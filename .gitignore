@@ -1,0 +1,11 @@
+# Node modules
+/node_modules
+
+# Image Editor files
+*.xcf
+
+# Generated output
+bundle.js
+
+# Pixi.js
+*pixi*

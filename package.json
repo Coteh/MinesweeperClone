@@ -1,0 +1,21 @@
+{
+  "name": "minesweeperclone",
+  "version": "1.0.0",
+  "description": "A clone of Minesweeper made using JavaScript and rendered with pixi.js.",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node server.js",
+    "cli": "node cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Coteh/MinesweeperClone.git"
+  },
+  "author": "James Cote",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^12.0.1",
+    "jest-cli": "^0.7.1"
+  }
+}
