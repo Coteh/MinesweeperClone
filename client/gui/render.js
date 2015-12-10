@@ -1,5 +1,5 @@
 var helpers = require('./display_helpers');
-var app = require('../../app');
+var game = require('../game');
 var MineBlock = require('./mineblock');
 var DigitBoard = require('./digitboard');
 var Timer = require('./timer');
@@ -256,7 +256,7 @@ var setupBoard = function(boardInfo){
       });
 
       mineTileArr[i][j].setLeftRelease(function(block, mouseData){
-        var result = (flagTimer > MAX_FLAG_HOLD_TIME) ? app.flagSpot(block.x, block.y) : app.selectSpot(block.x, block.y);
+        var result = (flagTimer > MAX_FLAG_HOLD_TIME) ? game.flagSpot(block.x, block.y) : game.selectSpot(block.x, block.y);
         if (result.hitInfo == "nonexistent" || result.flagInfo == "nonexistent"){
           console.log("The spot at x: " + block.x + ", y: " + block.y + " does not exist.");
         }
@@ -268,7 +268,7 @@ var setupBoard = function(boardInfo){
       });
 
       mineTileArr[i][j].setRightRelease(function(block, mouseData){
-        var result = app.flagSpot(block.x, block.y);
+        var result = game.flagSpot(block.x, block.y);
         if (result.flagInfo == "nonexistent"){
           console.log("The spot at x: " + block.x + ", y: " + block.y + " does not exist.");
         }
@@ -311,8 +311,8 @@ var resetBlockSprites = function(block){
 }
 
 var startGame = function() {
-  app.init({width: 10, height: 10, mines: 10});
-  boardInfo = app.getBoardInfo();
+  game.init({width: 10, height: 10, mines: 10});
+  boardInfo = game.getBoardInfo();
   if (mineTileArr != null){
     for (var i = 0; i < boardInfo.height; i++){
       for (var j = 0; j < boardInfo.width; j++){
@@ -385,7 +385,7 @@ renderer.view.oncontextmenu = function(e){
 }
 
 var updateBoard = function(updateInfo){
-  boardInfo = app.getBoardInfo();
+  boardInfo = game.getBoardInfo();
   if (updateInfo != null){
     if (updateInfo.hitInfo == "mine"){
       displayGameOver(true);

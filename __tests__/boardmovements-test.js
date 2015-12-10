@@ -1,8 +1,8 @@
-jest.dontMock('../app');
+jest.dontMock('../client/game');
 
 describe("select", function(){
   it("will select a spot on the board by marking it as revealed.", function(){
-    var app = require('../app');
+    var app = require('../client/game');
 
     app.init({width: 10, height: 10, mines: 10});
     app.selectSpot(2,2);
@@ -14,7 +14,7 @@ describe("select", function(){
 
 describe("already-select", function(){
   it("will prevent the user from selecting the same spot on the board twice.", function(){
-      var app = require('../app');
+      var app = require('../client/game');
 
       app.init({width: 10, height: 10, mines: 10});
       app.selectSpot(2,2);
@@ -27,7 +27,7 @@ describe("already-select", function(){
 //Export all modules from app.js somehow
 // describe("reveal", function(){
 //   it("will reveal a spot on the board using a direct call to revealSpot.", function(){
-//       var app = require('../app');
+//       var app = require('../client/game');
 //
 //       app.init({width: 10, height: 10, mines: 10});
 //       app.revealSpot
@@ -36,7 +36,7 @@ describe("already-select", function(){
 
 describe("flag", function(){
   it("will flag a spot on the board by marking it as flagged.", function(){
-    var app = require('../app');
+    var app = require('../client/game');
 
     app.init({width: 10, height: 10, mines: 10});
     expect(app.flagSpot(2, 2).flagInfo).toBe("flagged");
@@ -48,7 +48,7 @@ describe("flag", function(){
 
 describe("unflag", function(){
   it("will unflag a spot on the board by calling the flag function twice.", function(){
-    var app = require('../app');
+    var app = require('../client/game');
 
     app.init({width: 10, height: 10, mines: 10});
     expect(app.flagSpot(2, 2).flagInfo).toBe("flagged");

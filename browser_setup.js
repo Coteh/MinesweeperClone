@@ -1,1 +1,1 @@
-var render = require('./src/gui/render');
+var render = require('./client/gui/render');

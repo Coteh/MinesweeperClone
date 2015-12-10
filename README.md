@@ -18,7 +18,7 @@ Browserify is used to patch together all the js files linked via require into a 
 
 If your browser supports loading images, etc. via the file:// protocol, then just load up index.html. Otherwise, run the server via the following command:
 
-*node server.js*
+*node server/server.js*
 
 Once the server is running, just go to localhost:9000 and it should be there.
 

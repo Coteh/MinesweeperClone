@@ -2,11 +2,11 @@
   "name": "minesweeperclone",
   "version": "1.0.0",
   "description": "A clone of Minesweeper made using JavaScript and rendered with pixi.js.",
-  "main": "app.js",
+  "main": "client/game.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js",
-    "cli": "node cli.js"
+    "start": "node server/server.js",
+    "cli": "node app.js"
   },
   "repository": {
     "type": "git",

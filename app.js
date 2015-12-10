@@ -1,225 +1,80 @@
-var errors = require('./src/errors');
+var game = require('./client/game');
 
-var gameBoard;
-var isRevealed;
-var isFlagged;
-var adjMinesCount;
-var boardWidth;
-var boardHeight;
-var amountOfMines;
-var didWin = false;
-
-var init = function(gameOptions){
-  didWin = false;
-  boardWidth = (gameOptions != null && gameOptions.width != null) ? gameOptions.width : 10;
-  boardHeight = (gameOptions != null && gameOptions.height != null) ? gameOptions.height : 10;
-  amountOfMines = (gameOptions != null && gameOptions.mines != null) ? gameOptions.mines : 10;
-  gameBoard = new Array(boardHeight);
-  isRevealed = new Array(boardHeight);
-  isFlagged = new Array(boardHeight);
-  adjMinesCount = new Array(boardHeight);
-  for (var i = 0; i < gameBoard.length; i++){
-    gameBoard[i] = new Array(boardWidth);
-    isRevealed[i] = new Array(boardWidth);
-    isFlagged[i] = new Array(boardWidth);
-    adjMinesCount[i] = new Array(boardWidth);
-    for (var j = 0; j < gameBoard.length; j++){
-      gameBoard[i][j] = false;
-      isRevealed[i][j] = false;
-      isFlagged[i][j] = false;
-      adjMinesCount[i][j] = 0;
+var displayBoard = function(boardInfo){
+  //Printing width numbers
+  process.stdout.write("   ");
+  for (var k = 0; k < boardInfo.width; k++){
+    process.stdout.write("" + k);
+    if (k < boardInfo.width - 1){
+      process.stdout.write(" ");
     }
   }
-  var determinedMines = determineMineSpots(boardWidth * boardHeight, amountOfMines);
-  //Spot 1 is at [0,0], Spot (boardWidth * boardHeight) is at [boardWidth - 1, boardHeight - 1]
-  for (var k = 0; k < determinedMines.length; k++){
-    var yCoord = Math.floor(determinedMines[k] / boardWidth);
-    var xCoord = determinedMines[k] % boardWidth;
-    gameBoard[yCoord][xCoord] = true;
+  process.stdout.write("\n\n");
+  //Printing height numbers + board pieces
+  for (var i = 0; i < boardInfo.height; i++){
+    var row = "" + i + "  ";
+    for (var j = 0; j < boardInfo.width; j++){
+      row += (boardInfo.revealed[i][j]) ? ((boardInfo.board[i][j]) ? "X" : ((boardInfo.adjMinesCount[i][j]) ? boardInfo.adjMinesCount[i][j].toString() : "*") ) : (boardInfo.flagged[i][j]) ? "F" : "#";
+      if (j < boardInfo.width - 1){
+        row += " ".repeat((j < 10) ? 1 : Math.floor(Math.log10(j)) + 1);
+      }
+    }
+    console.log(row);
   }
 }
 
-var determineMineSpots = function(amountOfBoardPieces, amountOfMines){
-  var mineSpots = [];
+try {
+  game.init({width: 10, height: 10, mines: 10});
+}catch (e){
+  console.log("ERROR: A critical error occurred. Error info: \nName: " + e.name + "\nMessage: " + e.message);
+  return 1;
+}
 
-  if (amountOfMines < amountOfBoardPieces){
-    var i = 0;
-    while (i < amountOfMines){
-      var randomSelection = Math.floor(Math.random() * (amountOfBoardPieces - 1)); //from 0 to amountOfBoardPieces - 1
-      var isAlreadyThere = false;
-      for (var j = 0; j < mineSpots.length; j++){
-        if (randomSelection == mineSpots[j]){
-          isAlreadyThere = true; //already have a mine at this location, generate a new number
-          break;
+var isGameOver = false;
+
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('readable', function(){
+  var chunk = process.stdin.read();
+  if (chunk !== null){
+    var commandArr = chunk.split(" ");
+    if (commandArr.length >= 3){
+      var command = commandArr[0];
+      var inputX = parseInt(commandArr[1]);
+      var inputY = parseInt(commandArr[2]);
+      if (command == "select"){
+        var result = game.selectSpot(inputX, inputY);
+        if (result.hitInfo == "mine"){
+          isGameOver = true;
+          console.log("Game over buddy!");
+        }else if (result.hitInfo == "alreadyhit"){
+          console.log("Already hit!");
+        }else if (result.hitInfo == "nonexistent"){
+          console.log("This piece does not exist on the board. Select a piece that exists.");
+        }else{
+          console.log("You're good!");
+        }
+        if (result.win){
+          isGameOver = true;
+          console.log("YOU WIN!!!!");
+        }
+      }else if (command == "flag"){
+        var flag = game.flagSpot(inputX, inputY)
+        if (flag.flagInfo == "flagged"){
+          console.log("Spot [" + inputX + ", " + inputY + "] has been flagged.");
+        }else if (flag.flagInfo == "unflagged"){
+          console.log("Spot [" + inputX + ", " + inputY + "] has been unflagged.");
+        }else if (flag.flagInfo == "alreadyrevealed"){
+          console.log("Spot [" + inputX + ", " + inputY + "] has already been revealed.");
+        }else if (flag.flagInfo == "nonexistent"){
+          console.log("Spot does not exist, so it cannot be flagged.");
         }
       }
-      if (isAlreadyThere){
-        continue; //regenerate if we came across a number that's already in the list
-      }
-      mineSpots.push(randomSelection);
-      i++;
+
+      displayBoard(game.getBoardInfo());
     }
-  }else if (amountOfMines == amountOfBoardPieces){
-    //It'd be an impossible game, but whatever, you asked for it...
-    //Skip randomization entirely and just add each possible spot for amountOfBoardPieces
-    for (var i = 0; i < amountOfMines; i++){
-      mineSpots.push(i);
-    }
-  }else{ //amountOfMines > amountOfBoardPieces
-    throw new errors.BoardOverfillException("Amount of mines to generate exceeds amount of board pieces.");
+
+    if (isGameOver)
+      process.stdin.end();
   }
-
-  return mineSpots;
-}
-
-var getBoardInfo = function(){
-  return {board: gameBoard,
-          width: boardWidth,
-          height: boardHeight,
-          mineCount: amountOfMines,
-          revealed: isRevealed,
-          flagged: isFlagged,
-          adjMinesCount: adjMinesCount};
-}
-
-var selectSpot = function(x, y){
-  if ((x == null || y == null) || (x < 0 || x >= boardWidth) || (y < 0 || y >= boardHeight)){
-    //don't select a piece that doesn't exist on the board
-    return {hitInfo: "nonexistent"};
-  }
-  if (didWin || isRevealed[y][x]){
-    //don't select if piece is already selected or if player won already
-    return {hitInfo: "alreadyhit"};
-  }
-  var boardPiece = gameBoard[y][x];
-  revealSpot(x, y);
-  if (boardPiece){
-    return {hitInfo: "mine", win: false};
-  }
-  return {hitInfo: "land", win: checkForWin()};
-}
-
-var revealSpot = function(x, y){
-  if (isRevealed[y][x]) return; //don't reveal already revealed spot
-  isRevealed[y][x] = true;
-  if (!gameBoard[y][x]){
-    //If not a mine, determine adjacent mines
-    var adjacentSpots = getAdjacentSpots(x, y);
-    var amountOfAdjMines = calculateAdjacentMines(adjacentSpots);
-    //if mine count is 0, then recursively call revealSpot on all adjacent spots
-    if (amountOfAdjMines <= 0){
-      for (var i = 0; i < adjacentSpots.length; i++){
-        revealSpot(adjacentSpots[i].x, adjacentSpots[i].y);
-      }
-    }
-    adjMinesCount[y][x] = amountOfAdjMines;
-  }else{
-    //If a mine, reveal whole board
-    for (var a = 0; a < boardWidth; a++){
-      for (var b = 0; b < boardHeight; b++){
-        revealSpot(a, b);
-      }
-    }
-  }
-}
-
-var getAdjacentSpots = function(x, y){
-  var adjacentList = [];
-  //1 2 3
-  //4 X 5
-  //6 7 8
-  // X is the spot on board denoted by x and y coords
-  // if x is greater than 0, add 4 spot
-  // if x is less than board width - 1, add 5 spot
-  // if y is greater than 0, add 2 spot
-  // if y is less than board height - 1, add 7 spot
-  // if x is greater than 0 AND y is greater than 0, add 1 spot
-  // if x is less than board width - 1 AND y is greater than 0, add 3 spot
-  // if x is greater than 0 AND y is less than board height - 1, add 6 spot
-  // if x is less than board widht - 1 AND y is less than board height - 1, add 8 spot
-
-  var pastLeftEdge = (x > 0);
-  var pastRightEdge = (x < boardWidth - 1);
-  var pastTopEdge = (y > 0);
-  var pastBottomEdge = (y < boardHeight - 1);
-
-  if (pastLeftEdge){
-    adjacentList.push({x: x - 1, y: y, piece: gameBoard[y][x - 1]}); //4
-    if (pastTopEdge){
-      adjacentList.push({x: x - 1, y: y - 1, piece: gameBoard[y - 1][x - 1]}); //1
-    }
-    if (pastBottomEdge){
-      adjacentList.push({x: x - 1, y: y + 1, piece: gameBoard[y + 1][x - 1]}); //6
-    }
-  }
-  if (pastRightEdge){
-    adjacentList.push({x: x + 1, y: y, piece: gameBoard[y][x + 1]}); //5
-    if (pastTopEdge){
-      adjacentList.push({x: x + 1, y: y - 1, piece: gameBoard[y - 1][x + 1]}) //3
-    }
-    if (pastBottomEdge){
-      adjacentList.push({x: x + 1, y: y + 1, piece: gameBoard[y + 1][x + 1]}); //8
-    }
-  }
-  if (pastTopEdge){
-    adjacentList.push({x: x, y: y - 1, piece: gameBoard[y - 1][x]}); //2
-  }
-  if (pastBottomEdge){
-    adjacentList.push({x : x, y: y + 1, piece: gameBoard[y + 1][x]}); //7
-  }
-
-  return adjacentList;
-}
-
-var calculateAdjacentMines = function(adjacentSpots){
-  var amountOfAdjMines = 0;
-
-  for (var i = 0; i < adjacentSpots.length; i++){
-    if (adjacentSpots[i].piece){
-      amountOfAdjMines++;
-    }
-  }
-
-  return amountOfAdjMines;
-}
-
-var flagSpot = function(x, y, expression){
-  //only flag the spot if it hasn't been revealed yet and if it exists
-  if ((x == null || y == null) || (x < 0 || x >= boardWidth) || (y < 0 || y >= boardHeight)){
-    return {flagInfo: "nonexistent"};
-  }
-  if (didWin || isRevealed[y][x]){
-    return {flagInfo: "alreadyrevealed"};
-  }
-  if (expression == null){ //flag argument not provided
-    expression = !isFlagged[y][x];
-  }
-  isFlagged[y][x] = expression; //spot at x, y is flagged/unflagged
-  return {flagInfo: (isFlagged[y][x]) ? "flagged" : "unflagged"};
-}
-
-var checkForWin = function(){
-  //If player has revealed (boardWidth * boardHeight) - amountOfMines amount of pieces,
-  //then they win.
-  var amountOfRevealed = 0;
-
-  for (var i = 0; i < boardHeight; i++){
-    for (var j = 0; j < boardWidth; j++){
-      //If piece revealed AND not a mine
-      if (isRevealed[i][j] && !gameBoard[i][j]){
-        amountOfRevealed++;
-      }
-    }
-  }
-
-  if (amountOfRevealed == (boardWidth * boardHeight) - amountOfMines){
-    didWin = true;
-    return true; //they won
-  }
-
-  return false; //they didn't win (yet)
-}
-
-module.exports = {
-  init, getBoardInfo, selectSpot, flagSpot
-}
+});
