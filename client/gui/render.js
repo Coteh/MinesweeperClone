@@ -360,6 +360,7 @@ var startGame = function() {
     }
   }
   gameSeconds = 0;
+  timeDigitBoard.setDisplayNumber(gameSeconds);
 }
 
 var enableBoardInteraction = function(expression){
