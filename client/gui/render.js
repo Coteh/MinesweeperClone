@@ -16,12 +16,18 @@ var interactionManager = new PIXI.interaction.InteractionManager(renderer);
 //Attach renderer onto the page
 document.body.appendChild(renderer.view);
 
-//Other Variable declarations
+//PIXI Variable declarations
 var stage = null;
 var background = null;
 
+//Grab loader from PIXI
+var loader = PIXI.loader;
+
+//Background tile
 var tilingTile = null;
 var tileDelta = null;
+
+//Filters and other effects
 var normalBGFilters = null;
 var pixelateFilter = null;
 var pixelIntensity = null;
@@ -30,45 +36,49 @@ var blurFilter = null;
 var blurIntensity = 0;
 var gameInactiveFilters = null;
 
+//Board Info from game.js
 var boardInfo = null;
+
+//Mine board and mine tile renderable declarations
 var mineBoard = null;
 var mineTiles = null;
 var mineTileArr = null;
 
+//Board offset vector
 var boardOffsetX = 120 + (renderer.width / 2) - (10 * 32);
 var boardOffsetY = 100 + (renderer.height / 2) - (10 * 32);
 
+//Background colors
 var regularBackgroundColor = 0x888888;
 var gameOverBackgroundColor = 0x3D0000;
 
+//Flag hold feature variable declarations
 var holdToFlag = true;
 var flagTimer = 0.0;
 var MAX_FLAG_HOLD_TIME = 30.0; //amount of time to hold down select in order to flag a tile
 
+//Highlight effect
 var highlightEffect = false;
 
-/* Textures */
-var logoTex = PIXI.Texture.fromImage("img/Logo.png");
-var blockTex = PIXI.Texture.fromImage("img/Block.png");
-var blockSelectedTex = PIXI.Texture.fromImage("img/Block_selected.png");
-var blockHeldTex = PIXI.Texture.fromImage("img/Block_held.png");
-var blockHighlightedTex = PIXI.Texture.fromImage("img/Block_highlighted.png");
-var buttonTex = PIXI.Texture.fromImage("img/Button.png");
-var tileTex = PIXI.Texture.fromImage("img/Tiles.png");
-var mineTex = PIXI.Texture.fromImage("img/Mine.png");
-var flagTex = PIXI.Texture.fromImage("img/Flag.png");
-var smileyTex = PIXI.Texture.fromImage("img/Smiley.png");
-var smileyWinTex = PIXI.Texture.fromImage("img/Smiley_proud.png");
-var smileyLoseTex = PIXI.Texture.fromImage("img/Smiley_sad.png");
-var uncheckedTex = PIXI.Texture.fromImage("img/Checkbox_unchecked.png");
-var checkedTex = PIXI.Texture.fromImage("img/Checkbox_checked.png");
-var starTex = PIXI.Texture.fromImage("img/Star.png");
+/* Declaring Textures */
+var logoTex = null;
+var blockTex = null;
+var blockSelectedTex = null;
+var blockHeldTex = null;
+var blockHighlightedTex = null;
+var buttonTex = null;
+var tileTex = null;
+var mineTex = null;
+var flagTex = null;
+var smileyTex = null;
+var smileyWinTex = null;
+var smileyLoseTex = null;
+var uncheckedTex = null;
+var checkedTex = null;
+var starTex = null;
 
 /* Digit Textures */
 var digitTex = new Array(10);
-for (var i = 0; i <= 9; i++){
-  digitTex[i] = PIXI.Texture.fromImage("img/digits/" + i + ".png");
-}
 
 /* Menus */
 var titleMenu = null;
@@ -79,15 +89,6 @@ var holdToFlagBtn = null;
 /* Timers */
 var gameTimer = null;
 var gameSeconds = 0;
-
-//Initialize timers
-gameTimer = new Timer(window);
-gameTimer.setTickCallback(function(seconds){
-  //Update seconds
-  gameSeconds = seconds;
-  //Timer digit board update
-  timeDigitBoard.setDisplayNumber(gameSeconds);
-});
 
 /* Game Screens */
 var titleScreen = null;
@@ -103,6 +104,9 @@ var gameLogoSprite = null;
 var starSprite = null;
 var copyrightText = null;
 
+/* Game Ticker */
+var ticker = null;
+
 var initRenderElements = function(){
   //Setting background color of game
   renderer.backgroundColor = regularBackgroundColor;
@@ -113,6 +117,27 @@ var initRenderElements = function(){
   //Initialize screen containers
   gameScreen = new PIXI.Container();
   titleScreen = new PIXI.Container();
+
+  /* Initializing Textures */
+  logoTex = PIXI.Texture.fromImage("img/Logo.png");
+  blockTex = PIXI.Texture.fromImage("img/Block.png");
+  blockSelectedTex = PIXI.Texture.fromImage("img/Block_selected.png");
+  blockHeldTex = PIXI.Texture.fromImage("img/Block_held.png");
+  blockHighlightedTex = PIXI.Texture.fromImage("img/Block_highlighted.png");
+  buttonTex = PIXI.Texture.fromImage("img/Button.png");
+  tileTex = PIXI.Texture.fromImage("img/Tiles.png");
+  mineTex = PIXI.Texture.fromImage("img/Mine.png");
+  flagTex = PIXI.Texture.fromImage("img/Flag.png");
+  smileyTex = PIXI.Texture.fromImage("img/Smiley.png");
+  smileyWinTex = PIXI.Texture.fromImage("img/Smiley_proud.png");
+  smileyLoseTex = PIXI.Texture.fromImage("img/Smiley_sad.png");
+  uncheckedTex = PIXI.Texture.fromImage("img/Checkbox_unchecked.png");
+  checkedTex = PIXI.Texture.fromImage("img/Checkbox_checked.png");
+  starTex = PIXI.Texture.fromImage("img/Star.png");
+  //Initializing digit textures
+  for (var i = 0; i <= 9; i++){
+    digitTex[i] = PIXI.Texture.fromImage("img/digits/" + i + ".png");
+  }
 
   //Initializing tiling background sub-container
   background = new PIXI.Container();
@@ -445,9 +470,49 @@ function render(){
   renderer.render(stage);
 }
 
-var ticker = new PIXI.ticker.Ticker();
-ticker.add(update);
-ticker.add(render);
-ticker.start();
+function initGame(){
+    //Initialize timers
+    gameTimer = new Timer(window);
+    gameTimer.setTickCallback(function(seconds){
+      //Update seconds
+      gameSeconds = seconds;
+      //Timer digit board update
+      timeDigitBoard.setDisplayNumber(gameSeconds);
+    });
 
-initRenderElements();
+    initRenderElements();
+
+    ticker = new PIXI.ticker.Ticker();
+    ticker.add(update);
+    ticker.add(render);
+    ticker.start();
+}
+
+//Adding image resources to loader queue
+loader.add("Logo", "img/Logo.png");
+loader.add("Block", "img/Block.png");
+loader.add("Block_selected", "img/Block_selected.png");
+loader.add("Block_held", "img/Block_held.png");
+loader.add("Block_highlighted", "img/Block_highlighted.png");
+loader.add("Button", "img/Button.png");
+loader.add("Tiles", "img/Tiles.png");
+loader.add("Mine", "img/Mine.png");
+loader.add("Flag", "img/Flag.png");
+loader.add("Smiley", "img/Smiley.png");
+loader.add("Smiley_proud", "img/Smiley_proud.png");
+loader.add("Smiley_sad", "img/Smiley_sad.png");
+loader.add("Checkbox_unchecked", "img/Checkbox_unchecked.png");
+loader.add("Checkbox_checked", "img/Checkbox_checked.png");
+loader.add("Star", "img/Star.png");
+for (var i = 0; i <= 9; i++){
+  loader.add("digit_" + i, "img/digits/" + i + ".png");
+}
+
+loader.once("complete", function(){
+    console.log("Resources loaded.");
+    initGame();
+});
+loader.once("error", function(){
+    console.log("There was an error loading resources for the game.");
+});
+loader.load();
