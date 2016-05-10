@@ -428,6 +428,7 @@ var updateBoard = function(updateInfo){
       // console.log("GAME OVER!");
     }
   }
+  var amtFlagged = 0;
   for (var i = 0; i < boardInfo.height; i++){
     for (var j = 0; j < boardInfo.width; j++){
       mineTileArr[i][j].sprite.texture = (boardInfo.revealed[i][j]) ? blockSelectedTex : blockTex;
@@ -445,9 +446,15 @@ var updateBoard = function(updateInfo){
         mineTileArr[i][j].enableInteraction(false);
       }else{
         mineTileArr[i][j].setIndicatorSpriteVisibility(boardInfo.flagged[i][j]);
+        if (boardInfo.flagged[i][j]){
+            amtFlagged++;
+        }
       }
     }
   }
+  /* Update Amount of Mines Digit */
+  var amtOfUnflaggedMines = boardInfo.mineCount - amtFlagged;
+  mineDigitBoard.setDisplayNumber((amtOfUnflaggedMines > 0) ? amtOfUnflaggedMines : 0);
   /* Check for Win */
   if (updateInfo != null && updateInfo.win){
     displayGameWin(true);
