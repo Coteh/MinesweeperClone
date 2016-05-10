@@ -35,8 +35,8 @@ var mineBoard = null;
 var mineTiles = null;
 var mineTileArr = null;
 
-var boardOffsetX = 120 + (renderer.width / 2) - (10 * 32);
-var boardOffsetY = 100 + (renderer.height / 2) - (10 * 32);
+var boardOffsetX = 0;
+var boardOffsetY = 0;
 
 var regularBackgroundColor = 0x888888;
 var gameOverBackgroundColor = 0x3D0000;
@@ -104,6 +104,8 @@ var starSprite = null;
 var copyrightText = null;
 
 var initRenderElements = function(){
+  resizeGame();
+
   //Setting background color of game
   renderer.backgroundColor = regularBackgroundColor;
 
@@ -232,6 +234,11 @@ var initRenderElements = function(){
   stage.addChild(gameScreen);
   stage.addChild(titleScreen);
   gameScreen.visible = false;
+
+  resizeCallbacks.push(function(){
+      tilingTile.width = renderer.width;
+      tilingTile.height = renderer.height;
+  });
 }
 
 var setupBoard = function(boardInfo){
@@ -291,6 +298,10 @@ var setupBoard = function(boardInfo){
       mineTiles.addChild(mineTileArr[i][j].container);
     }
   }
+
+  //Repositioning mine board
+  mineBoard.x = boardOffsetX;
+  mineBoard.y = boardOffsetY;
 
   //Repositioning smiley button (always on top of the board at the center)
   smileyButton.setPosition(boardInfo.width / 2, -1);
@@ -444,6 +455,19 @@ function render(){
   //Render the stage
   renderer.render(stage);
 }
+
+var resizeGame = function(){
+    renderer.resize(document.documentElement.clientWidth, document.documentElement.clientHeight);
+    boardOffsetX = 120 + (renderer.width / 2) - (10 * 32);
+    boardOffsetY = 100 + (renderer.height / 2) - (10 * 32);
+    for (var i = 0; i < resizeCallbacks.length; i++){
+        resizeCallbacks[i]();
+    }
+}
+
+var resizeCallbacks = [];
+
+window.onresize = resizeGame;
 
 var ticker = new PIXI.ticker.Ticker();
 ticker.add(update);
