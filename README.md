@@ -25,7 +25,6 @@ Once the server is running, just go to localhost:9000 and it should be there.
 ## ![Smiley Sad](img/Smiley_sad.png "Smiley_sad") Issues ![Smiley Sad](img/Smiley_sad.png "Smiley_sad")
 - Unit and Integration testing is limited
 - CLI: Boards of height >= 10 and/or width >= 10 display alignment issues [#1](https://github.com/Coteh/MinesweeperClone/issues/1)
-- Add Asset Loader [#2](https://github.com/Coteh/MinesweeperClone/issues/2)
 - Stack overflow (RangeError) when recursive revealing boards with dimensions 100x100 or greater [#3](https://github.com/Coteh/MinesweeperClone/issues/3)
 
 ## ![Smiley Happy](img/Smiley_proud.png "Smiley_proud") Future Additions ![Smiley Happy](img/Smiley_proud.png "Smiley_proud")
