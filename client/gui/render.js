@@ -360,7 +360,6 @@ var startGame = function() {
     }
   }
   gameSeconds = 0;
-  gameTimer.start();
 }
 
 var enableBoardInteraction = function(expression){
@@ -496,6 +495,10 @@ function initGame(){
       gameSeconds = seconds;
       //Timer digit board update
       timeDigitBoard.setDisplayNumber(gameSeconds);
+    });
+    //Let the timer start only after the first board click
+    game.addFirstBlockEvent(function(){
+        gameTimer.start();
     });
 
     initRenderElements();

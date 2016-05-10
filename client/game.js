@@ -8,9 +8,12 @@ var boardWidth;
 var boardHeight;
 var amountOfMines;
 var didWin = false;
+var firstBlockClicked = false;
+var firstBlockCallbacks = [];
 
 var init = function(gameOptions){
   didWin = false;
+  firstBlockClicked = false;
   boardWidth = (gameOptions != null && gameOptions.width != null) ? gameOptions.width : 10;
   boardHeight = (gameOptions != null && gameOptions.height != null) ? gameOptions.height : 10;
   amountOfMines = (gameOptions != null && gameOptions.mines != null) ? gameOptions.mines : 10;
@@ -93,6 +96,12 @@ var selectSpot = function(x, y){
   }
   var boardPiece = gameBoard[y][x];
   revealSpot(x, y);
+  if (!firstBlockClicked){
+      for (var i = 0; i < firstBlockCallbacks.length; i++){
+          firstBlockCallbacks[i]();
+      }
+  }
+  firstBlockClicked = true;
   if (boardPiece){
     return {hitInfo: "mine", win: false};
   }
@@ -220,6 +229,10 @@ var checkForWin = function(){
   return false; //they didn't win (yet)
 }
 
+var addFirstBlockEvent = function(callback){
+    firstBlockCallbacks.push(callback);
+}
+
 module.exports = {
-  init, getBoardInfo, selectSpot, flagSpot
+  init, getBoardInfo, selectSpot, flagSpot, addFirstBlockEvent
 }
