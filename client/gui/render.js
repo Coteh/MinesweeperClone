@@ -251,7 +251,7 @@ var initRenderElements = function(){
   starSprite.y = 155;
 
   //Add copyright text
-  copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015 James Cote", {font: "18px Arial"});
+  copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", {font: "18px Arial"});
   titleScreen.addChild(copyrightText);
   copyrightText.x = 300;
   copyrightText.y = renderer.height - 24;
