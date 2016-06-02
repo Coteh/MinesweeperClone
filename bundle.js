@@ -773,6 +773,12 @@ var initRenderElements = function(){
   stage.addChild(background);
   background.addChild(tilingTile);
 
+  //Adding resize callback for resizing tiling background
+  resizeCallbacks.push(function(){
+      tilingTile.width = renderer.width;
+      tilingTile.height = renderer.height;
+  });
+
   //Background filter setup
   normalBGFilters = background.filters;
   pixelateFilter = new PIXI.filters.PixelateFilter();
@@ -820,11 +826,16 @@ var initRenderElements = function(){
 
   //Initializing mine board
   mineBoard = new PIXI.Container();
-  mineBoard.x = boardOffsetX;
-  mineBoard.y = boardOffsetY;
   mineTiles = new PIXI.Container();
-  gameScreen.addChild(mineBoard);
   mineBoard.addChild(mineTiles);
+  gameScreen.addChild(mineBoard);
+
+  var gameScreenPlacement = function(){
+      gameScreen.x = boardOffsetX;
+      gameScreen.y = boardOffsetY;
+  };
+  gameScreenPlacement();
+  resizeCallbacks.push(gameScreenPlacement);
 
   //Initializing menus
   titleMenu = new Menu(100, 100, "Title Menu");
@@ -841,6 +852,7 @@ var initRenderElements = function(){
     titleScreen.visible = false;
     gameScreen.visible = true;
     background.filters = normalBGFilters;
+    resizeGame();
   });
   playBtn.setGraphic(uncheckedTex);
 
@@ -876,19 +888,28 @@ var initRenderElements = function(){
   starSprite.y = 155;
 
   //Add copyright text
-  copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015 James Cote", {font: "18px Arial"});
+  copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", {font: "18px Arial"});
   titleScreen.addChild(copyrightText);
   copyrightText.x = 300;
   copyrightText.y = renderer.height - 24;
+  var copyrightPlacement = function(){
+      copyrightText.x = 300;
+      copyrightText.y = renderer.height - 24;;
+  };
+  copyrightPlacement();
+  resizeCallbacks.push(copyrightPlacement);
 
   stage.addChild(gameScreen);
   stage.addChild(titleScreen);
   gameScreen.visible = false;
 
-  resizeCallbacks.push(function(){
-      tilingTile.width = renderer.width;
-      tilingTile.height = renderer.height;
-  });
+  //Title screen placement
+  var titleScreenPlacement = function(){
+      titleScreen.x = renderer.width / 3.5;
+      titleScreen.y = 120;
+  }
+  titleScreenPlacement();
+  resizeCallbacks.push(titleScreenPlacement);
 }
 
 var setupBoard = function(boardInfo){
@@ -972,7 +993,7 @@ var resetBlockSprites = function(block){
 }
 
 var startGame = function() {
-  game.init({width: 10, height: 10, mines: 10});
+  game.init({width: 20, height: 20, mines: 35});
   boardInfo = game.getBoardInfo();
   if (mineTileArr != null){
     for (var i = 0; i < boardInfo.height; i++){
@@ -1156,9 +1177,11 @@ for (var i = 0; i <= 9; i++){
 }
 
 var resizeGame = function(){
-    renderer.resize(document.documentElement.clientWidth, document.documentElement.clientHeight);
-    boardOffsetX = 120 + (renderer.width / 2) - (10 * 32);
-    boardOffsetY = 100 + (renderer.height / 2) - (10 * 32);
+    renderer.resize(window.innerWidth, window.innerHeight);
+    boardOffsetX = ((boardInfo) ? boardInfo.width + renderer.width / 3.1 : 1);
+    boardOffsetY = ((boardInfo) ? boardInfo.height + renderer.height / 5 : 1);
+    // console.log(boardOffsetX);
+    // console.log(boardOffsetY);
     for (var i = 0; i < resizeCallbacks.length; i++){
         resizeCallbacks[i]();
     }
