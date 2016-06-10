@@ -1,6 +1,6 @@
 # ![MinesweeperClone](img/Logo.png "MinesweeperClone Logo")
 
-[![Build Status](https://travis-ci.org/Coteh/MinesweeperClone.svg?branch=master)](https://travis-ci.org/Coteh/MinesweeperClone)
+[![Build Status](https://travis-ci.org/Coteh/MinesweeperClone.svg?branch=master)](https://travis-ci.org/Coteh/MinesweeperClone) ![release | v1.0.0](https://img.shields.io/badge/release-v1.0.0-00b2ff.png)
 
 Simple clone of the well-known Minesweeper game. Created using Javascript, node.js, and pixi.js.
 
