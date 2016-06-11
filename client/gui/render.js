@@ -265,14 +265,6 @@ var initRenderElements = function(){
   //Add copyright text
   copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", {font: "18px Arial"});
   titleScreen.addChild(copyrightText);
-  copyrightText.x = 300;
-  copyrightText.y = renderer.height - 24;
-  var copyrightPlacement = function(){
-      copyrightText.x = 300;
-      copyrightText.y = renderer.height - 24;;
-  };
-  copyrightPlacement();
-  resizeCallbacks.push(copyrightPlacement);
 
   stage.addChild(gameScreen);
   stage.addChild(titleScreen);
@@ -285,6 +277,13 @@ var initRenderElements = function(){
   }
   titleScreenPlacement();
   resizeCallbacks.push(titleScreenPlacement);
+
+  var copyrightPlacement = function(){
+      copyrightText.x = 280;
+      copyrightText.y = renderer.height - 24 - titleScreen.y;
+  };
+  copyrightPlacement();
+  resizeCallbacks.push(copyrightPlacement);
 }
 
 var setupBoard = function(boardInfo){
