@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/Coteh/MinesweeperClone.svg?branch=master)](https://travis-ci.org/Coteh/MinesweeperClone) [![release | v1.0.1](https://img.shields.io/badge/release-v1.0.1-00b2ff.png)](https://github.com/Coteh/MinesweeperClone/releases/tag/1.0.1) [![Play here](https://img.shields.io/badge/play-here-yellow.png)](http://coteh.github.io/MinesweeperClone/)
 
-Simple clone of the well-known Minesweeper game. Created using Javascript, node.js, and pixi.js.
+Simple clone of the well-known Minesweeper game. Created using Javascript, Node.js, and Pixi.js.
 
 ## ![Smiley](img/Smiley.png "Smiley") Features ![Smiley](img/Smiley.png "Smiley")
 - Simple and familiar Minesweeper gameplay
@@ -13,7 +13,13 @@ Simple clone of the well-known Minesweeper game. Created using Javascript, node.
 ![Title Screen](screenshots/title.png "Title Screen")
 ![In-Game](screenshots/game.png "In-Game")
 
-## ![Mine](img/Mine.png "Mine") Install ![Mine](img/Mine.png "Mine")
+## ![Mine](img/Mine.png "Mine") Installation ![Mine](img/Mine.png "Mine")
+First, ensure that a [Pixi.js](https://github.com/pixijs/pixi.js) binary and a [Pixi.js filters](https://github.com/pixijs/pixi-filters) binary is available in a subdirectory titled "pixi". This is the setup used currently:
+
+├───pixi  
+│   ├───pixi.js (@v4.1.0)  
+│   ├───filters.js (@v1.0.6)  
+
 Browserify is used to patch together all the js files linked via require into a single bundle.js file. To do this, run the following:
 
 `browserify browser_setup.js > bundle.js`
