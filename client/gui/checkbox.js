@@ -1,7 +1,7 @@
 var MenuOption = require('./menuoption');
 
-function CheckBox(title, titleOptions){
-  this.menuOption = new MenuOption(title, titleOptions);
+function CheckBox(title, textOptions){
+  this.menuOption = new MenuOption(title, textOptions);
   this.container = this.menuOption.container;
   this.uncheckedTex = null;
   this.checkedTex = null;
