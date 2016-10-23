@@ -1,7 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var render = require('./client/gui/render');
 
-},{"./client/gui/render":10}],2:[function(require,module,exports){
+},{"./client/gui/render":11}],2:[function(require,module,exports){
 function BoardOverfillException(message) {
    this.message = message;
    this.name = "BoardOverfillException";
@@ -254,8 +254,8 @@ module.exports = {
 },{"./errors":2}],4:[function(require,module,exports){
 var MenuOption = require('./menuoption');
 
-function CheckBox(title, titleOptions){
-  this.menuOption = new MenuOption(title, titleOptions);
+function CheckBox(title, textOptions){
+  this.menuOption = new MenuOption(title, textOptions);
   this.container = this.menuOption.container;
   this.uncheckedTex = null;
   this.checkedTex = null;
@@ -288,7 +288,7 @@ CheckBox.prototype.setCheck = function(expression){
 
 module.exports = CheckBox;
 
-},{"./menuoption":8}],5:[function(require,module,exports){
+},{"./menuoption":9}],5:[function(require,module,exports){
 function DigitBoard(x, y, amtOfDigits, textureArr){
   this.container = new PIXI.Container();
   this.setPosition(x, y);
@@ -453,6 +453,38 @@ module.exports = {
 }
 
 },{}],7:[function(require,module,exports){
+var buttonFont = {
+    fontFamily: "Arial",
+    fontSize: "18px"
+};
+
+var bigButtonFont = {
+    fontFamily: buttonFont.fontFamily,
+    fontSize: "36px",
+    fontWeight: "bold"
+};
+
+var copyrightFont = {
+    fontFamily: "Arial",
+    fontSize: "18px"
+};
+
+var numberIndicatorFont = {
+    fontFamily: "Arial",
+    fontSize: "24px",
+    fontWeight: "bold",
+    fill: "#ff0000",
+    align: "right"
+};
+
+module.exports = {
+    buttonFont,
+    bigButtonFont,
+    copyrightFont,
+    numberIndicatorFont
+};
+
+},{}],8:[function(require,module,exports){
 function Menu(x, y, title){
   this.container = new PIXI.Container();
   this.setPosition(x, y);
@@ -477,8 +509,8 @@ Menu.prototype.setVisibility = function(expression){
 
 module.exports = Menu;
 
-},{}],8:[function(require,module,exports){
-function MenuOption(title, titleOptions){
+},{}],9:[function(require,module,exports){
+function MenuOption(title, textOptions){
   this.container = new PIXI.Container();
   this.actionCallback = null;
   this.graphic = new PIXI.Graphics();
@@ -493,7 +525,7 @@ function MenuOption(title, titleOptions){
   this.setPressAction(null);
   this.title = "";
   this.titleGraphic = null;
-  this.setTitleText(title, titleOptions);
+  this.setTitleText(title, textOptions);
   this.setRect(0, 0, this.titleGraphic.width + 10, this.titleGraphic.height + 10);
   this.container.addChild(this.graphic);
   this.container.addChild(this.titleGraphic);
@@ -533,14 +565,16 @@ MenuOption.prototype.setGraphic = function(texture){
 
 module.exports = MenuOption;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
+var FontPrefs = require('./fontprefs');
+
 function MineBlock(x, y){
   this.x = x;
   this.y = y;
   this.container = new PIXI.Container();
   this.container.interactive = false;
   this.sprite = new PIXI.Sprite(null);
-  this.numberIndicator = new PIXI.Text("", {font: "bold 24px Arial", fill: "#ff0000", align: "right"});
+  this.numberIndicator = new PIXI.Text("", FontPrefs.numberIndicatorFont);
   this.indicatorSprite = new PIXI.Sprite(null);
   this.setPosition(x, y);
   this.resetNumberIndicator();
@@ -622,7 +656,7 @@ MineBlock.prototype.enableInteraction = function(expression){
 
 module.exports = MineBlock;
 
-},{}],10:[function(require,module,exports){
+},{"./fontprefs":7}],11:[function(require,module,exports){
 var helpers = require('./display_helpers');
 var game = require('../game');
 var MineBlock = require('./mineblock');
@@ -631,6 +665,7 @@ var Timer = require('./timer');
 var Menu = require('./menu');
 var MenuOption = require('./menuoption');
 var CheckBox = require('./checkbox');
+var FontPrefs = require('./fontprefs');
 
 //Initializing renderer
 var renderer = new PIXI.autoDetectRenderer(800, 600);
@@ -842,7 +877,7 @@ var initRenderElements = function(){
   titleScreen.addChild(titleMenu.container);
 
   //Initializing menu buttons
-  playBtn = new MenuOption("Play Game");
+  playBtn = new MenuOption("Play Game", FontPrefs.bigButtonFont);
   playBtn.setPressAction(function(){
     startGame();
     setupBoard(boardInfo);
@@ -856,7 +891,7 @@ var initRenderElements = function(){
   });
   playBtn.setGraphic(uncheckedTex);
 
-  highlightBtn = new CheckBox("Highlight Effect?", {font: "18px Arial"});
+  highlightBtn = new CheckBox("Highlight Effect?", FontPrefs.buttonFont);
   highlightBtn.setCheck(highlightEffect);
   highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
   highlightBtn.setCheckBoxAction(function(expression){
@@ -864,7 +899,7 @@ var initRenderElements = function(){
   });
   titleMenu.addMenuOption(highlightBtn.menuOption);
 
-  holdToFlagBtn = new CheckBox("Hold left click to flag?", {font: "18px Arial"});
+  holdToFlagBtn = new CheckBox("Hold left click to flag?", FontPrefs.buttonFont);
   holdToFlagBtn.setCheck(holdToFlag);
   holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
   holdToFlagBtn.setCheckBoxAction(function(expression){
@@ -888,7 +923,7 @@ var initRenderElements = function(){
   starSprite.y = 155;
 
   //Add copyright text
-  copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", {font: "18px Arial"});
+  copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", FontPrefs.copyrightFont);
   titleScreen.addChild(copyrightText);
 
   stage.addChild(gameScreen);
@@ -1199,7 +1234,7 @@ loader.once("error", function(){
 });
 loader.load();
 
-},{"../game":3,"./checkbox":4,"./digitboard":5,"./display_helpers":6,"./menu":7,"./menuoption":8,"./mineblock":9,"./timer":11}],11:[function(require,module,exports){
+},{"../game":3,"./checkbox":4,"./digitboard":5,"./display_helpers":6,"./fontprefs":7,"./menu":8,"./menuoption":9,"./mineblock":10,"./timer":12}],12:[function(require,module,exports){
 function Timer(domWindow){
   this.domWindow = domWindow;
   this.seconds = 0;
