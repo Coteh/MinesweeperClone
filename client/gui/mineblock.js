@@ -1,10 +1,12 @@
+var FontPrefs = require('./fontprefs');
+
 function MineBlock(x, y){
   this.x = x;
   this.y = y;
   this.container = new PIXI.Container();
   this.container.interactive = false;
   this.sprite = new PIXI.Sprite(null);
-  this.numberIndicator = new PIXI.Text("", {font: "bold 24px Arial", fill: "#ff0000", align: "right"});
+  this.numberIndicator = new PIXI.Text("", FontPrefs.numberIndicatorFont);
   this.indicatorSprite = new PIXI.Sprite(null);
   this.setPosition(x, y);
   this.resetNumberIndicator();

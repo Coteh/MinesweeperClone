@@ -1,4 +1,4 @@
-function MenuOption(title, titleOptions){
+function MenuOption(title, textOptions){
   this.container = new PIXI.Container();
   this.actionCallback = null;
   this.graphic = new PIXI.Graphics();
@@ -13,7 +13,7 @@ function MenuOption(title, titleOptions){
   this.setPressAction(null);
   this.title = "";
   this.titleGraphic = null;
-  this.setTitleText(title, titleOptions);
+  this.setTitleText(title, textOptions);
   this.setRect(0, 0, this.titleGraphic.width + 10, this.titleGraphic.height + 10);
   this.container.addChild(this.graphic);
   this.container.addChild(this.titleGraphic);

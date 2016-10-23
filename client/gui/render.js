@@ -6,6 +6,7 @@ var Timer = require('./timer');
 var Menu = require('./menu');
 var MenuOption = require('./menuoption');
 var CheckBox = require('./checkbox');
+var FontPrefs = require('./fontprefs');
 
 //Initializing renderer
 var renderer = new PIXI.autoDetectRenderer(800, 600);
@@ -217,7 +218,7 @@ var initRenderElements = function(){
   titleScreen.addChild(titleMenu.container);
 
   //Initializing menu buttons
-  playBtn = new MenuOption("Play Game");
+  playBtn = new MenuOption("Play Game", FontPrefs.bigButtonFont);
   playBtn.setPressAction(function(){
     startGame();
     setupBoard(boardInfo);
@@ -231,7 +232,7 @@ var initRenderElements = function(){
   });
   playBtn.setGraphic(uncheckedTex);
 
-  highlightBtn = new CheckBox("Highlight Effect?", {font: "18px Arial"});
+  highlightBtn = new CheckBox("Highlight Effect?", FontPrefs.buttonFont);
   highlightBtn.setCheck(highlightEffect);
   highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
   highlightBtn.setCheckBoxAction(function(expression){
@@ -239,7 +240,7 @@ var initRenderElements = function(){
   });
   titleMenu.addMenuOption(highlightBtn.menuOption);
 
-  holdToFlagBtn = new CheckBox("Hold left click to flag?", {font: "18px Arial"});
+  holdToFlagBtn = new CheckBox("Hold left click to flag?", FontPrefs.buttonFont);
   holdToFlagBtn.setCheck(holdToFlag);
   holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
   holdToFlagBtn.setCheckBoxAction(function(expression){
@@ -263,7 +264,7 @@ var initRenderElements = function(){
   starSprite.y = 155;
 
   //Add copyright text
-  copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", {font: "18px Arial"});
+  copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", FontPrefs.copyrightFont);
   titleScreen.addChild(copyrightText);
 
   stage.addChild(gameScreen);
