@@ -10,6 +10,7 @@ var amountOfMines;
 var didWin = false;
 var firstBlockClicked = false;
 var firstBlockCallbacks = [];
+var revealBoardOnLoss = false;
 
 var init = function(gameOptions){
     didWin = false;
@@ -137,7 +138,9 @@ var revealSpot = function(x, y){
         } else {
             for (var a = 0; a < boardWidth; a++){
                 for (var b = 0; b < boardHeight; b++){
-                    performSpotReveal(a, b, null);
+                    if (revealBoardOnLoss || gameBoard[b][a]) {
+                        performSpotReveal(a, b, null);
+                    }
                 }
             }
         }
