@@ -108,28 +108,40 @@ var selectSpot = function(x, y){
     return {hitInfo: "land", win: checkForWin()};
 }
 
+var performSpotReveal = function(x, y, callback) {
+    isRevealed[y][x] = true;
+    var adjacentSpots = null;
+    var amountOfAdjMines = 0;
+    var isMine = gameBoard[y][x];
+    if (!isMine){
+        //If not a mine, determine adjacent mines
+        adjacentSpots = getAdjacentSpots(x, y);
+        amountOfAdjMines = calculateAdjacentMines(adjacentSpots);
+        adjMinesCount[y][x] = amountOfAdjMines;
+    }
+    if (callback) {
+        callback(isMine, amountOfAdjMines, adjacentSpots);
+    }
+}
+
 var revealSpot = function(x, y){
     if (isRevealed[y][x]) return; //don't reveal already revealed spot
-    isRevealed[y][x] = true;
-    if (!gameBoard[y][x]){
-        //If not a mine, determine adjacent mines
-        var adjacentSpots = getAdjacentSpots(x, y);
-        var amountOfAdjMines = calculateAdjacentMines(adjacentSpots);
-        //if mine count is 0, then recursively call revealSpot on all adjacent spots
-        if (amountOfAdjMines <= 0){
-            for (var i = 0; i < adjacentSpots.length; i++){
-                revealSpot(adjacentSpots[i].x, adjacentSpots[i].y);
+    performSpotReveal(x, y, function(isMine, amountOfAdjMines, adjacentSpots) {
+        if (!isMine) {
+            //if mine count is 0, then recursively call revealSpot on all adjacent spots
+            if (amountOfAdjMines <= 0){
+                for (var i = 0; i < adjacentSpots.length; i++){
+                    revealSpot(adjacentSpots[i].x, adjacentSpots[i].y);
+                }
+            }
+        } else {
+            for (var a = 0; a < boardWidth; a++){
+                for (var b = 0; b < boardHeight; b++){
+                    performSpotReveal(a, b, null);
+                }
             }
         }
-        adjMinesCount[y][x] = amountOfAdjMines;
-    }else{
-        //If a mine, reveal whole board
-        for (var a = 0; a < boardWidth; a++){
-            for (var b = 0; b < boardHeight; b++){
-                revealSpot(a, b);
-            }
-        }
-    }
+    });
 }
 
 var getAdjacentSpots = function(x, y){
