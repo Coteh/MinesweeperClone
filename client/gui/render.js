@@ -339,6 +339,8 @@ var setupBoard = function(boardInfo){
             mineTileArr[i][j].setMouseOut(function(block, mouseData){
                 if (!block.isRevealed){
                     block.setTexture(blockTex);
+                } else {
+                    block.setTexture(blockSelectedTex);
                 }
                 flagTimer = 0.0;
             });
