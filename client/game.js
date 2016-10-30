@@ -12,6 +12,14 @@ var firstBlockClicked = false;
 var firstBlockCallbacks = [];
 var revealBoardOnLoss = false;
 
+var isBoardRevealedOnLoss = function() {
+    return revealBoardOnLoss;
+};
+
+var setBoardRevealedOnLoss = function(expression) {
+    revealBoardOnLoss = expression;
+};
+
 var init = function(gameOptions){
     didWin = false;
     firstBlockClicked = false;
@@ -292,5 +300,5 @@ var addFirstBlockEvent = function(callback){
 };
 
 module.exports = {
-    init, getBoardInfo, selectSpot, selectAdjacentSpots, flagSpot, addFirstBlockEvent
+    init, getBoardInfo, selectSpot, selectAdjacentSpots, flagSpot, addFirstBlockEvent, isBoardRevealedOnLoss, setBoardRevealedOnLoss
 };

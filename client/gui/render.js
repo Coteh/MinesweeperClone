@@ -86,6 +86,7 @@ var titleMenu = null;
 var playBtn = null;
 var highlightBtn = null;
 var holdToFlagBtn = null;
+var revealBoardOnLossBtn = null;
 
 /* Timers */
 var gameTimer = null;
@@ -233,20 +234,28 @@ var initRenderElements = function(){
     playBtn.setGraphic(uncheckedTex);
 
     highlightBtn = new CheckBox("Highlight Effect?", FontPrefs.buttonFont);
-    highlightBtn.setCheck(highlightEffect);
     highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
     highlightBtn.setCheckBoxAction(function(expression){
         highlightEffect = expression;
     });
+    highlightBtn.setCheck(highlightEffect);
     titleMenu.addMenuOption(highlightBtn.menuOption);
 
     holdToFlagBtn = new CheckBox("Hold left click to flag?", FontPrefs.buttonFont);
-    holdToFlagBtn.setCheck(holdToFlag);
     holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
     holdToFlagBtn.setCheckBoxAction(function(expression){
         holdToFlag = expression;
     });
+    holdToFlagBtn.setCheck(holdToFlag);
     titleMenu.addMenuOption(holdToFlagBtn.menuOption);
+
+    revealBoardOnLossBtn = new CheckBox("Reveal board on loss", FontPrefs.buttonFont);
+    revealBoardOnLossBtn.setCheckTextures(uncheckedTex, checkedTex);
+    revealBoardOnLossBtn.setCheckBoxAction(function(expression){
+        game.setBoardRevealedOnLoss(expression);
+    });
+    revealBoardOnLossBtn.setCheck(game.isBoardRevealedOnLoss());
+    titleMenu.addMenuOption(revealBoardOnLossBtn.menuOption);
 
     titleMenu.addMenuOption(playBtn);
 
