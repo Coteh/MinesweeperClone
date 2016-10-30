@@ -131,9 +131,7 @@ var revealSpot = function(x, y){
         if (!isMine) {
             //if mine count is 0, then recursively call revealSpot on all adjacent spots
             if (amountOfAdjMines <= 0){
-                for (var i = 0; i < adjacentSpots.length; i++){
-                    revealSpot(adjacentSpots[i].x, adjacentSpots[i].y);
-                }
+                revealMultiple(adjacentSpots);
             }
         } else {
             for (var a = 0; a < boardWidth; a++){
@@ -145,6 +143,12 @@ var revealSpot = function(x, y){
             }
         }
     });
+}
+
+var revealMultiple = function(spotArr) {
+    for (var i = 0; i < spotArr.length; i++){
+        revealSpot(spotArr[i].x, spotArr[i].y);
+    }
 }
 
 var getAdjacentSpots = function(x, y){
