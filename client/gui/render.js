@@ -309,14 +309,16 @@ var setupBoard = function(boardInfo){
             });
 
             mineTileArr[i][j].setLeftRelease(function(block, mouseData){
-                var result = (flagTimer > MAX_FLAG_HOLD_TIME) ? game.flagSpot(block.x, block.y) : game.selectSpot(block.x, block.y);
+                var result = null;
+                if (block.isRevealed) {
+                    result = game.selectAdjacentSpots(block.x, block.y);
+                } else {
+                    result = (flagTimer > MAX_FLAG_HOLD_TIME) ? game.flagSpot(block.x, block.y) : game.selectSpot(block.x, block.y);
+                }
                 if (result.hitInfo == "nonexistent" || result.flagInfo == "nonexistent"){
                     console.log("The spot at x: " + block.x + ", y: " + block.y + " does not exist.");
                 }
                 updateBoard(result);
-                if (!holdToFlag || flagTimer <= MAX_FLAG_HOLD_TIME){
-                    block.enableInteraction(false);
-                }
                 flagTimer = 0.0;
             });
 
@@ -329,13 +331,13 @@ var setupBoard = function(boardInfo){
             });
 
             mineTileArr[i][j].setMouseEnter(function(block, mouseData){
-                if (block.sprite.interactive && highlightEffect){
+                if (!block.isRevealed && highlightEffect){
                     block.setTexture(blockHighlightedTex);
                 }
             });
 
             mineTileArr[i][j].setMouseOut(function(block, mouseData){
-                if (block.sprite.interactive){
+                if (!block.isRevealed){
                     block.setTexture(blockTex);
                 }
                 flagTimer = 0.0;
@@ -376,7 +378,7 @@ var startGame = function() {
                 mineTileArr[i][j].resetNumberIndicator();
                 mineTileArr[i][j].numberIndicator.visible = false;
                 resetBlockSprites(mineTileArr[i][j]);
-                mineTileArr[i][j].enableInteraction(true);
+                mineTileArr[i][j].setRevealed(false);
             }
         }
     }
@@ -464,7 +466,7 @@ var updateBoard = function(updateInfo){
                 mineTileArr[i][j].numberIndicator.style.fill = fill;
                 mineTileArr[i][j].numberIndicator.visible = (boardInfo.adjMinesCount[i][j]) ? true : false;
                 mineTileArr[i][j].setIndicatorSpriteVisibility(boardInfo.board[i][j]);
-                mineTileArr[i][j].enableInteraction(false);
+                mineTileArr[i][j].setRevealed(boardInfo.revealed[i][j]);
             }else{
                 mineTileArr[i][j].setIndicatorSpriteVisibility(boardInfo.flagged[i][j]);
                 if (boardInfo.flagged[i][j]){
