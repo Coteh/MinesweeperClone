@@ -19,13 +19,12 @@ First, ensure that a [Pixi.js](https://github.com/pixijs/pixi.js) binary and a [
 ├───pixi  
 │   ├───pixi.js             (or pixi.min.js)            (@v4.3.0)  
 │   ├───pixi.js.map         (or pixi.min.js.map)        (@v4.3.0)  
+│   ├ **(Can either include entire filters.js or include specific filters separately)**  
 │   ├───filters.js          (or filters.min.js)         (@v1.0.6)  
 │   ├───filters.js.map      (or filters.min.js.map)     (@v1.0.6)  
-│   ├ **(Filters included in Pixi.js Filters that are currently used by MinesweeperClone)**  
+│   ├ **(Filters included as separate .js files that are currently used by MinesweeperClone)**  
 │   ├───pixelate.js         (or pixelate.min.js)        (@v1.0.6)  
 │   ├───pixelate.js.map     (or pixelate.min.js.map)    (@v1.0.6)  
-│   ├───blur.js             (or blur.min.js)            (@v1.0.6)  
-│   ├───blur.js.map         (or blur.min.js.map)        (@v1.0.6)  
 
 Browserify is used to patch together all the js files linked via require into a single bundle.js file. To do this, run the following:
 
