@@ -4,19 +4,19 @@
 [![release | v1.0.2](https://img.shields.io/badge/release-v1.0.2-00b2ff.svg)](https://github.com/Coteh/MinesweeperClone/releases/tag/1.0.2)
 [![Play here](https://img.shields.io/badge/play-here-yellow.svg)](http://coteh.github.io/MinesweeperClone/)
 
-Simple clone of the well-known Minesweeper game. Created using Javascript, Node.js, and Pixi.js.
+Simple clone of the well-known Minesweeper game. Created using Javascript, Node.js, and PixiJS.
 
 ## ![Smiley](img/Smiley.png "Smiley") Features ![Smiley](img/Smiley.png "Smiley")
 - Simple and familiar Minesweeper gameplay
 - Ability to initialize a Minesweeper instance with specified height and width of board, and amount of mines
-- Game rendering with Pixi.js
+- Game rendering with PixiJS
 
 ## ![Flag](img/Flag.png "Flag") Screenshots ![Flag](img/Flag.png "Flag")
 ![Title Screen](screenshots/title.png "Title Screen")
 ![In-Game](screenshots/game.png "In-Game")
 
 ## ![Mine](img/Mine.png "Mine") Installation ![Mine](img/Mine.png "Mine")
-First, ensure that a [Pixi.js](https://github.com/pixijs/pixijs) binary and a [Pixi.js filters](https://github.com/pixijs/filters) binary is available in a subdirectory titled "pixi". This is the setup used currently:
+First, ensure that a [PixiJS](https://github.com/pixijs/pixijs) binary and a [PixiJS filters](https://github.com/pixijs/filters) binary is available in a subdirectory titled "pixi". This is the setup used currently:
 
 ├───pixi  
 │   ├───pixi.js             (or pixi.min.js)            (@v4.3.0)  
