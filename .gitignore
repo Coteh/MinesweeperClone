@@ -9,3 +9,6 @@ bundle.js
 
 # Pixi.js
 *pixi*/
+
+# Build output
+build/

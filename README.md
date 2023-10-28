@@ -16,7 +16,7 @@ Simple clone of the well-known Minesweeper game. Created using Javascript, Node.
 ![In-Game](screenshots/game.png "In-Game")
 
 ## ![Mine](img/Mine.png "Mine") Installation ![Mine](img/Mine.png "Mine")
-First, ensure that a [Pixi.js](https://github.com/pixijs/pixi.js) binary and a [Pixi.js filters](https://github.com/pixijs/pixi-filters) binary is available in a subdirectory titled "pixi". This is the setup used currently:
+First, ensure that a [Pixi.js](https://github.com/pixijs/pixijs) binary and a [Pixi.js filters](https://github.com/pixijs/filters) binary is available in a subdirectory titled "pixi". This is the setup used currently:
 
 ├───pixi  
 │   ├───pixi.js             (or pixi.min.js)            (@v4.3.0)  
@@ -27,6 +27,8 @@ First, ensure that a [Pixi.js](https://github.com/pixijs/pixi.js) binary and a [
 │   ├ **(Filters included as separate .js files that are currently used by MinesweeperClone)**  
 │   ├───pixelate.js         (or pixelate.min.js)        (@v1.0.6)  
 │   ├───pixelate.js.map     (or pixelate.min.js.map)    (@v1.0.6)  
+
+You can run `./scripts/download-pixi.sh` to download the non-minified files that can be used for development purposes, or `./scripts/download-pixi.sh prod` to download the minified files for production.
 
 Browserify is used to patch together all the js files linked via require into a single bundle.js file. To do this, run the following:
 
@@ -40,7 +42,6 @@ Once the server is running, just go to localhost:9000 and it should be there.
 
 ## ![Smiley Sad](img/Smiley_sad.png "Smiley_sad") Issues ![Smiley Sad](img/Smiley_sad.png "Smiley_sad")
 - Unit and Integration testing is limited
-- CLI: Boards of height >= 10 and/or width >= 10 display alignment issues [#1](https://github.com/Coteh/MinesweeperClone/issues/1)
 - Stack overflow (RangeError) when recursive revealing boards with dimensions 100x100 or greater [#3](https://github.com/Coteh/MinesweeperClone/issues/3)
 
 ## ![Smiley Happy](img/Smiley_proud.png "Smiley_proud") Future Additions ![Smiley Happy](img/Smiley_proud.png "Smiley_proud")
