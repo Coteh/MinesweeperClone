@@ -6,67 +6,67 @@ var port = 9000;
 
 http.createServer(function(request, response){
 
-  var uri = url.parse(request.url).pathname;
-  var filePath = path.join(process.cwd(), uri);
+    var uri = url.parse(request.url).pathname;
+    var filePath = path.join(process.cwd(), uri);
 
-  // console.log(filePath);
+    // console.log(filePath);
 
-  var extname = path.extname(filePath);
-  var contentType = 'text/html'; //.html, default case
-  switch (extname){
-    case '.js':
-      contentType = 'text/javascript';
-      break;
-    case '.css':
-      contentType = 'text/css';
-      break;
-    case '.json':
-      contentType = 'application/json';
-      break;
-    case '.png':
-      contentType = 'image/png';
-      break;
-    case '.jpg':
-      contentType = 'image/jpg';
-      break;
-    case '.png':
-      contentType = 'image/png';
-      break;
-    case '.wav':
-      contentType = 'audio/wav';
-      break;
-  }
-
-  fs.exists(filePath, function(exists) {
-    if (!exists){
-      response.writeHead(404, {"Content-Type" : "text/plain"});
-      response.write("This page does not exists.\n");
-      response.end();
-      return;
+    var extname = path.extname(filePath);
+    var contentType = 'text/html'; //.html, default case
+    switch (extname){
+        case '.js':
+        contentType = 'text/javascript';
+        break;
+        case '.css':
+        contentType = 'text/css';
+        break;
+        case '.json':
+        contentType = 'application/json';
+        break;
+        case '.png':
+        contentType = 'image/png';
+        break;
+        case '.jpg':
+        contentType = 'image/jpg';
+        break;
+        case '.png':
+        contentType = 'image/png';
+        break;
+        case '.wav':
+        contentType = 'audio/wav';
+        break;
     }
 
-    if (fs.statSync(filePath).isDirectory()){
-      filePath += "/index.html";
-    }
-
-    fs.readFile(filePath, function(error, content) {
-      if (error){
-        if (error.code == 'ENOENT'){
-          response.writeHead(404, {"Content-Type" : "text/plain"});
-          response.write(error + "\n");
-          response.end();
-        }else{
-          response.writeHead(500, {"Content-Type" : "text/plain"});
-          response.write(error + "\n");
-          response.end();
+    fs.exists(filePath, function(exists) {
+        if (!exists){
+            response.writeHead(404, {"Content-Type" : "text/plain"});
+            response.write("This page does not exists.\n");
+            response.end();
+            return;
         }
-      }else{
-        response.writeHead(200, {"Content-Type" : contentType});
-        response.end(content, 'utf-8');
-      }
-    });
 
-  });
+        if (fs.statSync(filePath).isDirectory()){
+            filePath += "/index.html";
+        }
+
+        fs.readFile(filePath, function(error, content) {
+            if (error){
+                if (error.code == 'ENOENT'){
+                    response.writeHead(404, {"Content-Type" : "text/plain"});
+                    response.write(error + "\n");
+                    response.end();
+                }else{
+                    response.writeHead(500, {"Content-Type" : "text/plain"});
+                    response.write(error + "\n");
+                    response.end();
+                }
+            }else{
+                response.writeHead(200, {"Content-Type" : contentType});
+                response.end(content, 'utf-8');
+            }
+        });
+
+    });
 
 }).listen(port);
 

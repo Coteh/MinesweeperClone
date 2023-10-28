@@ -86,6 +86,7 @@ var titleMenu = null;
 var playBtn = null;
 var highlightBtn = null;
 var holdToFlagBtn = null;
+var revealBoardOnLossBtn = null;
 
 /* Timers */
 var gameTimer = null;
@@ -233,20 +234,28 @@ var initRenderElements = function(){
     playBtn.setGraphic(uncheckedTex);
 
     highlightBtn = new CheckBox("Highlight Effect?", FontPrefs.buttonFont);
-    highlightBtn.setCheck(highlightEffect);
     highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
     highlightBtn.setCheckBoxAction(function(expression){
         highlightEffect = expression;
     });
+    highlightBtn.setCheck(highlightEffect);
     titleMenu.addMenuOption(highlightBtn.menuOption);
 
     holdToFlagBtn = new CheckBox("Hold left click to flag?", FontPrefs.buttonFont);
-    holdToFlagBtn.setCheck(holdToFlag);
     holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
     holdToFlagBtn.setCheckBoxAction(function(expression){
         holdToFlag = expression;
     });
+    holdToFlagBtn.setCheck(holdToFlag);
     titleMenu.addMenuOption(holdToFlagBtn.menuOption);
+
+    revealBoardOnLossBtn = new CheckBox("Reveal board on loss", FontPrefs.buttonFont);
+    revealBoardOnLossBtn.setCheckTextures(uncheckedTex, checkedTex);
+    revealBoardOnLossBtn.setCheckBoxAction(function(expression){
+        game.setBoardRevealedOnLoss(expression);
+    });
+    revealBoardOnLossBtn.setCheck(game.isBoardRevealedOnLoss());
+    titleMenu.addMenuOption(revealBoardOnLossBtn.menuOption);
 
     titleMenu.addMenuOption(playBtn);
 
@@ -266,25 +275,36 @@ var initRenderElements = function(){
     //Add copyright text
     copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", FontPrefs.copyrightFont);
     titleScreen.addChild(copyrightText);
+    
+    //Add version number
+    versionNumberText = new PIXI.Text("v1.0.2", FontPrefs.copyrightFont);
+    titleScreen.addChild(versionNumberText);
 
     stage.addChild(gameScreen);
     stage.addChild(titleScreen);
     gameScreen.visible = false;
 
     //Title screen placement
-    var titleScreenPlacement = function(){
+    const titleScreenPlacement = () => {
         titleScreen.x = renderer.width / 3.5;
         titleScreen.y = 120;
     }
     titleScreenPlacement();
     resizeCallbacks.push(titleScreenPlacement);
 
-    var copyrightPlacement = function(){
+    const copyrightPlacement = () => {
         copyrightText.x = 280;
         copyrightText.y = renderer.height - 24 - titleScreen.y;
     };
     copyrightPlacement();
     resizeCallbacks.push(copyrightPlacement);
+
+    const versionNumberPlacement = () => {
+        versionNumberText.x = gameLogoSprite.x + gameLogoSprite.width;
+        versionNumberText.y = gameLogoSprite.y + gameLogoSprite.height;
+    };
+    versionNumberPlacement();
+    resizeCallbacks.push(versionNumberPlacement);
 }
 
 var setupBoard = function(boardInfo){

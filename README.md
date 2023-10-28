@@ -1,6 +1,8 @@
 # ![MinesweeperClone](img/Logo.png "MinesweeperClone Logo")
 
-[![Build Status](https://travis-ci.org/Coteh/MinesweeperClone.svg?branch=master)](https://travis-ci.org/Coteh/MinesweeperClone) [![release | v1.0.1](https://img.shields.io/badge/release-v1.0.1-00b2ff.svg)](https://github.com/Coteh/MinesweeperClone/releases/tag/1.0.1) [![Play here](https://img.shields.io/badge/play-here-yellow.svg)](http://coteh.github.io/MinesweeperClone/)
+[![Run Tests](https://github.com/Coteh/MinesweeperClone/actions/workflows/run-tests.yml/badge.svg)](https://github.com/Coteh/MinesweeperClone/actions/workflows/run-tests.yml)
+[![release | v1.0.2](https://img.shields.io/badge/release-v1.0.2-00b2ff.svg)](https://github.com/Coteh/MinesweeperClone/releases/tag/1.0.2)
+[![Play here](https://img.shields.io/badge/play-here-yellow.svg)](http://coteh.github.io/MinesweeperClone/)
 
 Simple clone of the well-known Minesweeper game. Created using Javascript, Node.js, and Pixi.js.
 

@@ -1,8 +1,9 @@
 {
-  "name": "minesweeperclone",
-  "version": "1.0.1",
-  "description": "A clone of Minesweeper made using JavaScript and rendered with pixi.js.",
+  "name": "minesweeper-clone",
+  "version": "1.0.2",
+  "description": "A clone of Minesweeper made using JavaScript and rendered with PixiJS.",
   "main": "client/game.js",
+  "private": true,
   "scripts": {
     "test": "jest",
     "start": "node server/server.js",
@@ -16,6 +17,6 @@
   "license": "MIT",
   "devDependencies": {
     "browserify": "^12.0.1",
-    "jest-cli": "^0.7.1"
+    "jest-cli": "^29.7.0"
   }
 }
