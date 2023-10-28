@@ -275,25 +275,36 @@ var initRenderElements = function(){
     //Add copyright text
     copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", FontPrefs.copyrightFont);
     titleScreen.addChild(copyrightText);
+    
+    //Add version number
+    versionNumberText = new PIXI.Text("v1.0.1", FontPrefs.copyrightFont);
+    titleScreen.addChild(versionNumberText);
 
     stage.addChild(gameScreen);
     stage.addChild(titleScreen);
     gameScreen.visible = false;
 
     //Title screen placement
-    var titleScreenPlacement = function(){
+    const titleScreenPlacement = () => {
         titleScreen.x = renderer.width / 3.5;
         titleScreen.y = 120;
     }
     titleScreenPlacement();
     resizeCallbacks.push(titleScreenPlacement);
 
-    var copyrightPlacement = function(){
+    const copyrightPlacement = () => {
         copyrightText.x = 280;
         copyrightText.y = renderer.height - 24 - titleScreen.y;
     };
     copyrightPlacement();
     resizeCallbacks.push(copyrightPlacement);
+
+    const versionNumberPlacement = () => {
+        versionNumberText.x = gameLogoSprite.x + gameLogoSprite.width;
+        versionNumberText.y = gameLogoSprite.y + gameLogoSprite.height;
+    };
+    versionNumberPlacement();
+    resizeCallbacks.push(versionNumberPlacement);
 }
 
 var setupBoard = function(boardInfo){
