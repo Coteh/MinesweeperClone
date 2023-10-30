@@ -8,7 +8,11 @@ let gameOptions = {
 
 module.exports.loadGameOptions = () => {
     try {
-        gameOptions = JSON.parse(window.localStorage.getItem(GAME_OPTIONS_KEY));
+        const gameOptionsStr = window.localStorage.getItem(GAME_OPTIONS_KEY);
+        if (!gameOptionsStr) {
+            return gameOptions;
+        }
+        gameOptions = JSON.parse(gameOptionsStr);
     } catch (e) {
         console.error(e);
     }
