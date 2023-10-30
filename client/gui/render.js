@@ -7,6 +7,7 @@ var Menu = require('./menu');
 var MenuOption = require('./menuoption');
 var CheckBox = require('./checkbox');
 var FontPrefs = require('./fontprefs');
+const { loadGameOptions, saveGameOptions } = require('../storage');
 
 //Initializing renderer
 var renderer = new PIXI.autoDetectRenderer(800, 600);
@@ -54,12 +55,8 @@ var regularBackgroundColor = 0x888888;
 var gameOverBackgroundColor = 0x3D0000;
 
 //Flag hold feature variable declarations
-var holdToFlag = true;
 var flagTimer = 0.0;
 var MAX_FLAG_HOLD_TIME = 30.0; //amount of time to hold down select in order to flag a tile
-
-//Highlight effect
-var highlightEffect = false;
 
 /* Declaring Textures */
 var logoTex = null;
@@ -108,6 +105,9 @@ var copyrightText = null;
 
 /* Game Ticker */
 var ticker = null;
+
+/* Game Options */
+const gameOptions = loadGameOptions();
 
 var initRenderElements = function(){
     resizeGame();
@@ -183,7 +183,7 @@ var initRenderElements = function(){
     });
 
     smileyButton.setMouseEnter(function(block, mouseData){
-        if (smileyButton.sprite.interactive && highlightEffect){
+        if (smileyButton.sprite.interactive && gameOptions.highlightEffect){
             smileyButton.setTexture(blockHighlightedTex);
         }
     });
@@ -236,25 +236,30 @@ var initRenderElements = function(){
     highlightBtn = new CheckBox("Highlight Effect?", FontPrefs.buttonFont);
     highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
     highlightBtn.setCheckBoxAction(function(expression){
-        highlightEffect = expression;
+        gameOptions.highlightEffect = expression;
+        saveGameOptions(gameOptions);
     });
-    highlightBtn.setCheck(highlightEffect);
+    highlightBtn.setCheck(gameOptions.highlightEffect);
     titleMenu.addMenuOption(highlightBtn.menuOption);
 
     holdToFlagBtn = new CheckBox("Hold left click to flag?", FontPrefs.buttonFont);
     holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
     holdToFlagBtn.setCheckBoxAction(function(expression){
-        holdToFlag = expression;
+        gameOptions.holdToFlag = expression;
+        saveGameOptions(gameOptions);
     });
-    holdToFlagBtn.setCheck(holdToFlag);
+    holdToFlagBtn.setCheck(gameOptions.holdToFlag);
     titleMenu.addMenuOption(holdToFlagBtn.menuOption);
 
     revealBoardOnLossBtn = new CheckBox("Reveal board on loss", FontPrefs.buttonFont);
     revealBoardOnLossBtn.setCheckTextures(uncheckedTex, checkedTex);
     revealBoardOnLossBtn.setCheckBoxAction(function(expression){
         game.setBoardRevealedOnLoss(expression);
+        gameOptions.revealBoardOnLoss = expression;
+        saveGameOptions(gameOptions);
     });
-    revealBoardOnLossBtn.setCheck(game.isBoardRevealedOnLoss());
+    game.setBoardRevealedOnLoss(gameOptions.revealBoardOnLoss);
+    revealBoardOnLossBtn.setCheck(gameOptions.revealBoardOnLoss);
     titleMenu.addMenuOption(revealBoardOnLossBtn.menuOption);
 
     titleMenu.addMenuOption(playBtn);
@@ -322,7 +327,7 @@ var setupBoard = function(boardInfo){
             resetBlockSprites(mineTileArr[i][j]);
 
             mineTileArr[i][j].setLeftDown(function(block, mouseData){
-                if (holdToFlag){
+                if (gameOptions.holdToFlag){
                     flagTimer = 0.001;
                 }
                 block.setTexture(blockHeldTex);
@@ -334,7 +339,7 @@ var setupBoard = function(boardInfo){
                     console.log("The spot at x: " + block.x + ", y: " + block.y + " does not exist.");
                 }
                 updateBoard(result);
-                if (!holdToFlag || flagTimer <= MAX_FLAG_HOLD_TIME){
+                if (!gameOptions.holdToFlag || flagTimer <= MAX_FLAG_HOLD_TIME){
                     block.enableInteraction(false);
                 }
                 flagTimer = 0.0;
@@ -349,7 +354,7 @@ var setupBoard = function(boardInfo){
             });
 
             mineTileArr[i][j].setMouseEnter(function(block, mouseData){
-                if (block.sprite.interactive && highlightEffect){
+                if (block.sprite.interactive && gameOptions.highlightEffect){
                     block.setTexture(blockHighlightedTex);
                 }
             });
