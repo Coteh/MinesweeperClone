@@ -1,3 +1,5 @@
 #!/bin/sh
 
-./node_modules/.bin/browserify browser_setup.js > bundle.js && echo "Game has been built. Now running server." && node server/server.js
+./node_modules/.bin/watchify browser_setup.js -o bundle.js -v &
+
+echo "Running server..." && node server/server.js
