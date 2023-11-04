@@ -463,7 +463,15 @@ var displayGameWin = function(expression){
 }
 
 renderer.view.oncontextmenu = function(e){
-    e.preventDefault();
+    // Only disable context menu if player is right clicking on a board tile
+    // TODO: Should the offset for the game screen be removed and just the board itself should be offset?
+    if (gameScreen.visible && 
+        e.clientX >= (gameScreen.x + mineBoard.x) && 
+        e.clientY >= (gameScreen.y + mineBoard.y) && 
+        e.clientX <= (gameScreen.x + mineBoard.x + mineBoard.width) && 
+        e.clientY <= (gameScreen.y + mineBoard.y + mineBoard.height)) {
+        e.preventDefault();
+    }
 }
 
 var updateBoard = function(updateInfo){
