@@ -7,5 +7,8 @@
 # Generated output
 bundle.js
 
-# Pixi.js
-*pixi*
+# PixiJS
+*pixi*/
+
+# Build output
+build/

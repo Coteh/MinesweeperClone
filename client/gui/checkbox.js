@@ -12,8 +12,9 @@ function CheckBox(title, textOptions){
     this.checkBoxAction = null;
     var self = this;
     this.menuOption.setPressAction(function(){
+        if (typeof(this.checkBoxAction) == "function") this.checkBoxAction(!self.isChecked);
         self.setCheck(!self.isChecked);
-    });
+    }.bind(this));
 }
 
 CheckBox.prototype.setCheckTextures = function(uncheckedTex, checkedTex){
@@ -27,7 +28,6 @@ CheckBox.prototype.setCheckBoxAction = function(action){
 }
 
 CheckBox.prototype.setCheck = function(expression){
-    if (typeof(this.checkBoxAction) == "function") this.checkBoxAction(expression);
     this.checkBoxSprite.texture = (expression) ? this.checkedTex : this.uncheckedTex;
     this.isChecked = expression;
 }

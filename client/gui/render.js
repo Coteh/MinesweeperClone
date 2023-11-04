@@ -7,6 +7,7 @@ var Menu = require('./menu');
 var MenuOption = require('./menuoption');
 var CheckBox = require('./checkbox');
 var FontPrefs = require('./fontprefs');
+const { loadGameOptions, saveGameOptions } = require('../storage');
 
 //Initializing renderer
 var renderer = new PIXI.autoDetectRenderer(800, 600);
@@ -54,12 +55,8 @@ var regularBackgroundColor = 0x888888;
 var gameOverBackgroundColor = 0x3D0000;
 
 //Flag hold feature variable declarations
-var holdToFlag = true;
 var flagTimer = 0.0;
 var MAX_FLAG_HOLD_TIME = 30.0; //amount of time to hold down select in order to flag a tile
-
-//Highlight effect
-var highlightEffect = false;
 
 /* Declaring Textures */
 var logoTex = null;
@@ -108,6 +105,9 @@ var copyrightText = null;
 
 /* Game Ticker */
 var ticker = null;
+
+/* Game Options */
+const gameOptions = loadGameOptions();
 
 var initRenderElements = function(){
     resizeGame();
@@ -183,7 +183,7 @@ var initRenderElements = function(){
     });
 
     smileyButton.setMouseEnter(function(block, mouseData){
-        if (smileyButton.sprite.interactive && highlightEffect){
+        if (smileyButton.sprite.interactive && gameOptions.highlightEffect){
             smileyButton.setTexture(blockHighlightedTex);
         }
     });
@@ -236,25 +236,30 @@ var initRenderElements = function(){
     highlightBtn = new CheckBox("Highlight Effect?", FontPrefs.buttonFont);
     highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
     highlightBtn.setCheckBoxAction(function(expression){
-        highlightEffect = expression;
+        gameOptions.highlightEffect = expression;
+        saveGameOptions(gameOptions);
     });
-    highlightBtn.setCheck(highlightEffect);
+    highlightBtn.setCheck(gameOptions.highlightEffect);
     titleMenu.addMenuOption(highlightBtn.menuOption);
 
     holdToFlagBtn = new CheckBox("Hold left click to flag?", FontPrefs.buttonFont);
     holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
     holdToFlagBtn.setCheckBoxAction(function(expression){
-        holdToFlag = expression;
+        gameOptions.holdToFlag = expression;
+        saveGameOptions(gameOptions);
     });
-    holdToFlagBtn.setCheck(holdToFlag);
+    holdToFlagBtn.setCheck(gameOptions.holdToFlag);
     titleMenu.addMenuOption(holdToFlagBtn.menuOption);
 
     revealBoardOnLossBtn = new CheckBox("Reveal board on loss", FontPrefs.buttonFont);
     revealBoardOnLossBtn.setCheckTextures(uncheckedTex, checkedTex);
     revealBoardOnLossBtn.setCheckBoxAction(function(expression){
         game.setBoardRevealedOnLoss(expression);
+        gameOptions.revealBoardOnLoss = expression;
+        saveGameOptions(gameOptions);
     });
-    revealBoardOnLossBtn.setCheck(game.isBoardRevealedOnLoss());
+    game.setBoardRevealedOnLoss(gameOptions.revealBoardOnLoss);
+    revealBoardOnLossBtn.setCheck(gameOptions.revealBoardOnLoss);
     titleMenu.addMenuOption(revealBoardOnLossBtn.menuOption);
 
     titleMenu.addMenuOption(playBtn);
@@ -275,25 +280,36 @@ var initRenderElements = function(){
     //Add copyright text
     copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", FontPrefs.copyrightFont);
     titleScreen.addChild(copyrightText);
+    
+    //Add version number
+    versionNumberText = new PIXI.Text("v1.0.3", FontPrefs.copyrightFont);
+    titleScreen.addChild(versionNumberText);
 
     stage.addChild(gameScreen);
     stage.addChild(titleScreen);
     gameScreen.visible = false;
 
     //Title screen placement
-    var titleScreenPlacement = function(){
+    const titleScreenPlacement = () => {
         titleScreen.x = renderer.width / 3.5;
         titleScreen.y = 120;
     }
     titleScreenPlacement();
     resizeCallbacks.push(titleScreenPlacement);
 
-    var copyrightPlacement = function(){
+    const copyrightPlacement = () => {
         copyrightText.x = 280;
         copyrightText.y = renderer.height - 24 - titleScreen.y;
     };
     copyrightPlacement();
     resizeCallbacks.push(copyrightPlacement);
+
+    const versionNumberPlacement = () => {
+        versionNumberText.x = gameLogoSprite.x + gameLogoSprite.width;
+        versionNumberText.y = gameLogoSprite.y + gameLogoSprite.height;
+    };
+    versionNumberPlacement();
+    resizeCallbacks.push(versionNumberPlacement);
 }
 
 var setupBoard = function(boardInfo){
@@ -311,7 +327,7 @@ var setupBoard = function(boardInfo){
             resetBlockSprites(mineTileArr[i][j]);
 
             mineTileArr[i][j].setLeftDown(function(block, mouseData){
-                if (holdToFlag){
+                if (gameOptions.holdToFlag){
                     flagTimer = 0.001;
                 }
                 block.setTexture(blockHeldTex);
@@ -340,7 +356,7 @@ var setupBoard = function(boardInfo){
             });
 
             mineTileArr[i][j].setMouseEnter(function(block, mouseData){
-                if (!block.isRevealed && highlightEffect){
+                if (!block.isRevealed && gameOptions.highlightEffect){
                     block.setTexture(blockHighlightedTex);
                 }
             });
@@ -451,7 +467,15 @@ var displayGameWin = function(expression){
 }
 
 renderer.view.oncontextmenu = function(e){
-    e.preventDefault();
+    // Only disable context menu if player is right clicking on a board tile
+    // TODO: Should the offset for the game screen be removed and just the board itself should be offset?
+    if (gameScreen.visible && 
+        e.clientX >= (gameScreen.x + mineBoard.x) && 
+        e.clientY >= (gameScreen.y + mineBoard.y) && 
+        e.clientX <= (gameScreen.x + mineBoard.x + mineBoard.width) && 
+        e.clientY <= (gameScreen.y + mineBoard.y + mineBoard.height)) {
+        e.preventDefault();
+    }
 }
 
 var updateBoard = function(updateInfo){
