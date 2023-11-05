@@ -49,7 +49,7 @@ var init = function(gameOptions){
         var xCoord = determinedMines[k] % boardWidth;
         gameBoard[yCoord][xCoord] = true;
     }
-}
+};
 
 var determineMineSpots = function(amountOfBoardPieces, amountOfMines){
     var mineSpots = [];
@@ -82,7 +82,7 @@ var determineMineSpots = function(amountOfBoardPieces, amountOfMines){
     }
 
     return mineSpots;
-}
+};
 
 var getBoardInfo = function(){
     return {board: gameBoard,
@@ -92,7 +92,7 @@ var getBoardInfo = function(){
         revealed: isRevealed,
         flagged: isFlagged,
         adjMinesCount: adjMinesCount};
-}
+};
 
 var selectSpot = function(x, y){
     if ((x == null || y == null) || (x < 0 || x >= boardWidth) || (y < 0 || y >= boardHeight)){
@@ -115,7 +115,34 @@ var selectSpot = function(x, y){
         return {hitInfo: "mine", win: false};
     }
     return {hitInfo: "land", win: checkForWin()};
-}
+};
+
+var selectAdjacentSpots = function(x, y) {
+    var doesMineExist = false;
+    //Only selects adjacent spots if there are exactly as many flags in adjacent spots as there are mines
+    var adjacentSpots = getAdjacentSpots(x, y);
+    var amountOfAdjMines = calculateAdjacentMines(adjacentSpots);
+    var amountOfAdjFlags = calculateAdjacentFlags(adjacentSpots);
+    if (amountOfAdjMines == amountOfAdjFlags) {
+        //Remove spots that have been flagged from the list
+        //Also check to see if any of the remaining adjacent spots are mines
+        for (var i = 0; i < adjacentSpots.length; i++) {
+            if (adjacentSpots[i].flag) {
+                adjacentSpots.splice(i, 1);
+                i--;
+                continue;
+            }
+            if (adjacentSpots[i].piece) {
+                doesMineExist = true;
+            }
+        }
+        revealMultiple(adjacentSpots);
+    }
+    if (doesMineExist){
+        return {hitInfo: "mine", win: false};
+    }
+    return {hitInfo: "land", win: checkForWin()};
+};
 
 var performSpotReveal = function(x, y, callback) {
     isRevealed[y][x] = true;
@@ -131,7 +158,7 @@ var performSpotReveal = function(x, y, callback) {
     if (callback) {
         callback(isMine, amountOfAdjMines, adjacentSpots);
     }
-}
+};
 
 var revealSpot = function(x, y){
     if (isRevealed[y][x]) return; //don't reveal already revealed spot
@@ -139,21 +166,25 @@ var revealSpot = function(x, y){
         if (!isMine) {
             //if mine count is 0, then recursively call revealSpot on all adjacent spots
             if (amountOfAdjMines <= 0){
-                for (var i = 0; i < adjacentSpots.length; i++){
-                    revealSpot(adjacentSpots[i].x, adjacentSpots[i].y);
-                }
+                revealMultiple(adjacentSpots);
             }
         } else {
             for (var a = 0; a < boardWidth; a++){
                 for (var b = 0; b < boardHeight; b++){
                     if (revealBoardOnLoss || gameBoard[b][a]) {
-                        performSpotReveal(a, b, null);
+                        performSpotReveal(a, b);
                     }
                 }
             }
         }
     });
-}
+};
+
+var revealMultiple = function(spotArr) {
+    for (var i = 0; i < spotArr.length; i++){
+        revealSpot(spotArr[i].x, spotArr[i].y);
+    }
+};
 
 var getAdjacentSpots = function(x, y){
     var adjacentList = [];
@@ -176,32 +207,32 @@ var getAdjacentSpots = function(x, y){
     var pastBottomEdge = (y < boardHeight - 1);
 
     if (pastLeftEdge){
-        adjacentList.push({x: x - 1, y: y, piece: gameBoard[y][x - 1]}); //4
+        adjacentList.push({x: x - 1, y: y, piece: gameBoard[y][x - 1], flag: isFlagged[y][x - 1], revealed: isRevealed[y][x - 1]}); //4
         if (pastTopEdge){
-            adjacentList.push({x: x - 1, y: y - 1, piece: gameBoard[y - 1][x - 1]}); //1
+            adjacentList.push({x: x - 1, y: y - 1, piece: gameBoard[y - 1][x - 1], flag: isFlagged[y - 1][x - 1], revealed: isRevealed[y - 1][x - 1]}); //1
         }
         if (pastBottomEdge){
-            adjacentList.push({x: x - 1, y: y + 1, piece: gameBoard[y + 1][x - 1]}); //6
+            adjacentList.push({x: x - 1, y: y + 1, piece: gameBoard[y + 1][x - 1], flag: isFlagged[y + 1][x - 1], revealed: isRevealed[y + 1][x - 1]}); //6
         }
     }
     if (pastRightEdge){
-        adjacentList.push({x: x + 1, y: y, piece: gameBoard[y][x + 1]}); //5
+        adjacentList.push({x: x + 1, y: y, piece: gameBoard[y][x + 1], flag: isFlagged[y][x + 1], revealed: isRevealed[y][x + 1]}); //5
         if (pastTopEdge){
-            adjacentList.push({x: x + 1, y: y - 1, piece: gameBoard[y - 1][x + 1]}) //3
+            adjacentList.push({x: x + 1, y: y - 1, piece: gameBoard[y - 1][x + 1], flag: isFlagged[y - 1][x + 1], revealed: isRevealed[y - 1][x + 1]}) //3
         }
         if (pastBottomEdge){
-            adjacentList.push({x: x + 1, y: y + 1, piece: gameBoard[y + 1][x + 1]}); //8
+            adjacentList.push({x: x + 1, y: y + 1, piece: gameBoard[y + 1][x + 1], flag: isFlagged[y + 1][x + 1], revealed: isRevealed[y + 1][x + 1]}); //8
         }
     }
     if (pastTopEdge){
-        adjacentList.push({x: x, y: y - 1, piece: gameBoard[y - 1][x]}); //2
+        adjacentList.push({x: x, y: y - 1, piece: gameBoard[y - 1][x], flag: isFlagged[y - 1][x], revealed: isRevealed[y - 1][x]}); //2
     }
     if (pastBottomEdge){
-        adjacentList.push({x : x, y: y + 1, piece: gameBoard[y + 1][x]}); //7
+        adjacentList.push({x : x, y: y + 1, piece: gameBoard[y + 1][x], flag: isFlagged[y + 1][x], revealed: isRevealed[y + 1][x]}); //7
     }
 
     return adjacentList;
-}
+};
 
 var calculateAdjacentMines = function(adjacentSpots){
     var amountOfAdjMines = 0;
@@ -213,7 +244,19 @@ var calculateAdjacentMines = function(adjacentSpots){
     }
 
     return amountOfAdjMines;
-}
+};
+
+var calculateAdjacentFlags = function(adjacentSpots) {
+    var amountOfAdjFlags = 0;
+
+    for (var i = 0; i < adjacentSpots.length; i++){
+        if (adjacentSpots[i].flag){
+            amountOfAdjFlags++;
+        }
+    }
+
+    return amountOfAdjFlags;
+};
 
 var flagSpot = function(x, y, expression){
     //only flag the spot if it hasn't been revealed yet and if it exists
@@ -228,7 +271,7 @@ var flagSpot = function(x, y, expression){
     }
     isFlagged[y][x] = expression; //spot at x, y is flagged/unflagged
     return {flagInfo: (isFlagged[y][x]) ? "flagged" : "unflagged"};
-}
+};
 
 var checkForWin = function(){
     //If player has revealed (boardWidth * boardHeight) - amountOfMines amount of pieces,
@@ -250,12 +293,12 @@ var checkForWin = function(){
     }
 
     return false; //they didn't win (yet)
-}
+};
 
 var addFirstBlockEvent = function(callback){
     firstBlockCallbacks.push(callback);
-}
+};
 
 module.exports = {
-    init, getBoardInfo, selectSpot, flagSpot, addFirstBlockEvent, isBoardRevealedOnLoss, setBoardRevealedOnLoss
-}
+    init, getBoardInfo, selectSpot, selectAdjacentSpots, flagSpot, addFirstBlockEvent, isBoardRevealedOnLoss, setBoardRevealedOnLoss
+};
