@@ -1,3 +1,6 @@
+import * as PIXI from 'pixi.js';
+require('pixi-filters/bin/pixelate');
+
 var helpers = require('./display_helpers');
 var game = require('../game');
 var MineBlock = require('./mineblock');
@@ -282,7 +285,7 @@ var initRenderElements = function(){
     titleScreen.addChild(copyrightText);
     
     //Add version number
-    versionNumberText = new PIXI.Text("v1.0.4", FontPrefs.copyrightFont);
+    const versionNumberText = new PIXI.Text("v1.0.4", FontPrefs.copyrightFont);
     titleScreen.addChild(versionNumberText);
 
     stage.addChild(gameScreen);

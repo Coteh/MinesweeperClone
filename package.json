@@ -5,9 +5,9 @@
   "main": "client/game.js",
   "private": true,
   "scripts": {
-    "test": "jest",
-    "start": "node server/server.js",
-    "cli": "node app.js"
+    "start": "webpack serve --mode=development",
+    "build": "webpack",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,9 +15,20 @@
   },
   "author": "James Cote",
   "license": "MIT",
+  "dependencies": {
+    "pixi.js": "4.3.0"
+  },
   "devDependencies": {
-    "browserify": "^12.0.1",
+    "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-plugin": "^5.5.3",
     "jest-cli": "^29.7.0",
-    "watchify": "^4.0.0"
+    "node-polyfill-webpack-plugin": "^2.0.1",
+    "pixi-filters": "1.0.6",
+    "prettier": "2.0.5",
+    "terser-webpack-plugin": "^5.3.9",
+    "webpack": "^5.88.2",
+    "webpack-bundle-analyzer": "^4.9.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
   }
 }
