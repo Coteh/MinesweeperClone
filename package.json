@@ -16,7 +16,7 @@
   "author": "James Cote",
   "license": "MIT",
   "dependencies": {
-    "pixi.js": "4.3.0"
+    "pixi.js": "4.8.4"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",
