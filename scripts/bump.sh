@@ -20,7 +20,7 @@ fi
 rm client/gui/render.js.bak
 
 # Replace version number in README badge
-sed -i.bak "s/\[!\[release \| v[0-9.]*\](https:\/\/img.shields.io\/badge\/release-v[0-9.]*-00b2ff.svg)\](https:\/\/github.com\/Coteh\/MinesweeperClone\/releases\/tag\/[0-9.]\{1,\})/[![release | v$NEW_VERSION_NUMBER](https:\/\/img.shields.io\/badge\/release-v$NEW_VERSION_NUMBER-00b2ff.svg)](https:\/\/github.com\/Coteh\/MinesweeperClone\/releases\/tag\/$NEW_VERSION_NUMBER)/g" README.md
+sed -i.bak "s/\[!\[release \| v[0-9.]*\](https:\/\/img.shields.io\/badge\/release-v[0-9.]*-00b2ff.svg)\](https:\/\/github.com\/Coteh\/MinesweeperClone\/releases\/tag\/v[0-9.]\{1,\})/[![release | v$NEW_VERSION_NUMBER](https:\/\/img.shields.io\/badge\/release-v$NEW_VERSION_NUMBER-00b2ff.svg)](https:\/\/github.com\/Coteh\/MinesweeperClone\/releases\/tag\/v$NEW_VERSION_NUMBER)/g" README.md
 
 if [ $? != 0 ]; then
     >&2 echo "Failure editing README.md"
