@@ -4,11 +4,5 @@
 # Image Editor files
 *.xcf
 
-# Generated output
-bundle.js
-
-# PixiJS
-*pixi*/
-
 # Build output
 build/

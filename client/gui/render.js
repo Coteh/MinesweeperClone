@@ -288,7 +288,7 @@ var initRenderElements = function () {
     titleScreen.addChild(copyrightText);
 
     //Add version number
-    const versionNumberText = new PIXI.Text('v1.0.4', FontPrefs.copyrightFont);
+    const versionNumberText = new PIXI.Text(`v${GAME_VERSION}`, FontPrefs.copyrightFont);
     titleScreen.addChild(versionNumberText);
 
     stage.addChild(gameScreen);

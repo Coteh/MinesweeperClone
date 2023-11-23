@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const package = require('./package.json');
 const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -59,6 +60,9 @@ module.exports = (env, argv) => {
         },
 
         plugins: [
+            new webpack.DefinePlugin({
+                GAME_VERSION: JSON.stringify(package.version),
+            }),
             new CopyPlugin({
                 patterns: [
                     { from: 'img/', to: 'img/' },
