@@ -1,4 +1,4 @@
-const GAME_OPTIONS_KEY = "game_options";
+const GAME_OPTIONS_KEY = 'game_options';
 
 let gameOptions = {
     highlightEffect: false,

@@ -1,8 +1,8 @@
 function BoardOverfillException(message) {
     this.message = message;
-    this.name = "BoardOverfillException";
+    this.name = 'BoardOverfillException';
 }
 
 module.exports = {
-    BoardOverfillException
-}
+    BoardOverfillException,
+};

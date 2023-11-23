@@ -55,7 +55,7 @@ var boardOffsetY = 0;
 
 //Background colors
 var regularBackgroundColor = 0x888888;
-var gameOverBackgroundColor = 0x3D0000;
+var gameOverBackgroundColor = 0x3d0000;
 
 //Flag hold feature variable declarations
 var flagTimer = 0.0;
@@ -112,7 +112,7 @@ var ticker = null;
 /* Game Options */
 const gameOptions = loadGameOptions();
 
-var initRenderElements = function(){
+var initRenderElements = function () {
     resizeGame();
 
     //Setting background color of game
@@ -126,24 +126,24 @@ var initRenderElements = function(){
     titleScreen = new PIXI.Container();
 
     /* Initializing Textures */
-    logoTex = PIXI.Texture.fromImage("img/Logo.png");
-    blockTex = PIXI.Texture.fromImage("img/Block.png");
-    blockSelectedTex = PIXI.Texture.fromImage("img/Block_selected.png");
-    blockHeldTex = PIXI.Texture.fromImage("img/Block_held.png");
-    blockHighlightedTex = PIXI.Texture.fromImage("img/Block_highlighted.png");
-    buttonTex = PIXI.Texture.fromImage("img/Button.png");
-    tileTex = PIXI.Texture.fromImage("img/Tiles.png");
-    mineTex = PIXI.Texture.fromImage("img/Mine.png");
-    flagTex = PIXI.Texture.fromImage("img/Flag.png");
-    smileyTex = PIXI.Texture.fromImage("img/Smiley.png");
-    smileyWinTex = PIXI.Texture.fromImage("img/Smiley_proud.png");
-    smileyLoseTex = PIXI.Texture.fromImage("img/Smiley_sad.png");
-    uncheckedTex = PIXI.Texture.fromImage("img/Checkbox_unchecked.png");
-    checkedTex = PIXI.Texture.fromImage("img/Checkbox_checked.png");
-    starTex = PIXI.Texture.fromImage("img/Star.png");
+    logoTex = PIXI.Texture.fromImage('img/Logo.png');
+    blockTex = PIXI.Texture.fromImage('img/Block.png');
+    blockSelectedTex = PIXI.Texture.fromImage('img/Block_selected.png');
+    blockHeldTex = PIXI.Texture.fromImage('img/Block_held.png');
+    blockHighlightedTex = PIXI.Texture.fromImage('img/Block_highlighted.png');
+    buttonTex = PIXI.Texture.fromImage('img/Button.png');
+    tileTex = PIXI.Texture.fromImage('img/Tiles.png');
+    mineTex = PIXI.Texture.fromImage('img/Mine.png');
+    flagTex = PIXI.Texture.fromImage('img/Flag.png');
+    smileyTex = PIXI.Texture.fromImage('img/Smiley.png');
+    smileyWinTex = PIXI.Texture.fromImage('img/Smiley_proud.png');
+    smileyLoseTex = PIXI.Texture.fromImage('img/Smiley_sad.png');
+    uncheckedTex = PIXI.Texture.fromImage('img/Checkbox_unchecked.png');
+    checkedTex = PIXI.Texture.fromImage('img/Checkbox_checked.png');
+    starTex = PIXI.Texture.fromImage('img/Star.png');
     //Initializing digit textures
-    for (var i = 0; i <= 9; i++){
-        digitTex[i] = PIXI.Texture.fromImage("img/digits/" + i + ".png");
+    for (var i = 0; i <= 9; i++) {
+        digitTex[i] = PIXI.Texture.fromImage('img/digits/' + i + '.png');
     }
 
     //Initializing tiling background sub-container
@@ -154,7 +154,7 @@ var initRenderElements = function(){
     background.addChild(tilingTile);
 
     //Adding resize callback for resizing tiling background
-    resizeCallbacks.push(function(){
+    resizeCallbacks.push(function () {
         tilingTile.width = renderer.width;
         tilingTile.height = renderer.height;
     });
@@ -177,7 +177,7 @@ var initRenderElements = function(){
     smileyButton.setIndicatorSpriteVisibility(true);
     gameScreen.addChild(smileyButton.container);
 
-    smileyButton.setLeftRelease(function(block, mouseData){
+    smileyButton.setLeftRelease(function (block, mouseData) {
         gameTimer.stop();
         startGame();
         updateBoard();
@@ -185,14 +185,14 @@ var initRenderElements = function(){
         displayGameWin(false);
     });
 
-    smileyButton.setMouseEnter(function(block, mouseData){
-        if (smileyButton.sprite.interactive && gameOptions.highlightEffect){
+    smileyButton.setMouseEnter(function (block, mouseData) {
+        if (smileyButton.sprite.interactive && gameOptions.highlightEffect) {
             smileyButton.setTexture(blockHighlightedTex);
         }
     });
 
-    smileyButton.setMouseOut(function(block, mouseData){
-        if (smileyButton.sprite.interactive){
+    smileyButton.setMouseOut(function (block, mouseData) {
+        if (smileyButton.sprite.interactive) {
             smileyButton.setTexture(blockTex);
         }
     });
@@ -210,7 +210,7 @@ var initRenderElements = function(){
     mineBoard.addChild(mineTiles);
     gameScreen.addChild(mineBoard);
 
-    var gameScreenPlacement = function(){
+    var gameScreenPlacement = function () {
         gameScreen.x = boardOffsetX;
         gameScreen.y = boardOffsetY;
     };
@@ -218,12 +218,12 @@ var initRenderElements = function(){
     resizeCallbacks.push(gameScreenPlacement);
 
     //Initializing menus
-    titleMenu = new Menu(100, 100, "Title Menu");
+    titleMenu = new Menu(100, 100, 'Title Menu');
     titleScreen.addChild(titleMenu.container);
 
     //Initializing menu buttons
-    playBtn = new MenuOption("Play Game", FontPrefs.bigButtonFont);
-    playBtn.setPressAction(function(){
+    playBtn = new MenuOption('Play Game', FontPrefs.bigButtonFont);
+    playBtn.setPressAction(function () {
         startGame();
         setupBoard(boardInfo);
         displayGameOver(false);
@@ -236,27 +236,27 @@ var initRenderElements = function(){
     });
     playBtn.setGraphic(uncheckedTex);
 
-    highlightBtn = new CheckBox("Highlight Effect?", FontPrefs.buttonFont);
+    highlightBtn = new CheckBox('Highlight Effect?', FontPrefs.buttonFont);
     highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
-    highlightBtn.setCheckBoxAction(function(expression){
+    highlightBtn.setCheckBoxAction(function (expression) {
         gameOptions.highlightEffect = expression;
         saveGameOptions(gameOptions);
     });
     highlightBtn.setCheck(gameOptions.highlightEffect);
     titleMenu.addMenuOption(highlightBtn.menuOption);
 
-    holdToFlagBtn = new CheckBox("Hold left click to flag?", FontPrefs.buttonFont);
+    holdToFlagBtn = new CheckBox('Hold left click to flag?', FontPrefs.buttonFont);
     holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
-    holdToFlagBtn.setCheckBoxAction(function(expression){
+    holdToFlagBtn.setCheckBoxAction(function (expression) {
         gameOptions.holdToFlag = expression;
         saveGameOptions(gameOptions);
     });
     holdToFlagBtn.setCheck(gameOptions.holdToFlag);
     titleMenu.addMenuOption(holdToFlagBtn.menuOption);
 
-    revealBoardOnLossBtn = new CheckBox("Reveal board on loss", FontPrefs.buttonFont);
+    revealBoardOnLossBtn = new CheckBox('Reveal board on loss', FontPrefs.buttonFont);
     revealBoardOnLossBtn.setCheckTextures(uncheckedTex, checkedTex);
-    revealBoardOnLossBtn.setCheckBoxAction(function(expression){
+    revealBoardOnLossBtn.setCheckBoxAction(function (expression) {
         game.setBoardRevealedOnLoss(expression);
         gameOptions.revealBoardOnLoss = expression;
         saveGameOptions(gameOptions);
@@ -281,11 +281,14 @@ var initRenderElements = function(){
     starSprite.y = 155;
 
     //Add copyright text
-    copyrightText = new PIXI.Text(String.fromCharCode(169) + " 2015-2016 James Cote", FontPrefs.copyrightFont);
+    copyrightText = new PIXI.Text(
+        String.fromCharCode(169) + ' 2015-2016 James Cote',
+        FontPrefs.copyrightFont
+    );
     titleScreen.addChild(copyrightText);
-    
+
     //Add version number
-    const versionNumberText = new PIXI.Text("v1.0.4", FontPrefs.copyrightFont);
+    const versionNumberText = new PIXI.Text('v1.0.4', FontPrefs.copyrightFont);
     titleScreen.addChild(versionNumberText);
 
     stage.addChild(gameScreen);
@@ -296,7 +299,7 @@ var initRenderElements = function(){
     const titleScreenPlacement = () => {
         titleScreen.x = renderer.width / 3.5;
         titleScreen.y = 120;
-    }
+    };
     titleScreenPlacement();
     resizeCallbacks.push(titleScreenPlacement);
 
@@ -313,59 +316,66 @@ var initRenderElements = function(){
     };
     versionNumberPlacement();
     resizeCallbacks.push(versionNumberPlacement);
-}
+};
 
-var setupBoard = function(boardInfo){
+var setupBoard = function (boardInfo) {
     //Removing all elements of mineTileArr from mineTiles if there are any
-    if (mineTiles.children.length > 0){
+    if (mineTiles.children.length > 0) {
         mineTiles.removeChildren(0, mineTiles.children.length - 1);
     }
     //Setting up mine board
     mineTileArr = new Array(boardInfo.height);
-    for (var i = 0; i < boardInfo.height; i++){
+    for (var i = 0; i < boardInfo.height; i++) {
         mineTileArr[i] = new Array(boardInfo.width);
-        for (var j = 0; j < boardInfo.width; j++){
+        for (var j = 0; j < boardInfo.width; j++) {
             mineTileArr[i][j] = new MineBlock(j, i);
 
             resetBlockSprites(mineTileArr[i][j]);
 
-            mineTileArr[i][j].setLeftDown(function(block, mouseData){
-                if (gameOptions.holdToFlag){
+            mineTileArr[i][j].setLeftDown(function (block, mouseData) {
+                if (gameOptions.holdToFlag) {
                     flagTimer = 0.001;
                 }
                 block.setTexture(blockHeldTex);
             });
 
-            mineTileArr[i][j].setLeftRelease(function(block, mouseData){
+            mineTileArr[i][j].setLeftRelease(function (block, mouseData) {
                 var result = null;
                 if (block.isRevealed) {
                     result = game.selectAdjacentSpots(block.x, block.y);
                 } else {
-                    result = (flagTimer > MAX_FLAG_HOLD_TIME) ? game.flagSpot(block.x, block.y) : game.selectSpot(block.x, block.y);
+                    result =
+                        flagTimer > MAX_FLAG_HOLD_TIME
+                            ? game.flagSpot(block.x, block.y)
+                            : game.selectSpot(block.x, block.y);
                 }
-                if (result.hitInfo == "nonexistent" || result.flagInfo == "nonexistent"){
-                    console.log("The spot at x: " + block.x + ", y: " + block.y + " does not exist.");
+                if (result.hitInfo == 'nonexistent' || result.flagInfo == 'nonexistent') {
+                    console.log(
+                        'The spot at x: ' + block.x + ', y: ' + block.y + ' does not exist.'
+                    );
                 }
                 updateBoard(result);
                 flagTimer = 0.0;
             });
 
-            mineTileArr[i][j].setRightRelease(function(block, mouseData){
+            mineTileArr[i][j].setRightRelease(function (block, mouseData) {
                 var result = game.flagSpot(block.x, block.y);
-                if (result.flagInfo == "nonexistent"){
-                    console.log("The spot at x: " + block.x + ", y: " + block.y + " does not exist.");
+                if (result.flagInfo == 'nonexistent') {
+                    console.log(
+                        'The spot at x: ' + block.x + ', y: ' + block.y + ' does not exist.'
+                    );
                 }
                 updateBoard(result);
             });
 
-            mineTileArr[i][j].setMouseEnter(function(block, mouseData){
-                if (!block.isRevealed && gameOptions.highlightEffect){
+            mineTileArr[i][j].setMouseEnter(function (block, mouseData) {
+                if (!block.isRevealed && gameOptions.highlightEffect) {
                     block.setTexture(blockHighlightedTex);
                 }
             });
 
-            mineTileArr[i][j].setMouseOut(function(block, mouseData){
-                if (!block.isRevealed){
+            mineTileArr[i][j].setMouseOut(function (block, mouseData) {
+                if (!block.isRevealed) {
                     block.setTexture(blockTex);
                 } else {
                     block.setTexture(blockSelectedTex);
@@ -383,7 +393,7 @@ var setupBoard = function(boardInfo){
 
     //Repositioning smiley button (always on top of the board at the center)
     smileyButton.setPosition(boardInfo.width / 2, -1);
-    smileyButton.container.x += boardOffsetX - (((boardInfo.width / 2) % 2) * 16);
+    smileyButton.container.x += boardOffsetX - ((boardInfo.width / 2) % 2) * 16;
     smileyButton.container.y += boardOffsetY;
 
     //Setting up mine digits display
@@ -391,20 +401,20 @@ var setupBoard = function(boardInfo){
     mineDigitBoard.setDisplayNumber(boardInfo.mineCount);
 
     //Setting up time digits display
-    timeDigitBoard.setPosition(boardOffsetX + boardInfo.width * 32 - (3 * 32), boardOffsetY - 64);
-}
+    timeDigitBoard.setPosition(boardOffsetX + boardInfo.width * 32 - 3 * 32, boardOffsetY - 64);
+};
 
-var resetBlockSprites = function(block){
+var resetBlockSprites = function (block) {
     block.setTexture(blockTex);
     block.setIndicatorTexture(flagTex);
-}
+};
 
-var startGame = function() {
-    game.init({width: 20, height: 20, mines: 35});
+var startGame = function () {
+    game.init({ width: 20, height: 20, mines: 35 });
     boardInfo = game.getBoardInfo();
-    if (mineTileArr != null){
-        for (var i = 0; i < boardInfo.height; i++){
-            for (var j = 0; j < boardInfo.width; j++){
+    if (mineTileArr != null) {
+        for (var i = 0; i < boardInfo.height; i++) {
+            for (var j = 0; j < boardInfo.width; j++) {
                 mineTileArr[i][j].resetNumberIndicator();
                 mineTileArr[i][j].numberIndicator.visible = false;
                 resetBlockSprites(mineTileArr[i][j]);
@@ -414,100 +424,111 @@ var startGame = function() {
     }
     gameSeconds = 0;
     timeDigitBoard.setDisplayNumber(gameSeconds);
-}
+};
 
-var enableBoardInteraction = function(expression){
-    if (mineTileArr != null){
-        for (var i = 0; i < boardInfo.height; i++){
-            for (var j = 0; j < boardInfo.width; j++){
+var enableBoardInteraction = function (expression) {
+    if (mineTileArr != null) {
+        for (var i = 0; i < boardInfo.height; i++) {
+            for (var j = 0; j < boardInfo.width; j++) {
                 mineTileArr[i][j].enableInteraction(expression);
             }
         }
     }
-}
+};
 
-var showMinesOnBoard = function(){
+var showMinesOnBoard = function () {
     if (mineTileArr == null) return;
-    for (var i = 0; i < boardInfo.height; i++){
-        for (var j = 0; j < boardInfo.width; j++){
-            if (boardInfo.board[j][i]){
+    for (var i = 0; i < boardInfo.height; i++) {
+        for (var j = 0; j < boardInfo.width; j++) {
+            if (boardInfo.board[j][i]) {
                 mineTileArr[j][i].setIndicatorSpriteVisibility(true);
                 mineTileArr[j][i].setIndicatorTexture(mineTex);
             }
         }
     }
-}
+};
 
 /* Function that displays/hides Game Over */
-var displayGameOver = function(expression){
+var displayGameOver = function (expression) {
     enableBoardInteraction(!expression);
-    if (expression){
+    if (expression) {
         renderer.backgroundColor = gameOverBackgroundColor;
         background.filters = pixelBackgroundFilters;
         tileDelta = 0.25;
         showMinesOnBoard();
         smileyButton.setIndicatorTexture(smileyLoseTex);
         gameTimer.stop();
-    }else{
+    } else {
         renderer.backgroundColor = regularBackgroundColor;
         background.filters = normalBGFilters;
         tileDelta = 1;
         smileyButton.setIndicatorTexture(smileyTex);
     }
-}
+};
 
 /* Function that displays/hides game win screen */
-var displayGameWin = function(expression){
+var displayGameWin = function (expression) {
     enableBoardInteraction(!expression);
-    if (expression){
+    if (expression) {
         tileDelta = 0.25;
         smileyButton.setIndicatorTexture(smileyWinTex);
         gameTimer.stop();
-    }else{
+    } else {
         tileDelta = 1;
         smileyButton.setIndicatorTexture(smileyTex);
     }
-}
+};
 
-renderer.view.oncontextmenu = function(e){
+renderer.view.oncontextmenu = function (e) {
     // Only disable context menu if player is right clicking on a board tile
     // TODO: Should the offset for the game screen be removed and just the board itself should be offset?
-    if (gameScreen.visible && 
-        e.clientX >= (gameScreen.x + mineBoard.x) && 
-        e.clientY >= (gameScreen.y + mineBoard.y) && 
-        e.clientX <= (gameScreen.x + mineBoard.x + mineBoard.width) && 
-        e.clientY <= (gameScreen.y + mineBoard.y + mineBoard.height)) {
+    if (
+        gameScreen.visible &&
+        e.clientX >= gameScreen.x + mineBoard.x &&
+        e.clientY >= gameScreen.y + mineBoard.y &&
+        e.clientX <= gameScreen.x + mineBoard.x + mineBoard.width &&
+        e.clientY <= gameScreen.y + mineBoard.y + mineBoard.height
+    ) {
         e.preventDefault();
     }
-}
+};
 
-var updateBoard = function(updateInfo){
+var updateBoard = function (updateInfo) {
     boardInfo = game.getBoardInfo();
-    if (updateInfo != null){
-        if (updateInfo.hitInfo == "mine"){
+    if (updateInfo != null) {
+        if (updateInfo.hitInfo == 'mine') {
             displayGameOver(true);
             // console.log("GAME OVER!");
         }
     }
     var amtFlagged = 0;
-    for (var i = 0; i < boardInfo.height; i++){
-        for (var j = 0; j < boardInfo.width; j++){
-            mineTileArr[i][j].sprite.texture = (boardInfo.revealed[i][j]) ? blockSelectedTex : blockTex;
-            if (boardInfo.revealed[i][j]){
+    for (var i = 0; i < boardInfo.height; i++) {
+        for (var j = 0; j < boardInfo.width; j++) {
+            mineTileArr[i][j].sprite.texture = boardInfo.revealed[i][j]
+                ? blockSelectedTex
+                : blockTex;
+            if (boardInfo.revealed[i][j]) {
                 mineTileArr[i][j].numberIndicator.text = boardInfo.adjMinesCount[i][j].toString();
-                var fill = "#FFFFFF"
+                var fill = '#FFFFFF';
                 try {
-                    fill = helpers.getAdjMinesTextColor(boardInfo.adjMinesCount[i][j])
-                }catch (e){
-                    console.log("ERROR: A critical error occurred. Error info: \nName: " + e.name + "\nMessage: " + e.message);
+                    fill = helpers.getAdjMinesTextColor(boardInfo.adjMinesCount[i][j]);
+                } catch (e) {
+                    console.log(
+                        'ERROR: A critical error occurred. Error info: \nName: ' +
+                            e.name +
+                            '\nMessage: ' +
+                            e.message
+                    );
                 }
                 mineTileArr[i][j].numberIndicator.style.fill = fill;
-                mineTileArr[i][j].numberIndicator.visible = (boardInfo.adjMinesCount[i][j]) ? true : false;
+                mineTileArr[i][j].numberIndicator.visible = boardInfo.adjMinesCount[i][j]
+                    ? true
+                    : false;
                 mineTileArr[i][j].setIndicatorSpriteVisibility(boardInfo.board[i][j]);
                 mineTileArr[i][j].setRevealed(boardInfo.revealed[i][j]);
-            }else{
+            } else {
                 mineTileArr[i][j].setIndicatorSpriteVisibility(boardInfo.flagged[i][j]);
-                if (boardInfo.flagged[i][j]){
+                if (boardInfo.flagged[i][j]) {
                     amtFlagged++;
                 }
             }
@@ -515,20 +536,20 @@ var updateBoard = function(updateInfo){
     }
     /* Update Amount of Mines Digit */
     var amtOfUnflaggedMines = boardInfo.mineCount - amtFlagged;
-    mineDigitBoard.setDisplayNumber((amtOfUnflaggedMines > 0) ? amtOfUnflaggedMines : 0);
+    mineDigitBoard.setDisplayNumber(amtOfUnflaggedMines > 0 ? amtOfUnflaggedMines : 0);
     /* Check for Win */
-    if (updateInfo != null && updateInfo.win){
+    if (updateInfo != null && updateInfo.win) {
         displayGameWin(true);
         // console.log("WIN!");
-    }else{
+    } else {
         // console.log("No win");
     }
     // console.log("Board updated.");
-}
+};
 
-function update(){
+function update() {
     //Holdng left to flag functionality
-    if (flagTimer > 0.0){
+    if (flagTimer > 0.0) {
         flagTimer += ticker.deltaTime;
         // console.log(flagTimer);
     }
@@ -544,22 +565,22 @@ function update(){
     blurFilter.blur = Math.sin(blurIntensity) * 20;
 }
 
-function render(){
+function render() {
     //Render the stage
     renderer.render(stage);
 }
 
-function initGame(){
+function initGame() {
     //Initialize timers
     gameTimer = new Timer(window);
-    gameTimer.setTickCallback(function(seconds){
+    gameTimer.setTickCallback(function (seconds) {
         //Update seconds
         gameSeconds = seconds;
         //Timer digit board update
         timeDigitBoard.setDisplayNumber(gameSeconds);
     });
     //Let the timer start only after the first board click
-    game.addFirstBlockEvent(function(){
+    game.addFirstBlockEvent(function () {
         gameTimer.start();
     });
 
@@ -572,45 +593,45 @@ function initGame(){
 }
 
 //Adding image resources to loader queue
-loader.add("Logo", "img/Logo.png");
-loader.add("Block", "img/Block.png");
-loader.add("Block_selected", "img/Block_selected.png");
-loader.add("Block_held", "img/Block_held.png");
-loader.add("Block_highlighted", "img/Block_highlighted.png");
-loader.add("Button", "img/Button.png");
-loader.add("Tiles", "img/Tiles.png");
-loader.add("Mine", "img/Mine.png");
-loader.add("Flag", "img/Flag.png");
-loader.add("Smiley", "img/Smiley.png");
-loader.add("Smiley_proud", "img/Smiley_proud.png");
-loader.add("Smiley_sad", "img/Smiley_sad.png");
-loader.add("Checkbox_unchecked", "img/Checkbox_unchecked.png");
-loader.add("Checkbox_checked", "img/Checkbox_checked.png");
-loader.add("Star", "img/Star.png");
-for (var i = 0; i <= 9; i++){
-    loader.add("digit_" + i, "img/digits/" + i + ".png");
+loader.add('Logo', 'img/Logo.png');
+loader.add('Block', 'img/Block.png');
+loader.add('Block_selected', 'img/Block_selected.png');
+loader.add('Block_held', 'img/Block_held.png');
+loader.add('Block_highlighted', 'img/Block_highlighted.png');
+loader.add('Button', 'img/Button.png');
+loader.add('Tiles', 'img/Tiles.png');
+loader.add('Mine', 'img/Mine.png');
+loader.add('Flag', 'img/Flag.png');
+loader.add('Smiley', 'img/Smiley.png');
+loader.add('Smiley_proud', 'img/Smiley_proud.png');
+loader.add('Smiley_sad', 'img/Smiley_sad.png');
+loader.add('Checkbox_unchecked', 'img/Checkbox_unchecked.png');
+loader.add('Checkbox_checked', 'img/Checkbox_checked.png');
+loader.add('Star', 'img/Star.png');
+for (var i = 0; i <= 9; i++) {
+    loader.add('digit_' + i, 'img/digits/' + i + '.png');
 }
 
-var resizeGame = function(){
+var resizeGame = function () {
     renderer.resize(window.innerWidth, window.innerHeight);
-    boardOffsetX = ((boardInfo) ? boardInfo.width + renderer.width / 3.1 : 1);
-    boardOffsetY = ((boardInfo) ? boardInfo.height + renderer.height / 5 : 1);
+    boardOffsetX = boardInfo ? boardInfo.width + renderer.width / 3.1 : 1;
+    boardOffsetY = boardInfo ? boardInfo.height + renderer.height / 5 : 1;
     // console.log(boardOffsetX);
     // console.log(boardOffsetY);
-    for (var i = 0; i < resizeCallbacks.length; i++){
+    for (var i = 0; i < resizeCallbacks.length; i++) {
         resizeCallbacks[i]();
     }
-}
+};
 
 var resizeCallbacks = [];
 
 window.onresize = resizeGame;
 
-loader.once("complete", function(){
-    console.log("Resources loaded.");
+loader.once('complete', function () {
+    console.log('Resources loaded.');
     initGame();
 });
-loader.once("error", function(){
-    console.log("There was an error loading resources for the game.");
+loader.once('error', function () {
+    console.log('There was an error loading resources for the game.');
 });
 loader.load();

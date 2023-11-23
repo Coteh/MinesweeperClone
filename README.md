@@ -6,44 +6,43 @@
 
 Simple clone of the well-known Minesweeper game. Created using Javascript, Node.js, and PixiJS.
 
-## ![Smiley](img/Smiley.png "Smiley") Features ![Smiley](img/Smiley.png "Smiley")
+## Features
 - Simple and familiar Minesweeper gameplay
 - Ability to initialize a Minesweeper instance with specified height and width of board, and amount of mines
 - Game rendering with PixiJS
 
-## ![Flag](img/Flag.png "Flag") Screenshots ![Flag](img/Flag.png "Flag")
+## Screenshots
 ![Title Screen](screenshots/title.png "Title Screen")
 ![In-Game](screenshots/game.png "In-Game")
 
-## ![Mine](img/Mine.png "Mine") Installation ![Mine](img/Mine.png "Mine")
-First, ensure that a [PixiJS](https://github.com/pixijs/pixijs) binary and a [PixiJS filters](https://github.com/pixijs/filters) binary is available in a subdirectory titled "pixi". This is the setup used currently:
+## Installation
+To run the game locally, simply run the following to install dependencies:
+```
+npm install
+```
 
-├───pixi  
-│   ├───pixi.js             (or pixi.min.js)            (@v4.3.0)  
-│   ├───pixi.js.map         (or pixi.min.js.map)        (@v4.3.0)  
-│   ├ **(Can either include entire filters.js or include specific filters separately)**  
-│   ├───filters.js          (or filters.min.js)         (@v1.0.6)  
-│   ├───filters.js.map      (or filters.min.js.map)     (@v1.0.6)  
-│   ├ **(Filters included as separate .js files that are currently used by MinesweeperClone)**  
-│   ├───pixelate.js         (or pixelate.min.js)        (@v1.0.6)  
-│   ├───pixelate.js.map     (or pixelate.min.js.map)    (@v1.0.6)  
+Then run the following to build the game:
+```
+npm run build
+```
 
-You can run `./scripts/download-pixi.sh` to download the non-minified files that can be used for development purposes, or `./scripts/download-pixi.sh prod` to download the minified files for production.
+You can then run a local server on the `build` directory and open it on your browser to play. eg:
 
-Browserify is used to patch together all the js files linked via require into a single bundle.js file. To do this, run the following:
+```
+python -m http.server 8000 -d build
 
-`browserify browser_setup.js > bundle.js`
+# then open http://localhost:8000 to play locally
+```
 
-If your browser supports loading images, etc. via the file:// protocol, then just load up index.html. Otherwise, run the server via the following command:
+You can also run the following to run the game in development mode:
+```
+npm run dev
+```
 
-`node server/server.js`
-
-Once the server is running, just go to localhost:9000 and it should be there.
-
-## ![Smiley Sad](img/Smiley_sad.png "Smiley_sad") Issues ![Smiley Sad](img/Smiley_sad.png "Smiley_sad")
+## Issues
 - Unit and Integration testing is limited
 - Stack overflow (RangeError) when recursive revealing boards with dimensions 100x100 or greater [#3](https://github.com/Coteh/MinesweeperClone/issues/3)
 
-## ![Smiley Happy](img/Smiley_proud.png "Smiley_proud") Future Additions ![Smiley Happy](img/Smiley_proud.png "Smiley_proud")
+## Future Additions
 - Microsoft Mode (first click guaranteed not a mine)
 - Timed Mode
