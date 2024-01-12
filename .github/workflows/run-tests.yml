@@ -3,6 +3,10 @@ on: [push]
 jobs:
   test-game-logic:
     runs-on: ubuntu-latest
+    # These permissions are needed for the test report
+    permissions:
+      checks: write
+      pull-requests: write
     steps:
       - run: echo "Checking out ${{ github.ref }} from ${{ github.repository }}."
       - name: Check out repository code
