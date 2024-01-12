@@ -6,3 +6,6 @@
 
 # Build output
 build/
+
+# Test report output
+junit.xml
