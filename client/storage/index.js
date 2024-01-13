@@ -4,6 +4,7 @@ let gameOptions = {
     highlightEffect: false,
     holdToFlag: true,
     revealBoardOnLoss: false,
+    smallCanvasSize: false,
 };
 
 module.exports.loadGameOptions = () => {

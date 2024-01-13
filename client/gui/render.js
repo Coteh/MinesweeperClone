@@ -19,7 +19,8 @@ var renderer = new PIXI.autoDetectRenderer(800, 600);
 var interactionManager = new PIXI.interaction.InteractionManager(renderer);
 
 //Attach renderer onto the page
-document.body.appendChild(renderer.view);
+const domContainer = document.body.querySelector('div');
+domContainer.appendChild(renderer.view);
 
 //PIXI Variable declarations
 var stage = null;
@@ -82,11 +83,16 @@ var starTex = null;
 var digitTex = new Array(10);
 
 /* Menus */
-var titleMenu = null;
+var mainMenu = null;
+var settingsMenu = null;
 var playBtn = null;
+var settingsBtn = null;
 var highlightBtn = null;
 var holdToFlagBtn = null;
 var revealBoardOnLossBtn = null;
+var canvasSizeBtn = null;
+var fullScreenBtn = null;
+var backBtn = null;
 
 /* Timers */
 var gameTimer = null;
@@ -94,7 +100,9 @@ var gameSeconds = 0;
 
 /* Game Screens */
 var titleScreen = null;
+var mainMenuScreen = null;
 var gameScreen = null;
+var settingsScreen = null;
 
 /* Board Etc. */
 var smileyButton = null;
@@ -124,6 +132,8 @@ var initRenderElements = function () {
     //Initialize screen containers
     gameScreen = new PIXI.Container();
     titleScreen = new PIXI.Container();
+    mainMenuScreen = new PIXI.Container();
+    settingsScreen = new PIXI.Container();
 
     /* Initializing Textures */
     logoTex = PIXI.Texture.fromImage('img/Logo.png');
@@ -218,8 +228,11 @@ var initRenderElements = function () {
     resizeCallbacks.push(gameScreenPlacement);
 
     //Initializing menus
-    titleMenu = new Menu(100, 100, 'Title Menu');
-    titleScreen.addChild(titleMenu.container);
+    mainMenu = new Menu(100, 100, 'Main Menu');
+    mainMenuScreen.addChild(mainMenu.container);
+
+    settingsMenu = new Menu(100, 100, 'Settings Menu');
+    settingsScreen.addChild(settingsMenu.container);
 
     //Initializing menu buttons
     playBtn = new MenuOption('Play Game', FontPrefs.bigButtonFont);
@@ -230,29 +243,37 @@ var initRenderElements = function () {
         displayGameWin(false);
         updateBoard();
         titleScreen.visible = false;
+        mainMenuScreen.visible = false;
         gameScreen.visible = true;
         background.filters = normalBGFilters;
         resizeGame();
     });
     playBtn.setGraphic(uncheckedTex);
 
-    highlightBtn = new CheckBox('Highlight Effect?', FontPrefs.buttonFont);
+    settingsBtn = new MenuOption('Settings', FontPrefs.bigButtonFont);
+    settingsBtn.setPressAction(function () {
+        mainMenuScreen.visible = false;
+        settingsScreen.visible = true;
+    });
+    settingsBtn.setGraphic(uncheckedTex);
+
+    highlightBtn = new CheckBox('Highlight Effect', FontPrefs.buttonFont);
     highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
     highlightBtn.setCheckBoxAction(function (expression) {
         gameOptions.highlightEffect = expression;
         saveGameOptions(gameOptions);
     });
     highlightBtn.setCheck(gameOptions.highlightEffect);
-    titleMenu.addMenuOption(highlightBtn.menuOption);
+    settingsMenu.addMenuOption(highlightBtn.menuOption);
 
-    holdToFlagBtn = new CheckBox('Hold left click to flag?', FontPrefs.buttonFont);
+    holdToFlagBtn = new CheckBox('Hold left click to flag', FontPrefs.buttonFont);
     holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
     holdToFlagBtn.setCheckBoxAction(function (expression) {
         gameOptions.holdToFlag = expression;
         saveGameOptions(gameOptions);
     });
     holdToFlagBtn.setCheck(gameOptions.holdToFlag);
-    titleMenu.addMenuOption(holdToFlagBtn.menuOption);
+    settingsMenu.addMenuOption(holdToFlagBtn.menuOption);
 
     revealBoardOnLossBtn = new CheckBox('Reveal board on loss', FontPrefs.buttonFont);
     revealBoardOnLossBtn.setCheckTextures(uncheckedTex, checkedTex);
@@ -263,9 +284,52 @@ var initRenderElements = function () {
     });
     game.setBoardRevealedOnLoss(gameOptions.revealBoardOnLoss);
     revealBoardOnLossBtn.setCheck(gameOptions.revealBoardOnLoss);
-    titleMenu.addMenuOption(revealBoardOnLossBtn.menuOption);
+    settingsMenu.addMenuOption(revealBoardOnLossBtn.menuOption);
 
-    titleMenu.addMenuOption(playBtn);
+    canvasSizeBtn = new CheckBox('Small canvas size', FontPrefs.buttonFont);
+    canvasSizeBtn.setCheckTextures(uncheckedTex, checkedTex);
+    canvasSizeBtn.setCheckBoxAction(function (expression) {
+        if (expression) {
+            domContainer.classList.add('small');
+        } else {
+            domContainer.classList.remove('small');
+        }
+        gameOptions.smallCanvasSize = expression;
+        saveGameOptions(gameOptions);
+    });
+    if (gameOptions.smallCanvasSize) {
+        domContainer.classList.add('small');
+    }
+    canvasSizeBtn.setCheck(gameOptions.smallCanvasSize);
+    settingsMenu.addMenuOption(canvasSizeBtn.menuOption);
+
+    // Player will need to enable this setting manually due to browser restrictions
+    fullScreenBtn = new CheckBox('Full Screen', FontPrefs.buttonFont);
+    fullScreenBtn.setCheckTextures(uncheckedTex, checkedTex);
+    fullScreenBtn.setCheckBoxAction(function (expression) {
+        if (expression) {
+            renderer.view.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    });
+    fullScreenBtn.setCheck(false);
+    settingsMenu.addMenuOption(fullScreenBtn.menuOption);
+
+    document.addEventListener('fullscreenchange', () => {
+        fullScreenBtn.setCheck(document.fullscreenElement != null);
+    });
+
+    backBtn = new MenuOption('Back', FontPrefs.bigButtonFont);
+    backBtn.setPressAction(function () {
+        settingsScreen.visible = false;
+        mainMenuScreen.visible = true;
+    });
+    backBtn.setGraphic(uncheckedTex);
+    settingsMenu.addMenuOption(backBtn);
+
+    mainMenu.addMenuOption(playBtn);
+    mainMenu.addMenuOption(settingsBtn);
 
     //Add Logo
     gameLogoSprite = new PIXI.Sprite(logoTex);
@@ -293,7 +357,10 @@ var initRenderElements = function () {
 
     stage.addChild(gameScreen);
     stage.addChild(titleScreen);
+    stage.addChild(mainMenuScreen);
+    stage.addChild(settingsScreen);
     gameScreen.visible = false;
+    settingsScreen.visible = false;
 
     //Title screen placement
     const titleScreenPlacement = () => {
@@ -302,6 +369,22 @@ var initRenderElements = function () {
     };
     titleScreenPlacement();
     resizeCallbacks.push(titleScreenPlacement);
+
+    //Main Menu screen placement
+    const mainMenuScreenPlacement = () => {
+        mainMenuScreen.x = renderer.width / 3.5;
+        mainMenuScreen.y = 120;
+    };
+    mainMenuScreenPlacement();
+    resizeCallbacks.push(mainMenuScreenPlacement);
+
+    //Settings screen placement
+    const settingsScreenPlacement = () => {
+        settingsScreen.x = renderer.width / 3.5;
+        settingsScreen.y = 120;
+    };
+    settingsScreenPlacement();
+    resizeCallbacks.push(settingsScreenPlacement);
 
     const copyrightPlacement = () => {
         copyrightText.x = 280;

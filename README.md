@@ -4,7 +4,7 @@
 [![release | v1.0.6](https://img.shields.io/badge/release-v1.0.6-00b2ff.svg)](https://github.com/Coteh/MinesweeperClone/releases/tag/v1.0.6)
 [![Play here](https://img.shields.io/badge/play-here-yellow.svg)](http://coteh.github.io/MinesweeperClone/)
 
-Simple clone of the well-known Minesweeper game. Created using Javascript, Node.js, and PixiJS.
+Simple clone of the well-known Minesweeper game. Created using JavaScript, Node.js, and PixiJS.
 
 ## Features
 - Simple and familiar Minesweeper gameplay
