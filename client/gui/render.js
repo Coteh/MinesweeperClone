@@ -90,7 +90,6 @@ var settingsBtn = null;
 var highlightBtn = null;
 var holdToFlagBtn = null;
 var revealBoardOnLossBtn = null;
-var canvasSizeBtn = null;
 var fullScreenBtn = null;
 var backBtn = null;
 
@@ -285,23 +284,6 @@ var initRenderElements = function () {
     game.setBoardRevealedOnLoss(gameOptions.revealBoardOnLoss);
     revealBoardOnLossBtn.setCheck(gameOptions.revealBoardOnLoss);
     settingsMenu.addMenuOption(revealBoardOnLossBtn.menuOption);
-
-    canvasSizeBtn = new CheckBox('Small canvas size', FontPrefs.buttonFont);
-    canvasSizeBtn.setCheckTextures(uncheckedTex, checkedTex);
-    canvasSizeBtn.setCheckBoxAction(function (expression) {
-        if (expression) {
-            domContainer.classList.add('small');
-        } else {
-            domContainer.classList.remove('small');
-        }
-        gameOptions.smallCanvasSize = expression;
-        saveGameOptions(gameOptions);
-    });
-    if (gameOptions.smallCanvasSize) {
-        domContainer.classList.add('small');
-    }
-    canvasSizeBtn.setCheck(gameOptions.smallCanvasSize);
-    settingsMenu.addMenuOption(canvasSizeBtn.menuOption);
 
     // Player will need to enable this setting manually due to browser restrictions
     fullScreenBtn = new CheckBox('Full Screen', FontPrefs.buttonFont);
