@@ -1,4 +1,4 @@
-var getAdjMinesTextColor = function (adjMinesCount) {
+export const getAdjMinesTextColor = function (adjMinesCount) {
     switch (adjMinesCount) {
         case 1:
             return '#0099FF'; //blue
@@ -51,8 +51,4 @@ var determineDigitFormation = function (num, callback) {
             callback([0, 0, 0, 0, 0, 0, 0]);
             break;
     }
-};
-
-module.exports = {
-    getAdjMinesTextColor,
 };

@@ -1,16 +1,16 @@
 import * as PIXI from 'pixi.js';
-require('pixi-filters/bin/pixelate');
+import * as pixelate from 'pixi-filters/bin/pixelate';
 
-var helpers = require('./display_helpers');
-var game = require('../game');
-var MineBlock = require('./mineblock');
-var DigitBoard = require('./digitboard');
-var Timer = require('./timer');
-var Menu = require('./menu');
-var MenuOption = require('./menuoption');
-var CheckBox = require('./checkbox');
-var FontPrefs = require('./fontprefs');
-const { loadGameOptions, saveGameOptions } = require('../storage');
+import { getAdjMinesTextColor } from './display_helpers';
+import { init, getBoardInfo, selectSpot, flagSpot, selectAdjacentSpots, setBoardRevealedOnLoss, addFirstBlockEvent } from '../game';
+import { MineBlock } from './mineblock';
+import { DigitBoard } from './digitboard';
+import { Timer } from './timer';
+import { Menu } from './menu';
+import { MenuOption } from './menuoption';
+import { CheckBox } from './checkbox';
+import { buttonFont, bigButtonFont, copyrightFont } from './fontprefs';
+import { loadGameOptions, saveGameOptions } from '../storage';
 
 //Initializing renderer
 var renderer = new PIXI.autoDetectRenderer(800, 600);
@@ -234,7 +234,7 @@ var initRenderElements = function () {
     settingsScreen.addChild(settingsMenu.container);
 
     //Initializing menu buttons
-    playBtn = new MenuOption('Play Game', FontPrefs.bigButtonFont);
+    playBtn = new MenuOption('Play Game', bigButtonFont);
     playBtn.setPressAction(function () {
         startGame();
         setupBoard(boardInfo);
@@ -249,14 +249,14 @@ var initRenderElements = function () {
     });
     playBtn.setGraphic(uncheckedTex);
 
-    settingsBtn = new MenuOption('Settings', FontPrefs.bigButtonFont);
+    settingsBtn = new MenuOption('Settings', bigButtonFont);
     settingsBtn.setPressAction(function () {
         mainMenuScreen.visible = false;
         settingsScreen.visible = true;
     });
     settingsBtn.setGraphic(uncheckedTex);
 
-    highlightBtn = new CheckBox('Highlight Effect', FontPrefs.buttonFont);
+    highlightBtn = new CheckBox('Highlight Effect', buttonFont);
     highlightBtn.setCheckTextures(uncheckedTex, checkedTex);
     highlightBtn.setCheckBoxAction(function (expression) {
         gameOptions.highlightEffect = expression;
@@ -265,7 +265,7 @@ var initRenderElements = function () {
     highlightBtn.setCheck(gameOptions.highlightEffect);
     settingsMenu.addMenuOption(highlightBtn.menuOption);
 
-    holdToFlagBtn = new CheckBox('Hold left click to flag', FontPrefs.buttonFont);
+    holdToFlagBtn = new CheckBox('Hold left click to flag', buttonFont);
     holdToFlagBtn.setCheckTextures(uncheckedTex, checkedTex);
     holdToFlagBtn.setCheckBoxAction(function (expression) {
         gameOptions.holdToFlag = expression;
@@ -274,19 +274,19 @@ var initRenderElements = function () {
     holdToFlagBtn.setCheck(gameOptions.holdToFlag);
     settingsMenu.addMenuOption(holdToFlagBtn.menuOption);
 
-    revealBoardOnLossBtn = new CheckBox('Reveal board on loss', FontPrefs.buttonFont);
+    revealBoardOnLossBtn = new CheckBox('Reveal board on loss', buttonFont);
     revealBoardOnLossBtn.setCheckTextures(uncheckedTex, checkedTex);
     revealBoardOnLossBtn.setCheckBoxAction(function (expression) {
-        game.setBoardRevealedOnLoss(expression);
+        setBoardRevealedOnLoss(expression);
         gameOptions.revealBoardOnLoss = expression;
         saveGameOptions(gameOptions);
     });
-    game.setBoardRevealedOnLoss(gameOptions.revealBoardOnLoss);
+    setBoardRevealedOnLoss(gameOptions.revealBoardOnLoss);
     revealBoardOnLossBtn.setCheck(gameOptions.revealBoardOnLoss);
     settingsMenu.addMenuOption(revealBoardOnLossBtn.menuOption);
 
     // Player will need to enable this setting manually due to browser restrictions
-    fullScreenBtn = new CheckBox('Full Screen', FontPrefs.buttonFont);
+    fullScreenBtn = new CheckBox('Full Screen', buttonFont);
     fullScreenBtn.setCheckTextures(uncheckedTex, checkedTex);
     fullScreenBtn.setCheckBoxAction(function (expression) {
         if (expression) {
@@ -302,7 +302,7 @@ var initRenderElements = function () {
         fullScreenBtn.setCheck(document.fullscreenElement != null);
     });
 
-    backBtn = new MenuOption('Back', FontPrefs.bigButtonFont);
+    backBtn = new MenuOption('Back', bigButtonFont);
     backBtn.setPressAction(function () {
         settingsScreen.visible = false;
         mainMenuScreen.visible = true;
@@ -329,12 +329,12 @@ var initRenderElements = function () {
     //Add copyright text
     copyrightText = new PIXI.Text(
         String.fromCharCode(169) + ' 2015-2016 James Cote',
-        FontPrefs.copyrightFont
+        copyrightFont
     );
     titleScreen.addChild(copyrightText);
 
     //Add version number
-    const versionNumberText = new PIXI.Text(`v${GAME_VERSION}`, FontPrefs.copyrightFont);
+    const versionNumberText = new PIXI.Text(`v${GAME_VERSION}`, copyrightFont);
     titleScreen.addChild(versionNumberText);
 
     stage.addChild(gameScreen);
@@ -407,12 +407,12 @@ var setupBoard = function (boardInfo) {
             mineTileArr[i][j].setLeftRelease(function (block, mouseData) {
                 var result = null;
                 if (block.isRevealed) {
-                    result = game.selectAdjacentSpots(block.x, block.y);
+                    result = selectAdjacentSpots(block.x, block.y);
                 } else {
                     result =
                         flagTimer > MAX_FLAG_HOLD_TIME
-                            ? game.flagSpot(block.x, block.y)
-                            : game.selectSpot(block.x, block.y);
+                            ? flagSpot(block.x, block.y)
+                            : selectSpot(block.x, block.y);
                 }
                 if (result.hitInfo == 'nonexistent' || result.flagInfo == 'nonexistent') {
                     console.log(
@@ -424,7 +424,7 @@ var setupBoard = function (boardInfo) {
             });
 
             mineTileArr[i][j].setRightRelease(function (block, mouseData) {
-                var result = game.flagSpot(block.x, block.y);
+                var result = flagSpot(block.x, block.y);
                 if (result.flagInfo == 'nonexistent') {
                     console.log(
                         'The spot at x: ' + block.x + ', y: ' + block.y + ' does not exist.'
@@ -475,8 +475,8 @@ var resetBlockSprites = function (block) {
 };
 
 var startGame = function () {
-    game.init({ width: 20, height: 20, mines: 35 });
-    boardInfo = game.getBoardInfo();
+    init({ width: 20, height: 20, mines: 35 });
+    boardInfo = getBoardInfo();
     if (mineTileArr != null) {
         for (var i = 0; i < boardInfo.height; i++) {
             for (var j = 0; j < boardInfo.width; j++) {
@@ -559,7 +559,7 @@ renderer.view.oncontextmenu = function (e) {
 };
 
 var updateBoard = function (updateInfo) {
-    boardInfo = game.getBoardInfo();
+    boardInfo = getBoardInfo();
     if (updateInfo != null) {
         if (updateInfo.hitInfo == 'mine') {
             displayGameOver(true);
@@ -576,7 +576,7 @@ var updateBoard = function (updateInfo) {
                 mineTileArr[i][j].numberIndicator.text = boardInfo.adjMinesCount[i][j].toString();
                 var fill = '#FFFFFF';
                 try {
-                    fill = helpers.getAdjMinesTextColor(boardInfo.adjMinesCount[i][j]);
+                    fill = getAdjMinesTextColor(boardInfo.adjMinesCount[i][j]);
                 } catch (e) {
                     console.log(
                         'ERROR: A critical error occurred. Error info: \nName: ' +
@@ -645,7 +645,7 @@ function initGame() {
         timeDigitBoard.setDisplayNumber(gameSeconds);
     });
     //Let the timer start only after the first board click
-    game.addFirstBlockEvent(function () {
+    addFirstBlockEvent(function () {
         gameTimer.start();
     });
 

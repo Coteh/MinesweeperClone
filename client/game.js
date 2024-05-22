@@ -1,4 +1,4 @@
-var errors = require('./errors');
+import { BoardOverfillException } from './errors';
 
 var gameBoard;
 var isRevealed;
@@ -12,15 +12,15 @@ var firstBlockClicked = false;
 var firstBlockCallbacks = [];
 var revealBoardOnLoss = false;
 
-var isBoardRevealedOnLoss = function () {
+export const isBoardRevealedOnLoss = function () {
     return revealBoardOnLoss;
 };
 
-var setBoardRevealedOnLoss = function (expression) {
+export const setBoardRevealedOnLoss = function (expression) {
     revealBoardOnLoss = expression;
 };
 
-var init = function (gameOptions) {
+export const init = function (gameOptions) {
     didWin = false;
     firstBlockClicked = false;
     boardWidth = gameOptions != null && gameOptions.width != null ? gameOptions.width : 10;
@@ -79,7 +79,7 @@ var determineMineSpots = function (amountOfBoardPieces, amountOfMines) {
         }
     } else {
         //amountOfMines > amountOfBoardPieces
-        throw new errors.BoardOverfillException(
+        throw new BoardOverfillException(
             'Amount of mines to generate exceeds amount of board pieces.'
         );
     }
@@ -87,7 +87,7 @@ var determineMineSpots = function (amountOfBoardPieces, amountOfMines) {
     return mineSpots;
 };
 
-var getBoardInfo = function () {
+export const getBoardInfo = function () {
     return {
         board: gameBoard,
         width: boardWidth,
@@ -99,7 +99,7 @@ var getBoardInfo = function () {
     };
 };
 
-var selectSpot = function (x, y) {
+export const selectSpot = function (x, y) {
     if (x == null || y == null || x < 0 || x >= boardWidth || y < 0 || y >= boardHeight) {
         //don't select a piece that doesn't exist on the board
         return { hitInfo: 'nonexistent' };
@@ -122,7 +122,7 @@ var selectSpot = function (x, y) {
     return { hitInfo: 'land', win: checkForWin() };
 };
 
-var selectAdjacentSpots = function (x, y) {
+export const selectAdjacentSpots = function (x, y) {
     var doesMineExist = false;
     //Only selects adjacent spots if there are exactly as many flags in adjacent spots as there are mines
     var adjacentSpots = getAdjacentSpots(x, y);
@@ -311,7 +311,7 @@ var calculateAdjacentFlags = function (adjacentSpots) {
     return amountOfAdjFlags;
 };
 
-var flagSpot = function (x, y, expression) {
+export const flagSpot = function (x, y, expression) {
     //only flag the spot if it hasn't been revealed yet and if it exists
     if (x == null || y == null || x < 0 || x >= boardWidth || y < 0 || y >= boardHeight) {
         return { flagInfo: 'nonexistent' };
@@ -349,17 +349,6 @@ var checkForWin = function () {
     return false; //they didn't win (yet)
 };
 
-var addFirstBlockEvent = function (callback) {
+export const addFirstBlockEvent = function (callback) {
     firstBlockCallbacks.push(callback);
-};
-
-module.exports = {
-    init,
-    getBoardInfo,
-    selectSpot,
-    selectAdjacentSpots,
-    flagSpot,
-    addFirstBlockEvent,
-    isBoardRevealedOnLoss,
-    setBoardRevealedOnLoss,
 };

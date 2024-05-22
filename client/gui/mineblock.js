@@ -1,12 +1,12 @@
-var FontPrefs = require('./fontprefs');
+import { numberIndicatorFont } from './fontprefs';
 
-function MineBlock(x, y) {
+export function MineBlock(x, y) {
     this.x = x;
     this.y = y;
     this.container = new PIXI.Container();
     this.container.interactive = false;
     this.sprite = new PIXI.Sprite(null);
-    this.numberIndicator = new PIXI.Text('', FontPrefs.numberIndicatorFont);
+    this.numberIndicator = new PIXI.Text('', numberIndicatorFont);
     this.indicatorSprite = new PIXI.Sprite(null);
     this.setPosition(x, y);
     this.resetNumberIndicator();
@@ -90,5 +90,3 @@ MineBlock.prototype.enableInteraction = function (expression) {
 MineBlock.prototype.setRevealed = function (expression) {
     this.isRevealed = expression;
 };
-
-module.exports = MineBlock;
