@@ -9,7 +9,7 @@
     "dev": "vite serve",
     "build": "vite build",
     "format": "prettier --config ./.prettierrc --write .",
-    "test": "jest"
+    "test": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js"
   },
   "repository": {
     "type": "git",
