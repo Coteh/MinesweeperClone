@@ -1,6 +1,6 @@
-var MenuOption = require('./menuoption');
+import { MenuOption } from './menuoption';
 
-function CheckBox(title, textOptions) {
+export function CheckBox(title, textOptions) {
     this.menuOption = new MenuOption(title, textOptions);
     this.container = this.menuOption.container;
     this.uncheckedTex = null;
@@ -33,5 +33,3 @@ CheckBox.prototype.setCheck = function (expression) {
     this.checkBoxSprite.texture = expression ? this.checkedTex : this.uncheckedTex;
     this.isChecked = expression;
 };
-
-module.exports = CheckBox;

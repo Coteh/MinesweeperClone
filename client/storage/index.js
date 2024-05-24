@@ -6,7 +6,7 @@ let gameOptions = {
     revealBoardOnLoss: false,
 };
 
-module.exports.loadGameOptions = () => {
+export function loadGameOptions() {
     try {
         const gameOptionsStr = window.localStorage.getItem(GAME_OPTIONS_KEY);
         if (!gameOptionsStr) {
@@ -19,6 +19,6 @@ module.exports.loadGameOptions = () => {
     return gameOptions;
 };
 
-module.exports.saveGameOptions = (newOptions) => {
+export function saveGameOptions(newOptions) {
     window.localStorage.setItem(GAME_OPTIONS_KEY, JSON.stringify(newOptions));
 };

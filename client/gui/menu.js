@@ -1,4 +1,4 @@
-function Menu(x, y, title) {
+export function Menu(x, y, title) {
     this.container = new PIXI.Container();
     this.setPosition(x, y);
     this.menuList = new Array();
@@ -22,5 +22,3 @@ Menu.prototype.addMenuOption = function (menuOption) {
 Menu.prototype.setVisibility = function (expression) {
     this.container.visible = expression;
 };
-
-module.exports = Menu;

@@ -1,4 +1,4 @@
-function DigitBoard(x, y, amtOfDigits, textureArr) {
+export function DigitBoard(x, y, amtOfDigits, textureArr) {
     this.container = new PIXI.Container();
     this.setPosition(x, y);
     this.amtOfDigits = 0;
@@ -100,5 +100,3 @@ DigitBoard.prototype.setDisplayNumber = function (num) {
         this.digitSpriteArr[i].texture = this.textureArr[digits[i]];
     }
 };
-
-module.exports = DigitBoard;

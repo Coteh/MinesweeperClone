@@ -1,4 +1,4 @@
-function MenuOption(title, textOptions) {
+export function MenuOption(title, textOptions) {
     this.container = new PIXI.Container();
     this.actionCallback = null;
     this.graphic = new PIXI.Graphics();
@@ -50,5 +50,3 @@ MenuOption.prototype.performSelect = function (mouseData) {
 MenuOption.prototype.setGraphic = function (texture) {
     this.graphic.texture = texture;
 };
-
-module.exports = MenuOption;

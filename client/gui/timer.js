@@ -1,4 +1,4 @@
-function Timer(domWindow) {
+export function Timer(domWindow) {
     this.domWindow = domWindow;
     this.seconds = 0;
     this.callback = null;
@@ -28,5 +28,3 @@ Timer.prototype.performTick = function () {
 Timer.prototype.setTickCallback = function (callback) {
     this.callback = callback;
 };
-
-module.exports = Timer;
