@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import path from "path";
 import { version } from './package.json';
-import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
@@ -20,13 +19,6 @@ export default defineConfig({
         }
     },
     plugins: [
-        // TODO: "Before you use this plugin, consider using public directory or import in JavaScript. In most cases, these will work."
-        viteStaticCopy({
-            targets: [
-                { src: 'img/', dest: '.' },
-                { src: 'style.css', dest: '.' },
-            ]
-        }),
         nodePolyfills(),
     ]
 })
