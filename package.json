@@ -19,7 +19,7 @@
   "author": "James Cote",
   "license": "MIT",
   "dependencies": {
-    "pixi.js": "4.3.0",
+    "pixi.js": "8.1.5",
     "vite": "^5.2.12",
     "vite-plugin-node-polyfills": "^0.22.0"
   },
