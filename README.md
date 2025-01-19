@@ -1,4 +1,4 @@
-# ![MinesweeperClone](img/Logo.png "MinesweeperClone Logo")
+# ![MinesweeperClone](public/img/Logo.png "MinesweeperClone Logo")
 
 [![Run Tests](https://github.com/Coteh/MinesweeperClone/actions/workflows/run-tests.yml/badge.svg)](https://github.com/Coteh/MinesweeperClone/actions/workflows/run-tests.yml)
 [![release | v1.0.6](https://img.shields.io/badge/release-v1.0.6-00b2ff.svg)](https://github.com/Coteh/MinesweeperClone/releases/tag/v1.0.6)
