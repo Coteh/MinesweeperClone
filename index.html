@@ -1,12 +1,261 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>MinesweeperClone</title>
-        <meta charset="utf-8" />
-        <link rel="stylesheet" href="/style.css" />
+        <title>Minesweeper Clone</title>
+        <meta name="theme-color" content="#888888">
+        <meta name="description" content="A clone of the popular Minesweeper game">
+        <meta name="robots" content="index, follow">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="index.css">
+        <link href="https://coteh.github.io/minesweeper-clone" rel="canonical">
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <link rel="manifest" href="manifest.json">
+        <link rel="apple-touch-icon" href="icon152.png">
     </head>
     <body>
-        <div id="content" class="container"></div>
-        <script src="/client/gui/render.js" type="module"></script>
+        <div class="game-wrapper">
+            <nav id="top" class="top-menu">
+                <span class="space"></span>
+                <div class="title" style="display:none">
+                    <span>Minesweeper</span><br/>
+                    <span>Clone</span>
+                </div>
+
+                <img class="classic-logo" alt="Minesweeper Clone" src="/img/Logo.png"/>
+                <span class="space"></span>
+                <div class="menu-options">
+                    <div class="icon-bar">
+                        <a id="debug" class="debug-link link-icon" href="#" style="display:none">
+                            <i data-feather="tool"></i>
+                        </a>
+                        <!-- <a class="help-link link-icon" href="#">
+                            <i data-feather="help-circle"></i>
+                        </a> -->
+                        <a popovertarget="settings" popovertargetaction="show" class="settings-link link-icon" href="#">
+                            <i data-feather="settings"></i>
+                        </a>
+                    </div>
+                    <!-- <div class="score-wrap-box">
+                        <div class="score-box">
+                            <span class="score-label">Score:</span>
+                            <span class="score" id="score"></span>
+                        </div>
+                        <div class="space"></div>
+                        <div class="highscore-box">
+                            <span class="score-label">Highscore:</span>
+                            <span class="highscore" id="highscore"></span>
+                        </div>
+                    </div> -->
+                </div>
+            </nav>
+            <div class="game pane">
+                <div class="commands">
+                    <a id="debug-hud" class="debug-hud-link link-icon" href="#" style="display:none;">
+                        <i data-feather="eye"></i>
+                    </a>
+                    <a id="undo" class="undo-link link-icon disabled" href="#" style="display:none;">
+                        <i data-feather="rewind"></i>
+                    </a>
+                    <a id="zoom-in" class="zoom-in link-icon" href="#">
+                        <i data-feather="zoom-in"></i>
+                    </a>
+                    <a id="zoom-out" class="zoom-out link-icon" href="#">
+                        <i data-feather="zoom-out"></i>
+                    </a>
+                </div>
+                <div id="zoomable" class="zoom-area">
+                    <div id="middle" class="game-space">
+                        <div class="game-top">
+                            <div id="mine-count-board" class="digit-board">
+                                <img src="img/digits/0.png"/>
+                                <img src="img/digits/0.png"/>
+                                <img src="img/digits/0.png"/>
+                            </div>
+                            <button class="button new-game" id="new-game">
+                                <img src="img/Smiley.png"/>
+                            </button>
+                            <div id="time-board" class="digit-board">
+                                <img src="img/digits/0.png"/>
+                                <img src="img/digits/0.png"/>
+                                <img src="img/digits/0.png"/>
+                            </div>
+                        </div>
+                        <div id="board" class="game-board">
+                            <div class="back-rows">
+
+                            </div>
+                            <div class="base-rows">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="debug-overlay" class="debug-overlay" style="display: none;">
+                    <div class="debug-row">
+                        <span>x:</span>
+                        <span id="x">0</span>
+                    </div>
+                    <div class="debug-row">
+                        <span>y:</span>
+                        <span id="y">0</span>
+                    </div>
+                    <div class="debug-row">
+                        <span>zoom:</span>
+                        <span id="zoom">0</span>
+                    </div>
+                    <div class="debug-row">
+                        <span>pinch:</span>
+                        <span id="pinch">false</span>
+                    </div>
+                </div>
+                <noscript>
+                    <div class="pane-overlay">
+                        <h3>Please enable JavaScript to play this game.</h3>
+                    </div>
+                </noscript>
+            </div>
+            <div class="game-overlay" style="display:none"></div>
+        </div>
+        <div id="settings" class="settings pane" popover>
+            <h1>Settings</h1>
+            <button popovertarget="settings" popovertargetaction="hide" class="close">
+                <i data-feather="x"></i>
+            </button>
+            <div class="space"></div>
+            <div class="settings-item-group">
+                <!-- <div class="settings-item setting theme-switch">
+                    <div class="settings-item-column">
+                        <span>Theme</span>
+                    </div>
+                    <div class="settings-item-column">
+                        <span class="toggle">Standard</span>
+                    </div>
+                </div> -->
+                <div class="settings-item setting difficulty">
+                    <div class="settings-item-column">
+                        <span>Difficulty</span>
+                    </div>
+                    <div class="settings-item-column">
+                        <span class="toggle">Medium</span>
+                    </div>
+                </div>
+            </div>
+            <span style="height: 40px"></span>
+            <!-- <div class="settings-item-group">
+                <div class="settings-item setting clear-all-data">
+                    <div class="settings-item-column">
+                        <span>Clear Game Data</span>
+                    </div>
+                </div>
+            </div> -->
+            <span class="space"></span>
+            <div class="settings-item-group">
+                <div class="settings-item">
+                    <div class="settings-item-column">
+                        <a href="https://github.com/Coteh/MinesweeperClone/releases" target="_blank">
+                            <span class="version-number">v0.0.0</span>
+                        </a>
+                        <a href="https://github.com/Coteh/MinesweeperClone/commit/" target="_blank">
+                            <span class="commit-hash">aaaaaaa</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <span>
+                    &copy; 2015-2025 <a class="author-link" href="https://www.jamescote.ca/" target="_blank">James Cote</a>
+                </span><br/>
+                <span class="snow-theme-credits">
+                    Snow effect from <a href="https://embed.im/snow/" target="_blank">embed.im</a>
+                </span>
+            </div>
+            <div class="space"></div>
+        </div>
+        <div class="loader-wrapper" style="background-color: white">
+            <div class="loader">
+                <span>
+                    2048
+                </span>
+            </div>
+        </div>
+        <div class="notification-area"></div>
+        <div class="overlay-back"></div>
+        <!-- <div id="swipeArea" class="swipe-area">Swipe Here</div> -->
+        <div id="landscape-overlay" class="landscape-overlay" style="display:none">
+            <div class="overlay-content">
+                <p>Please rotate your device to portrait mode to play the game.</p>
+                <img src="/images/rotate-device.png" alt="Rotate device">
+            </div>
+        </div>
+        <template id="dialog">
+            <dialog class="dialog">
+                <button class="close"><i data-feather="x"></i></button>
+                <div class="dialog-content">
+                </div>
+            </dialog>
+        </template>
+        <template id="notification">
+            <div class="notification">
+                <div class="notification-content">
+                    <span class="notification-message"></span>
+                </div>
+            </div>
+        </template>
+        <template id="win-dialog-content">
+            <h3>You win!</h3>
+            <span id="undo-text" style="display:none">However, you needed to use an undo... 😏</span>
+            <span>You can keep playing by closing this dialog box. But you can also click the button below to share your score!</span>
+            <button class="button share-button">
+                <i data-feather="share-2"></i>
+                <span>Share</span>
+            </button>
+            <button class="button clipboard-button" style="display:none">
+                <i data-feather="clipboard"></i>
+                <span>Copy to Clipboard</span>
+            </button>
+            <!-- TODO: renderDialog should add close event listener to all close buttons, not just the first -->
+            <!-- <button class="close"><span>Continue</span></button> -->
+        </template>
+        <template id="lose-dialog-content">
+            <span>You lose!</span><br/>
+            <span>Your score was <span id="dialog-score"></span></span>
+            <span id="dialog-highscore" style="display:none">You got the high score!</span>
+            <button class="button share-button">
+                <i data-feather="share-2"></i>
+                <span>Share</span>
+            </button>
+            <button class="button clipboard-button" style="display:none">
+                <i data-feather="clipboard"></i>
+                <span>Copy to Clipboard</span>
+            </button>
+            <button class="button new-game">
+                <span>New Game</span>
+            </button>
+        </template>
+        <template id="prompt-dialog-content">
+            <span class="prompt-text"></span><br/>
+            <button class="button confirm"><span>Yes</span></button>
+            <button class="button cancel"><span>Cancel</span></button>
+        </template>
+        <template id="error-dialog-content">
+            <span>
+                The following error occurred:
+            </span>
+            <span class="error-text"></span>
+            <span>
+                Please refresh the page and try again later.<br/>
+                If this persists, please reach out to me on <a href="https://github.com/Coteh/minesweeper-clone/issues/new?assignees=&labels=&template=bug_report.md" target="_blank">GitHub</a> or <a href="mailto:james.cote.730@gmail.com" target="_blank">email</a> with more information and I'll take a look.
+            </span>
+        </template>
+        <template id="debug-dialog-content">
+            <h3>Debug</h3><br/>
+            <button class="button new-debug-game"><span>New Debug Game</span></button>
+            <button class="button prompt-dialog"><span>Prompt Dialog</span></button>
+            <button class="button non-closable-dialog"><span>Non-Closable Dialog</span></button>
+            <button class="button show-notification"><span>Show Notification</span></button>
+        </template>
+        <script src="src/index.ts" type="module"></script>
+        <!-- <script src="vendor/snow.js" defer></script> -->
     </body>
 </html>

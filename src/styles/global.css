@@ -1,0 +1,217 @@
+@import url('./components/dialog.css');
+@import url('./components/notification.css');
+@import url('./components/knob.css');
+@import url('./components/slider.css');
+@import url('./components/swipe.css');
+@import url('./components/zoom.css');
+@import url('./components/landscape.css');
+
+@import url('./game/menu.css');
+@import url('./game/panes/index.css');
+
+@import url('./themes/classic.css');
+@import url('./themes/snow.css');
+
+@import url('./debug.css');
+
+/* Fonts */
+
+@font-face {
+    font-family: 'Comic Neue';
+    src: url('/fonts/comicneue/ComicNeue-Regular.woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Comic Neue';
+    src: url('/fonts/comicneue/ComicNeue-Bold.woff2');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* Variables */
+
+:root {
+    --green: green;
+    --yellow: #eec039;
+    --orange: #f5793a;
+    --blue: #85c0f9;
+    --black: #000;
+    --white: #fff;
+    --gray-1: rgb(22, 22, 22);
+    --gray-2: #333;
+    --gray-3: #737373;
+    --gray-4: grey;
+    --gray-5: #aaa;
+    --gray-6: rgb(202, 202, 202);
+    --gray-7: lightgrey;
+
+    --beige: bisque;
+    --darkorange: #ff7410;
+    --lightorange: #ffc296;
+
+    --standard-color: var(--gray-5);
+    --standard-block-color: #808080;
+
+    --hovered-color: var(--yellow);
+    --enabled-color: var(--green);
+
+    --box-border-color: var(--black);
+    --box-border-color-highlighted: var(--gray-5);
+
+    --settings-item-border-color: 1px solid var(--gray-4);
+
+    --background-color: var(--beige);
+    --fallback-background-color: var(--background-color);
+    --item-background-color: rgba(0, 0, 0, 0);
+    --dialog-background-color: var(--beige);
+
+    --text-color: var(--black);
+    --letter-text-color: var(--white);
+    --letter-selected-text-color: var(--white);
+    --letter-selected-inverted-text-color: var(--white);
+
+    --text-font-family: sans-serif;
+
+    --notification-background-color: var(--gray-7);
+    --notification-text-color: var(--black);
+
+    --block-revealed-color: #b3b3b3;
+
+    --mine-text-1: #0099ff;
+    --mine-text-2: #00ff00;
+    --mine-text-3: #ff0000;
+    --mine-text-4: #0000ff;
+    --mine-text-5: #442200;
+    --mine-text-6: #00ffff;
+    --mine-text-7: #000000;
+    --mine-text-8: #858585;
+
+    --classic-checkerboard-color: rgb(128, 128, 128);
+}
+
+/* Main Content */
+
+html {
+    font-size: 125%;
+    font-family: var(--text-font-family);
+}
+
+body {
+    background: var(--fallback-background-color);
+    background: var(--background-color);
+    margin: 0;
+    overflow: hidden;
+}
+
+svg {
+    color: var(--text-color);
+}
+
+a.link-icon {
+    position: relative;
+}
+
+body a.link-icon.disabled > * {
+    color: grey;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button.close {
+    z-index: 1;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(0, 0, 0, 0);
+    color: var(--text-color);
+}
+
+button.button {
+    font-family: var(--text-font-family);
+    padding: 8px;
+    margin: 0.5em 0em 0.5em 0em;
+    padding: 1em 0.5em 1em 0.5em;
+    border-radius: 8em;
+
+    background-color: #8f7a66;
+    border: 2px solid #bbada0;
+}
+
+button.button:hover {
+    background-color: #a58a71;
+}
+
+button.button > * {
+    color: white;
+    font-weight: bold;
+}
+
+/* Overlay Backdrop */
+
+.overlay-back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 100;
+}
+
+/* Specific Dialogs */
+
+body button.button.share-button,
+body button.button.clipboard-button {
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    border-radius: 8em;
+    background-color: var(--green);
+}
+
+button.button.share-button > *,
+button.button.clipboard-button > * {
+    color: var(--letter-selected-inverted-text-color);
+    font-weight: bold;
+}
+
+button.button.new-game {
+    background-color: #808080;
+    border: 2px solid black;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    width: 40px;
+    height: 40px;
+    align-self: end;
+}
+
+button.button.new-game > img {
+    pointer-events: none;
+}
+
+/* Error Content */
+
+span.error-text {
+    margin: 1em;
+}
+
+/* Text Content */
+
+a {
+    color: var(--text-color);
+}
+
+/* HACK: This will undo the 125% font-size change from html CSS rule.
+    Original font-size for loader block text was 2rem.
+    2rem / 125% = 1.6rem
+*/
+.loader > span {
+    font-size: 1.6rem;
+}
