@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     (document.querySelector('#zoom-in') as HTMLElement).addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('zoom clicked', boardTransform.scale);
+        console.log('zoom in clicked', boardTransform.scale);
         const zoomFactor = 0.5;
         const currentDistance = boardTransform.scale + zoomFactor;
 
@@ -351,12 +351,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     (document.querySelector('#zoom-out') as HTMLElement).addEventListener('click', (e) => {
         e.preventDefault();
-        console.log('zoom clicked', boardTransform.scale);
+        console.log('zoom out clicked', boardTransform.scale);
         const zoomFactor = -0.5;
         const currentDistance = boardTransform.scale + zoomFactor;
 
         // Apply the scale transform to the element
         boardTransform.scale = Math.max(0.5, Math.min(2, currentDistance)); // Limit scale between 0.5 and 2
+        adjustBoardTransform();
+    });
+    (document.querySelector('#zoom-reset') as HTMLElement).addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('zoom reset clicked', boardTransform.scale);
+
+        boardTransform.scale = 1;
+        boardTransform.x = 0;
+        boardTransform.y = 0;
         adjustBoardTransform();
     });
 
