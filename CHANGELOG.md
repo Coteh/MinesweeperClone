@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-01-26
+
 ### Added
 
-- Screen resolution options (bbeafdd)
+- Fullscreen resolution option
+
+### Changed
+
+- Game settings moved into new submenu
 
 ## [1.0.6] - 2024-01-09
 
@@ -82,7 +88,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial Release
 
-[unreleased]: https://github.com/Coteh/MinesweeperClone/compare/v1.0.6...HEAD
+[unreleased]: https://github.com/Coteh/MinesweeperClone/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Coteh/MinesweeperClone/compare/v1.0.6...v1.1.0
 [1.0.6]: https://github.com/Coteh/MinesweeperClone/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/Coteh/MinesweeperClone/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/Coteh/MinesweeperClone/compare/v1.0.3...v1.0.4
