@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let timeBoardInterval: NodeJS.Timeout;
 
-    // TODO: Allow user to configure these options
     const gameOptions: GameOptions = {
         boardHeight: 10,
         boardWidth: 10,
@@ -468,43 +467,47 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (elem.classList.contains(DIFFICULTY_SETTING_NAME)) {
                 const nextIndex = (difficulties.indexOf(currDifficulty) + 1) % difficulties.length;
                 const nextDifficulty = difficulties[nextIndex];
-                switchDifficulty(nextDifficulty);
+                switchDifficulty(nextDifficulty, true);
                 savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, nextDifficulty);
                 toggle.innerText = nextDifficulty;
             }
         });
     });
 
-    const switchDifficulty = (difficulty: string) => {
+    const switchDifficulty = (difficulty: string, startNewGame: boolean) => {
         switch (difficulty) {
-            case DIFFICULTY_EASY:
-                gameOptions.boardWidth = 9;
-                gameOptions.boardHeight = 9;
-                gameOptions.numberOfMines = 10;
-                newGame(gameOptions);
-                break;
             case DIFFICULTY_MEDIUM:
                 gameOptions.boardWidth = 16;
                 gameOptions.boardHeight = 16;
                 gameOptions.numberOfMines = 40;
-                newGame(gameOptions);
                 break;
             case DIFFICULTY_HARD:
                 gameOptions.boardWidth = 16;
                 gameOptions.boardHeight = 30;
                 gameOptions.numberOfMines = 99;
-                newGame(gameOptions);
+                break;
+            case DIFFICULTY_EASY:
+            default:
+                gameOptions.boardWidth = 9;
+                gameOptions.boardHeight = 9;
+                gameOptions.numberOfMines = 10;
                 break;
         }
+        if (startNewGame) newGame(gameOptions);
         currDifficulty = difficulty;
     };
 
     initPreferences(gameStorage, {});
     currDifficulty = getPreferenceValue(DIFFICULTY_PREFERENCE_NAME);
+    // Default to easy if no difficulty preference set
+    if (!currDifficulty) {
+        currDifficulty = DIFFICULTY_EASY;
+    }
     const difficultySetting = document.querySelector(
         `.setting.${DIFFICULTY_SETTING_NAME}`
     ) as HTMLElement;
     (difficultySetting.querySelector('.toggle') as HTMLElement).innerText = currDifficulty;
+    switchDifficulty(currDifficulty, false);
 
     const gameOverlay = document.querySelector('.game-overlay') as HTMLElement;
     const settingsPane = document.querySelector('.settings.pane') as HTMLElement;
