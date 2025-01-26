@@ -1,3 +1,27 @@
 .classic-logo {
     object-fit: contain;
 }
+
+/* Settings Knob Modifications for Classic theme */
+/* TODO Uncomment the body.classic selectors once classic theme is setup */
+
+/* body.classic .knob { */
+.knob {
+    position: relative;
+
+    width: 32px;
+    height: 32px;
+    border-radius: 0;
+
+    background-image: url('/img/Checkbox_unchecked.png');
+}
+
+/* body.classic .knob.enabled { */
+.knob.enabled {
+    background-image: url('/img/Checkbox_checked.png');
+}
+
+/* body.classic .knob > .knob-inside { */
+.knob > .knob-inside {
+    display: none;
+}
