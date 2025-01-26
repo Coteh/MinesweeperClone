@@ -1,0 +1,46 @@
+.loader-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.loader-wrapper > .loading-label {
+    padding: 8px;
+}
+
+.loader {
+    position: absolute;
+    top: calc(50% - 60px);
+    left: calc(50% - 60px);
+
+    width: 100px;
+    height: 100px;
+
+    padding: 1em;
+    margin: 3px;
+    line-height: 1.9em;
+    text-align: center;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    animation: spin 2s linear infinite;
+}
+
+.loader > img {
+    width: 100px;
+    height: auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

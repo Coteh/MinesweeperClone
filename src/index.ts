@@ -20,6 +20,7 @@ import { Ticker } from 'pixi.js/lib/core/ticker';
 import * as filters from 'pixi-filters';
 import { ActionIconManager } from './manager/action-icon';
 import { getPreferenceValue, initPreferences, savePreferenceValue } from './preferences';
+import { AssetManager } from './manager/asset';
 
 // Background colors
 var regularBackgroundColor = 0x888888;
@@ -62,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const mineCountBoard = document.getElementById('mine-count-board') as HTMLElement;
     const timeBoard = document.getElementById('time-board') as HTMLElement;
 
+    let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
     let actionIconManager = new ActionIconManager();
 
     let gameState: GameState;
@@ -730,6 +732,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     (commitElem.parentElement as HTMLAnchorElement).href += COMMIT_HASH;
 
     try {
+        await assetManager.loadAssets([
+            'img/Flag.png',
+            'img/Mine.png',
+            'img/Logo.png',
+            'img/Smiley.png',
+            'img/Smiley_proud.png',
+            'img/Smiley_sad.png',
+            'img/Checkbox_unchecked.png',
+            'img/Checkbox_checked.png',
+            'img/Tiles.png',
+        ]);
+
+        (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
+
         await initGame(gameOptions, eventHandler, gameStorage);
     } catch (e) {
         // if (typeof Sentry !== 'undefined') Sentry.captureException(e);
