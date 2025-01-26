@@ -8,6 +8,7 @@ import {
     renderNotification,
     renderPromptDialog,
 } from './render';
+import MobileDetect from 'mobile-detect';
 import * as feather from 'feather-icons';
 // @ts-ignore TODO: Update PIXI.js
 import * as PIXI from 'pixi.js';
@@ -29,12 +30,14 @@ const CLASSIC_THEME = 'classic';
 
 const THEME_PREFERENCE_NAME = 'theme';
 const DIFFICULTY_PREFERENCE_NAME = 'difficulty';
+const HIGHLIGHT_PREFERENCE_NAME = 'highlight';
 const DEBUG_HUD_ENABLED_PREFERENCE_NAME = 'debugHudEnabled';
 const DEBUG_HUD_VISIBLE_PREFERENCE_NAME = 'debugHudVisible';
 const FULLSCREEN_PREFERENCE_NAME = 'fullscreen';
 
 const THEME_SETTING_NAME = 'theme-switch';
 const DIFFICULTY_SETTING_NAME = 'difficulty';
+const HIGHLIGHT_SETTING_NAME = 'highlight';
 const CLEAR_DATA_SETTING_NAME = 'clear-all-data';
 
 const SETTING_ENABLED = 'enabled';
@@ -85,6 +88,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         y: 0,
         scale: 1,
     };
+
+    const md = new MobileDetect(window.navigator.userAgent);
+    const isMobile = md.mobile() !== null;
 
     const eventHandler = (event: string, data: any) => {
         switch (event) {
@@ -479,6 +485,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 switchDifficulty(nextDifficulty, true);
                 savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, nextDifficulty);
                 toggle.innerText = nextDifficulty;
+            } else if (elem.classList.contains(HIGHLIGHT_SETTING_NAME)) {
+                const canHighlight = document.body.dataset.canHighlight != null;
+                if (!canHighlight) {
+                    document.body.dataset.canHighlight = '';
+                } else {
+                    document.body.removeAttribute('data-can-highlight');
+                }
+                savePreferenceValue(
+                    HIGHLIGHT_PREFERENCE_NAME,
+                    !canHighlight ? SETTING_ENABLED : SETTING_DISABLED
+                );
+                const knob = setting.querySelector('.knob') as HTMLElement;
+                if (!canHighlight) {
+                    knob.classList.add('enabled');
+                } else {
+                    knob.classList.remove('enabled');
+                }
             }
         });
     });
@@ -517,6 +540,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     ) as HTMLElement;
     (difficultySetting.querySelector('.toggle') as HTMLElement).innerText = currDifficulty;
     switchDifficulty(currDifficulty, false);
+
+    // Hide highlight setting on mobile devices
+    const highlightSetting = document.querySelector(`.setting.highlight`) as HTMLElement;
+    if (isMobile) {
+        highlightSetting.remove();
+    } else {
+        const canHighlight = getPreferenceValue(HIGHLIGHT_PREFERENCE_NAME);
+        if (canHighlight === SETTING_ENABLED) {
+            document.body.dataset.canHighlight = '';
+            const knob = highlightSetting.querySelector('.knob') as HTMLElement;
+            knob.classList.add('enabled');
+        }
+    }
 
     const gameOverlay = document.querySelector('.game-overlay') as HTMLElement;
     const settingsPane = document.querySelector('.settings.pane') as HTMLElement;
