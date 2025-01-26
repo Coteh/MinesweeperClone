@@ -12,6 +12,8 @@ import { CheckBox } from './checkbox';
 import { buttonFont, bigButtonFont, copyrightFont } from './fontprefs';
 import { loadGameOptions, saveGameOptions } from '../storage';
 
+import "../style.css";
+
 //Initializing renderer
 var renderer = new PIXI.autoDetectRenderer(800, 600);
 
