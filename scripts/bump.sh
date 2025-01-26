@@ -22,6 +22,6 @@ rm README.md.bak
 # Perform npm version bump, using --no-git-tag-version so that everything can be committed together
 npm version $NEW_VERSION_NUMBER --no-git-tag-version
 
-git add client/gui/render.js README.md package.json package-lock.json
+git add README.md package.json package-lock.json
 
 git commit -m "Version bump"
