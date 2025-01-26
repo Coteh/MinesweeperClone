@@ -15,11 +15,11 @@
 
 @media (max-width: 480px) {
     .settings.pane {
-        width: 80vw;
+        width: 75vw;
     }
 
     .settings.pane.toggled {
-        transform: translate(20%);
+        transform: translate(15%);
     }
 }
 
