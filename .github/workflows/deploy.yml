@@ -4,7 +4,8 @@ on:
     # Runs on pushes targeting tags
     push:
         tags:
-            - 'v*' # Trigger on tags that start with 'v'
+            # - 'v*' # Trigger on tags that start with 'v'
+            - 'v1*' # Trigger on tags that start with 'v1' until v2 is released
     # Allow the ability to run this workflow manually from the Actions tab
     workflow_dispatch:
 
