@@ -126,24 +126,10 @@
 .game.pane > .commands {
     display: flex;
     justify-content: flex-end;
-    width: 100%;
-    z-index: 100;
-}
-
-.game.pane > .commands > * {
-    padding-top: 0.5em;
-}
-
-.game.pane > .commands > *:first-child {
-    padding-left: 0.5em;
-}
-
-.game.pane > .commands > *:last-child {
-    padding-right: 0.5em;
-}
-
-.game.pane > .commands .link-icon {
+    align-self: end;
+    padding: 0.5em 0.5em 0 0.5em;
     background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
 }
 
 .game.pane > .commands a.link-icon > * {
