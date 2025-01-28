@@ -91,6 +91,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         scale: 1,
     };
 
+    const MIN_ZOOM = 0.5;
+    const MAX_ZOOM = 2;
+
     const md = new MobileDetect(window.navigator.userAgent);
     const isMobile = md.mobile() !== null;
 
@@ -333,10 +336,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         overlayBackElem.style.display = 'none';
     };
 
+    const zoomInButton = document.querySelector('#zoom-in') as HTMLElement;
+    const zoomOutButton = document.querySelector('#zoom-out') as HTMLElement;
+
     const adjustBoardTransform = () => {
         const translateRule = `translate(${boardTransform.x}px, ${boardTransform.y}px)`;
         const scaleRule = `scale(${boardTransform.scale})`;
         zoomableElement.style.transform = `${translateRule}${scaleRule}`;
+
+        if (boardTransform.scale > MIN_ZOOM) {
+            zoomOutButton.classList.remove('disabled');
+        } else {
+            zoomOutButton.classList.add('disabled');
+        }
+        if (boardTransform.scale < MAX_ZOOM) {
+            zoomInButton.classList.remove('disabled');
+        } else {
+            zoomInButton.classList.add('disabled');
+        }
 
         (document.querySelector('#x') as HTMLSpanElement).innerText = boardTransform.x.toString();
         (document.querySelector('#y') as HTMLSpanElement).innerText = boardTransform.y.toString();
@@ -347,24 +364,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const zoomableElement = middleElem;
 
-    (document.querySelector('#zoom-in') as HTMLElement).addEventListener('click', (e) => {
+    zoomInButton.addEventListener('click', (e) => {
         e.preventDefault();
         console.log('zoom in clicked', boardTransform.scale);
         const zoomFactor = 0.5;
         const currentDistance = boardTransform.scale + zoomFactor;
 
         // Apply the scale transform to the element
-        boardTransform.scale = Math.max(0.5, Math.min(2, currentDistance)); // Limit scale between 0.5 and 2
+        boardTransform.scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentDistance)); // Limit scale between min and max
         adjustBoardTransform();
     });
-    (document.querySelector('#zoom-out') as HTMLElement).addEventListener('click', (e) => {
+    zoomOutButton.addEventListener('click', (e) => {
         e.preventDefault();
         console.log('zoom out clicked', boardTransform.scale);
         const zoomFactor = -0.5;
         const currentDistance = boardTransform.scale + zoomFactor;
 
         // Apply the scale transform to the element
-        boardTransform.scale = Math.max(0.5, Math.min(2, currentDistance)); // Limit scale between 0.5 and 2
+        boardTransform.scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentDistance)); // Limit scale between min and max
         adjustBoardTransform();
     });
     (document.querySelector('#zoom-reset') as HTMLElement).addEventListener('click', (e) => {
@@ -437,7 +454,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                 // Apply the zoom
                 boardTransform.scale *= zoomFactor;
-                boardTransform.scale = Math.max(0.5, Math.min(2, boardTransform.scale)); // Limit scale between 0.5 and 2
+                boardTransform.scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, boardTransform.scale)); // Limit scale between min and max
                 adjustBoardTransform();
 
                 // Update the start distance for smooth scaling
