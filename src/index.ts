@@ -21,6 +21,7 @@ import * as filters from 'pixi-filters';
 import { ActionIconManager } from './manager/action-icon';
 import { getPreferenceValue, initPreferences, savePreferenceValue } from './preferences';
 import { AssetManager } from './manager/asset';
+import { FullscreenManager } from './manager/fullscreen';
 
 // Background colors
 var regularBackgroundColor = 0x888888;
@@ -39,6 +40,7 @@ const FULLSCREEN_PREFERENCE_NAME = 'fullscreen';
 const THEME_SETTING_NAME = 'theme-switch';
 const DIFFICULTY_SETTING_NAME = 'difficulty';
 const HIGHLIGHT_SETTING_NAME = 'highlight';
+const FULLSCREEN_SETTING_NAME = 'fullscreen';
 const CLEAR_DATA_SETTING_NAME = 'clear-all-data';
 
 const SETTING_ENABLED = 'enabled';
@@ -63,11 +65,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const mineCountBoard = document.getElementById('mine-count-board') as HTMLElement;
     const timeBoard = document.getElementById('time-board') as HTMLElement;
 
-    let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
-    let actionIconManager = new ActionIconManager();
-
     let gameState: GameState;
     let gameStorage = new BrowserGameStorage();
+    let fullscreenManager = new FullscreenManager(gameStorage);
+    let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
+    let actionIconManager = new ActionIconManager();
 
     let timeBoardInterval: NodeJS.Timeout;
 
@@ -163,6 +165,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (dialog) {
             return;
         }
+        if (key === 'r') {
+            promptNewGame(() => {
+                if (settingsPane.style.display !== 'none') {
+                    toggleSettings(false);
+                }
+            });
+            return;
+        }
+        if (key === 'f' && !isMobile) {
+            fullscreenManager.toggleFullscreen();
+            const knob = document.querySelector('.setting.fullscreen .knob') as HTMLElement;
+            if (fullscreenManager.isFullscreenEnabled()) {
+                knob.classList.add('enabled');
+            } else {
+                knob.classList.remove('enabled');
+            }
+            return;
+        }
         if (gameState.ended) {
             return;
         }
@@ -221,6 +241,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         handleKeyUp(e.key.toLowerCase());
     });
 
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+            fullscreenManager.setFullscreenPreference(false);
+            const knob = document.querySelector('.setting.fullscreen .knob') as HTMLElement;
+            knob.classList.remove('enabled');
+        }
+    });
+
     const promptNewGame = (onNewGameStarted?: () => void) => {
         // If game ended, no need to prompt
         if (gameState.ended) {
@@ -240,6 +268,31 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (onNewGameStarted) {
                     onNewGameStarted();
                 }
+            },
+        });
+    };
+
+    const promptFullscreen = () => {
+        const dialogElem = createDialogContentFromTemplate('#prompt-dialog-content');
+        (dialogElem.querySelector('.prompt-text') as HTMLSpanElement).innerText =
+            'Fullscreen mode was previously enabled. Do you want to re-enter fullscreen mode?';
+        renderPromptDialog(dialogElem, {
+            fadeIn: true,
+            onConfirm: () => {
+                fullscreenManager.toggleFullscreen(true);
+                const setting = document.querySelector(
+                    `.setting.${FULLSCREEN_SETTING_NAME}`
+                ) as HTMLElement;
+                const knob = setting.querySelector('.knob') as HTMLElement;
+                knob.classList.add('enabled');
+            },
+            onCancel: () => {
+                fullscreenManager.toggleFullscreen(false);
+                const setting = document.querySelector(
+                    `.setting.${FULLSCREEN_SETTING_NAME}`
+                ) as HTMLElement;
+                const knob = setting.querySelector('.knob') as HTMLElement;
+                knob.classList.remove('enabled');
             },
         });
     };
@@ -265,9 +318,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     numberOfMines: 3,
                     revealBoardOnLoss: true,
                 });
-                // if (settingsPane.style.display !== 'none') {
-                //     toggleSettings();
-                // }
                 closeDialogAndOverlay();
             }
         );
@@ -312,7 +362,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         debugButton.blur();
     });
 
-    // console.log("document.querySelector('#new-game')", document.querySelector('#new-game'));
     newGameButton.addEventListener('click', (e) => {
         e.preventDefault();
         if (gameState.ended) {
@@ -320,10 +369,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         promptNewGame(() => {
-            // TODO: Add Settings screen
-            // if (settingsPane.style.display !== 'none') {
-            //     toggleSettings();
-            // }
             newGame(gameOptions);
         });
     });
@@ -535,6 +580,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } else {
                     knob.classList.remove('enabled');
                 }
+            } else if (elem.classList.contains(FULLSCREEN_SETTING_NAME)) {
+                fullscreenManager.toggleFullscreen();
+                const knob = setting.querySelector('.knob') as HTMLElement;
+                if (fullscreenManager.isFullscreenEnabled()) {
+                    knob.classList.add('enabled');
+                } else {
+                    knob.classList.remove('enabled');
+                }
             }
         });
     });
@@ -587,30 +640,45 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Hide fullscreen setting on mobile devices
+    const fullscreenOption = document.querySelector('.setting.fullscreen') as HTMLElement;
+    if (isMobile) {
+        fullscreenOption.remove();
+    } else {
+        if (getPreferenceValue(FULLSCREEN_PREFERENCE_NAME) === SETTING_ENABLED) {
+            promptFullscreen();
+        }
+    }
+
+    const toggleSettings = (enabled: boolean) => {
+        if (enabled) {
+            domContainer.style.filter = 'blur(3px)';
+            gameOverlay.style.display = '';
+            settingsPane.classList.add('toggled');
+            settingsPane.style.opacity = '1';
+        } else {
+            domContainer.style.filter = '';
+            gameOverlay.style.display = 'none';
+            settingsPane.style.opacity = '0';
+            settingsPane.classList.remove('toggled');
+        }
+    };
+
     const gameOverlay = document.querySelector('.game-overlay') as HTMLElement;
     const settingsPane = document.querySelector('.settings.pane') as HTMLElement;
     const settingsButton = document.querySelector('.settings-link') as HTMLElement;
     settingsButton.addEventListener('click', (e) => {
-        domContainer.style.filter = 'blur(3px)';
-        gameOverlay.style.display = '';
-        settingsPane.classList.add('toggled');
-        settingsPane.style.opacity = '1';
+        toggleSettings(true);
     });
     const settingsCloseButton = document.querySelector('#settings .close') as HTMLElement;
     settingsCloseButton.addEventListener('click', (e) => {
-        domContainer.style.filter = '';
-        gameOverlay.style.display = 'none';
-        settingsPane.style.opacity = '0';
-        settingsPane.classList.remove('toggled');
+        toggleSettings(false);
     });
     gameOverlay.addEventListener('click', (e) => {
         if (!settingsPane.classList.contains('toggled')) {
             return;
         }
-        domContainer.style.filter = '';
-        gameOverlay.style.display = 'none';
-        settingsPane.style.opacity = '0';
-        settingsPane.classList.remove('toggled');
+        toggleSettings(false);
     });
 
     // (document.querySelector("[data-feather='help-circle']") as HTMLElement).innerText = '?';
