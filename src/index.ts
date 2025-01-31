@@ -10,12 +10,7 @@ import {
 } from './render';
 import MobileDetect from 'mobile-detect';
 import * as feather from 'feather-icons';
-// @ts-ignore TODO: Update PIXI.js
-import * as PIXI from 'pixi.js';
-// @ts-ignore TODO: Update PIXI.js
-import { autoDetectRenderer, Container, Texture } from 'pixi.js/lib/core';
-// @ts-ignore TODO: Update PIXI.js
-import { Ticker } from 'pixi.js/lib/core/ticker';
+import { autoDetectRenderer, Container, Texture, Ticker, TilingSprite } from 'pixi.js';
 // @ts-ignore TODO: Update PIXI.js
 import * as filters from 'pixi-filters';
 import { ActionIconManager } from './manager/action-icon';
@@ -688,7 +683,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 
-    var renderer = autoDetectRenderer(800, 600);
+    var renderer = autoDetectRenderer({
+        width: 800,
+        height: 600,
+    });
     var regularBackgroundColor = 0x888888;
     var gameOverBackgroundColor = 0x3d0000;
 
@@ -703,8 +701,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderer.backgroundColor = regularBackgroundColor;
     var stage = new Container();
     var background = new Container();
-    var tileTex = Texture.fromImage('img/Tiles.png');
-    var tilingTile = new PIXI.extras.TilingSprite(tileTex, renderer.width, renderer.height);
+    var tileTex = Texture.from('img/Tiles.png');
+    var tilingTile = new TilingSprite(tileTex, renderer.width, renderer.height);
     var tileDelta = 1;
     stage.addChild(background);
     background.addChild(tilingTile);
