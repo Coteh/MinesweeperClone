@@ -10,7 +10,7 @@ import {
 } from './render';
 import MobileDetect from 'mobile-detect';
 import * as feather from 'feather-icons';
-import { autoDetectRenderer, Container, Texture, Ticker, TilingSprite } from 'pixi.js';
+import { autoDetectRenderer, Container, Point, Texture, Ticker, TilingSprite } from 'pixi.js';
 // @ts-ignore TODO: Update PIXI.js
 import * as filters from 'pixi-filters';
 import { ActionIconManager } from './manager/action-icon';
@@ -755,8 +755,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     var normalBGFilters = background.filters;
     var pixelateFilter = new filters.PixelateFilter();
     var pixelIntensity = 10;
-    pixelateFilter.size.x = pixelIntensity;
-    pixelateFilter.size.y = pixelIntensity;
+    pixelateFilter.size = new Point(pixelIntensity, pixelIntensity);
     var pixelBackgroundFilters = [pixelateFilter];
     // var blurFilter = new filters.BlurFilter();
     // blurFilter.blur = 20;
