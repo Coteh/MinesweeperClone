@@ -11,8 +11,7 @@ import {
 import MobileDetect from 'mobile-detect';
 import * as feather from 'feather-icons';
 import { autoDetectRenderer, Container, Point, Texture, Ticker, TilingSprite } from 'pixi.js';
-// @ts-ignore TODO: Update PIXI.js
-import * as filters from 'pixi-filters';
+import { PixelateFilter } from '@pixi/filter-pixelate';
 import { ActionIconManager } from './manager/action-icon';
 import { getPreferenceValue, initPreferences, savePreferenceValue } from './preferences';
 import { AssetManager } from './manager/asset';
@@ -98,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         switch (event) {
             case 'init':
                 gameState = data.gameState;
-                renderer.backgroundColor = regularBackgroundColor;
+                renderer.background.color = regularBackgroundColor;
                 background.filters = normalBGFilters;
                 tileDelta = 1;
                 newGameImage.src = 'img/Smiley.png';
@@ -130,7 +129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             case 'lose': {
                 console.log('Player loses!');
-                renderer.backgroundColor = gameOverBackgroundColor;
+                renderer.background.color = gameOverBackgroundColor;
                 background.filters = pixelBackgroundFilters;
                 tileDelta = 0.25;
                 newGameImage.src = 'img/Smiley_sad.png';
@@ -683,7 +682,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 
-    var renderer = autoDetectRenderer({
+    var renderer = autoDetectRenderer<HTMLCanvasElement>({
         width: 800,
         height: 600,
     });
@@ -698,7 +697,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderer.view.style.zIndex = '-10';
     domContainer.appendChild(renderer.view);
 
-    renderer.backgroundColor = regularBackgroundColor;
+    renderer.background.color = regularBackgroundColor;
     var stage = new Container();
     var background = new Container();
     var tileTex = Texture.from('img/Tiles.png');
@@ -753,7 +752,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Background filter setup
     var normalBGFilters = background.filters;
-    var pixelateFilter = new filters.PixelateFilter();
+    var pixelateFilter = new PixelateFilter();
     var pixelIntensity = 10;
     pixelateFilter.size = new Point(pixelIntensity, pixelIntensity);
     var pixelBackgroundFilters = [pixelateFilter];
