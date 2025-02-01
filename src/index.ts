@@ -10,16 +10,11 @@ import {
 } from './render';
 import MobileDetect from 'mobile-detect';
 import * as feather from 'feather-icons';
-import { autoDetectRenderer, Container, Point, Texture, Ticker, TilingSprite } from 'pixi.js';
-import { PixelateFilter } from '@pixi/filter-pixelate';
 import { ActionIconManager } from './manager/action-icon';
 import { getPreferenceValue, initPreferences, savePreferenceValue } from './preferences';
 import { AssetManager } from './manager/asset';
 import { FullscreenManager } from './manager/fullscreen';
-
-// Background colors
-var regularBackgroundColor = 0x888888;
-var gameOverBackgroundColor = 0x3d0000;
+import { BackgroundManager } from './manager/background';
 
 const STANDARD_THEME = 'standard';
 const CLASSIC_THEME = 'classic';
@@ -52,6 +47,7 @@ const DIRECTION_DOWN = 'down';
 console.info(`minesweeper-clone v${GAME_VERSION}`);
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const domContainer = document.body.querySelector('div.game-wrapper') as HTMLDivElement;
     const middleElem = document.querySelector('#middle') as HTMLElement;
     const gameBoard = middleElem.querySelector('#board') as HTMLElement;
     const newGameButton = document.querySelector('#new-game') as HTMLElement;
@@ -64,6 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let fullscreenManager = new FullscreenManager(gameStorage);
     let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
     let actionIconManager = new ActionIconManager();
+    let backgroundManager = new BackgroundManager(assetManager);
 
     let timeBoardInterval: NodeJS.Timeout;
 
@@ -97,15 +94,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         switch (event) {
             case 'init':
                 gameState = data.gameState;
-                renderer.background.color = regularBackgroundColor;
-                background.filters = normalBGFilters;
-                tileDelta = 1;
                 newGameImage.src = 'img/Smiley.png';
                 clearInterval(timeBoardInterval);
                 timeBoardInterval = setInterval(() => {
                     renderDigits(timeBoard, gameState.elapsedTimeMS / 1000);
                 }, 500);
                 renderDigits(timeBoard, gameState.elapsedTimeMS / 1000);
+                backgroundManager.renderInitial();
                 break;
             case 'draw':
                 renderBoard(gameBoard, gameState);
@@ -129,25 +124,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             case 'lose': {
                 console.log('Player loses!');
-                renderer.background.color = gameOverBackgroundColor;
-                background.filters = pixelBackgroundFilters;
-                tileDelta = 0.25;
                 newGameImage.src = 'img/Smiley_sad.png';
                 clearInterval(timeBoardInterval);
                 boardTransform.scale = Math.min(1, boardTransform.scale);
                 boardTransform.x = 0;
                 boardTransform.y = 0;
                 adjustBoardTransform(true);
+                backgroundManager.renderLose();
                 break;
             }
             case 'win': {
                 console.log('Player wins!');
-                tileDelta = 0.25;
                 newGameImage.src = 'img/Smiley_proud.png';
                 boardTransform.scale = Math.min(1, boardTransform.scale);
                 boardTransform.x = 0;
                 boardTransform.y = 0;
                 adjustBoardTransform(true);
+                backgroundManager.renderWin();
                 break;
             }
         }
@@ -682,41 +675,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 
-    var renderer = autoDetectRenderer<HTMLCanvasElement>({
-        width: 800,
-        height: 600,
-    });
-    var regularBackgroundColor = 0x888888;
-    var gameOverBackgroundColor = 0x3d0000;
-
-    // Attach renderer onto the page
-    const domContainer = document.body.querySelector('div.game-wrapper') as HTMLDivElement;
-    renderer.view.style.position = 'absolute';
-    renderer.view.style.top = '0';
-    renderer.view.style.left = '0';
-    renderer.view.style.zIndex = '-10';
-    domContainer.appendChild(renderer.view);
-
-    renderer.background.color = regularBackgroundColor;
-    var stage = new Container();
-    var background = new Container();
-    var tileTex = Texture.from('img/Tiles.png');
-    var tilingTile = new TilingSprite(tileTex, renderer.width, renderer.height);
-    var tileDelta = 1;
-    stage.addChild(background);
-    background.addChild(tilingTile);
-
-    function updateRenderer() {
-        //Tiling Sprite update
-        tilingTile.tilePosition.x -= tileDelta;
-        tilingTile.tilePosition.y -= tileDelta;
-    }
-
-    function render() {
-        //Render the stage
-        renderer.render(stage);
-    }
-
     function update() {
         if (directionsPressed[DIRECTION_LEFT]) {
             boardTransform.x += 10;
@@ -736,39 +694,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         requestAnimationFrame(update);
     }
 
-    var ticker = new Ticker();
-    ticker.add(updateRenderer);
-    ticker.add(render);
-    ticker.start();
-
     update();
-
-    //Adding resize callback for resizing tiling background
-    var resizeCallbacks = new Array<Function>();
-    resizeCallbacks.push(function () {
-        tilingTile.width = renderer.width;
-        tilingTile.height = renderer.height;
-    });
-
-    // Background filter setup
-    var normalBGFilters = background.filters;
-    var pixelateFilter = new PixelateFilter();
-    var pixelIntensity = 10;
-    pixelateFilter.size = new Point(pixelIntensity, pixelIntensity);
-    var pixelBackgroundFilters = [pixelateFilter];
-    // var blurFilter = new filters.BlurFilter();
-    // blurFilter.blur = 20;
-    // var gameInactiveFilters = [blurFilter];
-
-    var resizeGame = function () {
-        renderer.resize(window.innerWidth, window.innerHeight);
-        console.log(window.innerWidth, window.innerHeight);
-        for (var i = 0; i < resizeCallbacks.length; i++) {
-            resizeCallbacks[i]();
-        }
-    };
-    window.onresize = resizeGame;
-    resizeGame();
 
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;
     const debugMenuButton = document.querySelector('.link-icon#debug') as HTMLElement;
@@ -838,6 +764,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             'img/Checkbox_checked.png',
             'img/Tiles.png',
         ]);
+
+        await backgroundManager.initialize();
 
         (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 

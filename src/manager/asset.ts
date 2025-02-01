@@ -2,12 +2,14 @@ export class AssetManager {
     private parentElement: HTMLElement;
     private loadingLabel: HTMLElement;
     private loaderElem: HTMLElement;
+    private images: Map<string, HTMLImageElement>;
 
     constructor(parentElement: HTMLElement) {
         this.parentElement = parentElement;
         this.loadingLabel = document.createElement('div');
         this.loadingLabel.classList.add('loading-label');
         this.loaderElem = this.parentElement.querySelector('.loader') as HTMLElement;
+        this.images = new Map<string, HTMLImageElement>();
     }
 
     async loadAssets(imagesList: string[]) {
@@ -72,7 +74,8 @@ export class AssetManager {
     preloadImage(url: string): Promise<string> {
         return new Promise((resolve, reject) => {
             const img = new Image();
-            img.onload = function () {
+            img.onload = () => {
+                this.images.set(url, img);
                 resolve(url);
             };
             img.onerror = function () {
@@ -81,5 +84,10 @@ export class AssetManager {
             };
             img.src = url;
         });
+    }
+
+    getImage(url: string): HTMLImageElement | undefined {
+        const fullUrl = import.meta.env.BASE_URL + url;
+        return this.images.get(fullUrl);
     }
 }
