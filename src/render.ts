@@ -48,7 +48,7 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                 }
                 // alert('this second');
                 console.log('touchend on mine block');
-                if (Date.now() - pressStartTime > 500) {
+                if (Date.now() - pressStartTime > 250) {
                     flagSpot(j, i);
                     return;
                 }
