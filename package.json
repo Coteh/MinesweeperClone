@@ -1,6 +1,6 @@
 {
   "name": "minesweeper-clone",
-  "version": "2.0.0-alpha-1",
+  "version": "2.0.0-alpha.2",
   "description": "A clone of Minesweeper made using JavaScript and rendered with PixiJS.",
   "main": "client/game.js",
   "private": true,
