@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 boardTransform.x += currentMidpoint.x - startMidpoint.x;
                 boardTransform.y += currentMidpoint.y - startMidpoint.y;
 
-                // Apply the zoom
+                // Apply the zoom and translation
                 boardTransform.scale *= zoomFactor;
                 boardTransform.scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, boardTransform.scale)); // Limit scale between min and max
                 adjustBoardTransform(false);
@@ -508,6 +508,23 @@ document.addEventListener('DOMContentLoaded', async () => {
                 startMidpoint = currentMidpoint;
                 event.preventDefault();
                 // event.stopImmediatePropagation();
+            } else {
+                // Translation based on touch pos
+                const touch = event.touches[0];
+                const rect = document.body.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const diffX = (touch.clientX - centerX) * -1;
+                const diffY = (touch.clientY - centerY) * -1;
+                const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
+                const speed = 7.5;
+                const translateX = (diffX / magnitude) * speed;
+                const translateY = (diffY / magnitude) * speed;
+                boardTransform.x += translateX;
+                boardTransform.y += translateY;
+
+                // Apply translation
+                adjustBoardTransform(false);
             }
         },
         true
