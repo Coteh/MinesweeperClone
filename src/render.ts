@@ -46,20 +46,6 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                     console.log('block not pressed');
                     return;
                 }
-                const targetElem = e.target as HTMLElement;
-                const touch = e.changedTouches[0];
-                const rect = targetElem.getBoundingClientRect();
-
-                // Check if the touch point is outside the target element
-                if (
-                    touch.clientX < rect.left ||
-                    touch.clientX > rect.right ||
-                    touch.clientY < rect.top ||
-                    touch.clientY > rect.bottom
-                ) {
-                    // The touch ended outside the target element; cancel the event.
-                    return;
-                }
                 console.log('touchend on mine block');
                 if (Date.now() - pressStartTime > 250) {
                     flagSpot(j, i);

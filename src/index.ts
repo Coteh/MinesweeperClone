@@ -15,6 +15,8 @@ import { getPreferenceValue, initPreferences, savePreferenceValue } from './pref
 import { AssetManager } from './manager/asset';
 import { FullscreenManager } from './manager/fullscreen';
 import { BackgroundManager } from './manager/background';
+import { TransformManager } from './manager/transform';
+import { interactionSubsystem } from './subsystem/interaction';
 
 const STANDARD_THEME = 'standard';
 const CLASSIC_THEME = 'classic';
@@ -39,11 +41,6 @@ const DIFFICULTY_EASY = 'easy';
 const DIFFICULTY_MEDIUM = 'medium';
 const DIFFICULTY_HARD = 'hard';
 
-const DIRECTION_LEFT = 'left';
-const DIRECTION_RIGHT = 'right';
-const DIRECTION_UP = 'up';
-const DIRECTION_DOWN = 'down';
-
 console.info(`minesweeper-clone v${GAME_VERSION}`);
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -61,6 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
     let actionIconManager = new ActionIconManager();
     let backgroundManager = new BackgroundManager(assetManager);
+    let transformManager = new TransformManager(middleElem);
 
     let timeBoardInterval: NodeJS.Timeout;
 
@@ -71,24 +69,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         revealBoardOnLoss: true,
     };
 
-    const directionsPressed = {
-        [DIRECTION_LEFT]: false,
-        [DIRECTION_RIGHT]: false,
-        [DIRECTION_UP]: false,
-        [DIRECTION_DOWN]: false,
-    };
-
-    const boardTransform = {
-        x: 0,
-        y: 0,
-        scale: 1,
-    };
-
-    const MIN_ZOOM = 0.5;
-    const MAX_ZOOM = 2;
-
     const md = new MobileDetect(window.navigator.userAgent);
     const isMobile = md.mobile() !== null;
+
+    let interactionSetup = false;
 
     const eventHandler = (event: string, data: any) => {
         switch (event) {
@@ -101,6 +85,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }, 500);
                 renderDigits(timeBoard, gameState.elapsedTimeMS / 1000);
                 backgroundManager.renderInitial();
+                if (!interactionSetup) {
+                    interactionSubsystem(
+                        transformManager,
+                        fullscreenManager,
+                        gameState,
+                        promptNewGame,
+                        toggleSettings,
+                        toggleDebugHud
+                    );
+                    interactionSetup = true;
+                }
                 break;
             case 'draw':
                 renderBoard(gameBoard, gameState);
@@ -126,107 +121,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.log('Player loses!');
                 newGameImage.src = 'img/Smiley_sad.png';
                 clearInterval(timeBoardInterval);
-                boardTransform.scale = Math.min(1, boardTransform.scale);
-                boardTransform.x = 0;
-                boardTransform.y = 0;
-                adjustBoardTransform(true);
+                transformManager.resetZoom(true);
                 backgroundManager.renderLose();
                 break;
             }
             case 'win': {
                 console.log('Player wins!');
                 newGameImage.src = 'img/Smiley_proud.png';
-                boardTransform.scale = Math.min(1, boardTransform.scale);
-                boardTransform.x = 0;
-                boardTransform.y = 0;
-                adjustBoardTransform(true);
+                transformManager.resetZoom(true);
                 backgroundManager.renderWin();
                 break;
             }
         }
     };
-
-    const handleKeyInput = (key: string) => {
-        console.log(key);
-        const dialog = document.querySelector('.dialog') as HTMLDialogElement;
-        if (dialog) {
-            return;
-        }
-        if (key === 'r') {
-            promptNewGame(() => {
-                if (settingsPane.style.display !== 'none') {
-                    toggleSettings(false);
-                }
-            });
-            return;
-        }
-        if (key === 'f' && !isMobile) {
-            fullscreenManager.toggleFullscreen();
-            const knob = document.querySelector('.setting.fullscreen .knob') as HTMLElement;
-            if (fullscreenManager.isFullscreenEnabled()) {
-                knob.classList.add('enabled');
-            } else {
-                knob.classList.remove('enabled');
-            }
-            return;
-        }
-        if (gameState.ended) {
-            return;
-        }
-        switch (key) {
-            case 'arrowleft':
-                console.log('going left');
-                directionsPressed[DIRECTION_LEFT] = true;
-                break;
-            case 'arrowright':
-                console.log('going right');
-                directionsPressed[DIRECTION_RIGHT] = true;
-                break;
-            case 'arrowdown':
-                console.log('going down');
-                directionsPressed[DIRECTION_DOWN] = true;
-                break;
-            case 'arrowup':
-                console.log('going up');
-                directionsPressed[DIRECTION_UP] = true;
-                break;
-            case 'd':
-                // Only toggle the debug HUD if debug HUD is enabled
-                if (isDebugHudEnabled) {
-                    toggleDebugHud(debugOverlay.style.display !== 'none');
-                }
-                break;
-        }
-    };
-
-    const handleKeyUp = (key: string) => {
-        switch (key) {
-            case 'arrowleft':
-                console.log('releasing left');
-                directionsPressed[DIRECTION_LEFT] = false;
-                break;
-            case 'arrowright':
-                console.log('releasing right');
-                directionsPressed[DIRECTION_RIGHT] = false;
-                break;
-            case 'arrowdown':
-                console.log('releasing down');
-                directionsPressed[DIRECTION_DOWN] = false;
-                break;
-            case 'arrowup':
-                console.log('releasing up');
-                directionsPressed[DIRECTION_UP] = false;
-                break;
-        }
-    };
-
-    window.addEventListener('keydown', (e) => {
-        handleKeyInput(e.key.toLowerCase());
-    });
-
-    window.addEventListener('keyup', (e) => {
-        handleKeyUp(e.key.toLowerCase());
-    });
 
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement) {
@@ -376,182 +283,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         overlayBackElem.style.display = 'none';
     };
 
-    const zoomInButton = document.querySelector('#zoom-in') as HTMLElement;
-    const zoomOutButton = document.querySelector('#zoom-out') as HTMLElement;
-
-    const adjustBoardTransform = (useTransition: boolean) => {
-        const translateRule = `translate(${boardTransform.x}px, ${boardTransform.y}px)`;
-        const scaleRule = `scale(${boardTransform.scale})`;
-        if (useTransition) zoomableElement.style.transition = 'transform 0.25s';
-        zoomableElement.style.transform = `${translateRule}${scaleRule}`;
-        if (useTransition) {
-            setTimeout(() => {
-                zoomableElement.style.transition = '';
-            }, 10);
-        }
-
-        if (boardTransform.scale > MIN_ZOOM) {
-            zoomOutButton.classList.remove('disabled');
-        } else {
-            zoomOutButton.classList.add('disabled');
-        }
-        if (boardTransform.scale < MAX_ZOOM) {
-            zoomInButton.classList.remove('disabled');
-        } else {
-            zoomInButton.classList.add('disabled');
-        }
-
-        (document.querySelector('#x') as HTMLSpanElement).innerText = boardTransform.x.toString();
-        (document.querySelector('#y') as HTMLSpanElement).innerText = boardTransform.y.toString();
-        (document.querySelector(
-            '#zoom'
-        ) as HTMLSpanElement).innerText = boardTransform.scale.toString();
-    };
-
-    const zoomableElement = middleElem;
-
-    zoomInButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.log('zoom in clicked', boardTransform.scale);
-        const zoomFactor = 0.5;
-        const currentDistance = boardTransform.scale + zoomFactor;
-
-        // Apply the scale transform to the element
-        boardTransform.scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentDistance)); // Limit scale between min and max
-        adjustBoardTransform(true);
-    });
-    zoomOutButton.addEventListener('click', (e) => {
-        e.preventDefault();
-        console.log('zoom out clicked', boardTransform.scale);
-        const zoomFactor = -0.5;
-        const currentDistance = boardTransform.scale + zoomFactor;
-
-        // Apply the scale transform to the element
-        boardTransform.scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentDistance)); // Limit scale between min and max
-        adjustBoardTransform(true);
-    });
-    (document.querySelector('#zoom-reset') as HTMLElement).addEventListener('click', (e) => {
-        e.preventDefault();
-        console.log('zoom reset clicked', boardTransform.scale);
-
-        boardTransform.scale = 1;
-        boardTransform.x = 0;
-        boardTransform.y = 0;
-        adjustBoardTransform(true);
-    });
-
-    const zoomable = document.getElementById('zoomable') as HTMLElement;
-    let startDistance = 0;
-    let startMidpoint = { x: 0, y: 0 };
-
-    function getDistance(touches: TouchList) {
-        const [touch1, touch2] = touches;
-        const dx = touch2.clientX - touch1.clientX;
-        const dy = touch2.clientY - touch1.clientY;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
-    function getMidpoint(touches: TouchList) {
-        const [touch1, touch2] = touches;
-        return {
-            x: (touch1.clientX + touch2.clientX) / 2,
-            y: (touch1.clientY + touch2.clientY) / 2,
-        };
-    }
-
-    let isPinching = false;
-
-    zoomable.addEventListener(
-        'touchstart',
-        (event) => {
-            console.log('touch start on zoomable', event.touches);
-            if (event.touches.length === 2) {
-                startDistance = getDistance(event.touches);
-                startMidpoint = getMidpoint(event.touches);
-                event.preventDefault();
-                event.stopPropagation();
-                console.log('stopping propagation');
-                // TODO: Prevent taps from being sent to the mine blocks if pinching to zoom
-                // event.stopImmediatePropagation();
-                isPinching = true;
-                (document.querySelector(
-                    '#pinch'
-                ) as HTMLSpanElement).innerText = isPinching.toString();
-                return;
-            }
-            // event.stopPropagation();
-        },
-        true
-    );
-
-    zoomable.addEventListener(
-        'touchmove',
-        (event) => {
-            if (event.touches.length === 2) {
-                const currentDistance = getDistance(event.touches);
-                const currentMidpoint = getMidpoint(event.touches);
-
-                // Zoom factor based on distance ratio
-                const zoomFactor = currentDistance / startDistance;
-
-                // Translation based on midpoint movement
-                boardTransform.x += currentMidpoint.x - startMidpoint.x;
-                boardTransform.y += currentMidpoint.y - startMidpoint.y;
-
-                // Apply the zoom and translation
-                boardTransform.scale *= zoomFactor;
-                boardTransform.scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, boardTransform.scale)); // Limit scale between min and max
-                adjustBoardTransform(false);
-
-                // Update the start distance for smooth scaling
-                startDistance = currentDistance;
-                startMidpoint = currentMidpoint;
-                event.preventDefault();
-                // event.stopImmediatePropagation();
-            } else {
-                // Translation based on touch pos
-                const touch = event.touches[0];
-                const rect = document.body.getBoundingClientRect();
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const diffX = (touch.clientX - centerX) * -1;
-                const diffY = (touch.clientY - centerY) * -1;
-                const magnitude = Math.sqrt(diffX * diffX + diffY * diffY);
-                const speed = 7.5;
-                const translateX = (diffX / magnitude) * speed;
-                const translateY = (diffY / magnitude) * speed;
-                boardTransform.x += translateX;
-                boardTransform.y += translateY;
-
-                // Apply translation
-                adjustBoardTransform(false);
-            }
-        },
-        true
-    );
-
-    zoomable.addEventListener(
-        'touchend',
-        (event) => {
-            // TODO: Properly handle stopping propagation of touch event to mine blocks if pinching to zoom
-            console.log('touchend on zoomable', event.touches);
-            if (isPinching) {
-                event.stopPropagation();
-                event.preventDefault();
-
-                if (event.touches.length === 0) {
-                    isPinching = false;
-                    console.log('pinch ended');
-                    (document.querySelector(
-                        '#pinch'
-                    ) as HTMLSpanElement).innerText = isPinching.toString();
-                    startDistance = 0;
-                }
-            }
-        },
-        true
-    );
-
     const difficulties = [DIFFICULTY_EASY, DIFFICULTY_MEDIUM, DIFFICULTY_HARD];
     let currDifficulty = DIFFICULTY_EASY;
 
@@ -692,27 +423,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 
-    function update() {
-        if (directionsPressed[DIRECTION_LEFT]) {
-            boardTransform.x += 10;
-        }
-        if (directionsPressed[DIRECTION_RIGHT]) {
-            boardTransform.x -= 10;
-        }
-        if (directionsPressed[DIRECTION_UP]) {
-            boardTransform.y += 10;
-        }
-        if (directionsPressed[DIRECTION_DOWN]) {
-            boardTransform.y -= 10;
-        }
-
-        adjustBoardTransform(false);
-
-        requestAnimationFrame(update);
-    }
-
-    update();
-
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;
     const debugMenuButton = document.querySelector('.link-icon#debug') as HTMLElement;
     const debugHudButton = document.querySelector('.link-icon#debug-hud') as HTMLElement;
@@ -721,12 +431,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         debugHudButton.style.display = isEnabled ? '' : 'none';
         debugOverlay.style.display = isVisible ? '' : 'none';
         actionIconManager.changeIcon(debugHudButton, isVisible ? 'eye-off' : 'eye');
-        (document.querySelector('#x') as HTMLSpanElement).innerText = boardTransform.x.toString();
-        (document.querySelector('#y') as HTMLSpanElement).innerText = boardTransform.y.toString();
+        (document.querySelector(
+            '#x'
+        ) as HTMLSpanElement).innerText = transformManager.boardTransform.x.toString();
+        (document.querySelector(
+            '#y'
+        ) as HTMLSpanElement).innerText = transformManager.boardTransform.y.toString();
         (document.querySelector(
             '#zoom'
-        ) as HTMLSpanElement).innerText = boardTransform.scale.toString();
-        (document.querySelector('#pinch') as HTMLSpanElement).innerText = isPinching.toString();
+        ) as HTMLSpanElement).innerText = transformManager.boardTransform.scale.toString();
     };
 
     debugHudButton.addEventListener('click', (e) => {
