@@ -8,4 +8,4 @@
 build/
 
 # Test report output
-junit.xml
+results/*.xml

@@ -1,9 +1,23 @@
-/** @type {import('jest').Config} */
+/**
+ * For a detailed explanation regarding each configuration property, visit:
+ * https://jestjs.io/docs/configuration
+ */
+
+/** @type {import('ts-jest').JestConfigWithTsJest} **/
 export default {
-    verbose: true,
-    reporters: ["default", "jest-junit"],
-    // NOTE: Node needs to be run with --experimental-vm-modules flag
-    // and code transforms need to be disabled in order for Jest to work with ESM.
-    // https://jestjs.io/docs/ecmascript-modules
-    transform: {}
+    coverageProvider: "v8",
+    reporters: [
+        "default",
+        [
+            "jest-junit",
+            {
+                outputFile: "./results/unit-test-results.xml",
+            },
+        ],
+    ],
+    testMatch: ["**/test/**/*_test.[jt]s?(x)"],
+    testEnvironment: "node",
+    transform: {
+        "^.+.tsx?$": ["ts-jest", {}],
+    },
 };

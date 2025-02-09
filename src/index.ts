@@ -18,6 +18,8 @@ import { BackgroundManager } from './manager/background';
 import { TransformManager } from './manager/transform';
 import { interactionSubsystem } from './subsystem/interaction';
 
+import './styles/global.css';
+
 const STANDARD_THEME = 'standard';
 const CLASSIC_THEME = 'classic';
 

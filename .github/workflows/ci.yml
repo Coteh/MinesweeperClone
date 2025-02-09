@@ -1,0 +1,44 @@
+name: CI
+on: [push]
+jobs:
+  test-game-logic:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Checking out ${{ github.ref }} from ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Print Node.js version
+        run: node -v
+      - name: Run npm clean install
+        run: npm ci
+      - name: Run test
+        run: npm run test-ci
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: ./results/unit-test-results.xml
+  publish-test-results:
+    if: always()
+    needs: [test-game-logic]
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
+    steps:
+      - name: Download test results artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./results
+          pattern: "*-test-results"
+          merge-multiple: true
+      - name: Publish test results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: |
+            ./results/*-test-results*.xml

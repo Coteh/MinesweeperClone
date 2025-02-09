@@ -1,8 +1,6 @@
 import { BoardOverfillException } from './errors';
 import { IGameStorage } from './storage';
 
-import './styles/global.css';
-
 let debugEnabled = true;
 
 export type GameOptions = {
@@ -480,4 +478,9 @@ const checkForWin = function () {
 
     // Not a winner yet
     return false;
+};
+
+// To be used for tests
+export const getGameState: () => GameState = () => {
+    return gameState;
 };
