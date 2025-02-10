@@ -20,7 +20,7 @@ const standardMineBlock: (
     };
 };
 
-describe.skip('settings', () => {
+describe('settings', () => {
     before(() => {
         throw new Error('TODO: Implement these tests');
     });
