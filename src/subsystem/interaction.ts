@@ -3,6 +3,7 @@ import { GameState } from '../game';
 import { FullscreenManager } from '../manager/fullscreen';
 import { MAX_ZOOM, MIN_ZOOM, TransformManager } from '../manager/transform';
 import { getPreferenceValue } from '../preferences';
+import { FrontendState } from '..';
 
 const DIRECTION_LEFT = 'left';
 const DIRECTION_RIGHT = 'right';
@@ -20,13 +21,16 @@ export function interactionSubsystem(
     gameState: GameState,
     promptNewGame: (onNewGameStarted?: () => void) => void,
     toggleSettings: (enabled: boolean) => void,
-    toggleDebugHud: Function
+    toggleDebugHud: Function,
+    closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
+    frontendState: FrontendState
 ) {
     const zoomInButton = document.querySelector('#zoom-in') as HTMLElement;
     const zoomOutButton = document.querySelector('#zoom-out') as HTMLElement;
 
     const settingsPane = document.querySelector('.settings.pane') as HTMLElement;
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;
+    const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
 
     const md = new MobileDetect(window.navigator.userAgent);
     const isMobile = md.mobile() !== null;
@@ -41,6 +45,15 @@ export function interactionSubsystem(
     const handleKeyInput = (key: string) => {
         console.log(key);
         const dialog = document.querySelector('.dialog') as HTMLDialogElement;
+        if (dialog) {
+            if (key === 'escape') {
+                // Do not allow player to close the dialog if they're presented with a prompt dialog asking for Yes/No
+                if (frontendState.isPrompted) {
+                    return;
+                }
+                return closeDialog(dialog, overlayBackElem);
+            }
+        }
         if (dialog) {
             return;
         }

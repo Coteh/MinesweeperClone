@@ -23,9 +23,29 @@ jobs:
         with:
           name: unit-test-results
           path: ./results/unit-test-results.xml
+  cypress-run:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Checking out ${{ github.ref }} from ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set Cypress browser timeout environment variable
+        run: echo CYPRESS_INTERNAL_BROWSER_CONNECT_TIMEOUT=300000 >> $GITHUB_ENV # 5 minutes
+      - name: Run Cypress tests
+        uses: cypress-io/github-action@v6
+        with:
+          browser: edge
+          start: npm run dev
+          wait-on: 'http://localhost:5173'
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-test-results
+          path: ./results/cypress-test-results-*.xml
   publish-test-results:
     if: always()
-    needs: [test-game-logic]
+    needs: [test-game-logic, cypress-run]
     runs-on: ubuntu-latest
     permissions:
       checks: write

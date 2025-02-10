@@ -20,6 +20,11 @@ import { interactionSubsystem } from './subsystem/interaction';
 
 import './styles/global.css';
 
+export type FrontendState = {
+    gameOptions: GameOptions;
+    isPrompted: boolean;
+};
+
 const STANDARD_THEME = 'standard';
 const CLASSIC_THEME = 'classic';
 
@@ -43,6 +48,16 @@ const DIFFICULTY_EASY = 'easy';
 const DIFFICULTY_MEDIUM = 'medium';
 const DIFFICULTY_HARD = 'hard';
 
+const frontendState: FrontendState = {
+    gameOptions: {
+        boardHeight: 10,
+        boardWidth: 10,
+        numberOfMines: 15,
+        revealBoardOnLoss: true,
+    },
+    isPrompted: false,
+};
+
 console.info(`minesweeper-clone v${GAME_VERSION}`);
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -63,13 +78,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let transformManager = new TransformManager(middleElem);
 
     let timeBoardInterval: NodeJS.Timeout;
-
-    const gameOptions: GameOptions = {
-        boardHeight: 10,
-        boardWidth: 10,
-        numberOfMines: 15,
-        revealBoardOnLoss: true,
-    };
 
     const md = new MobileDetect(window.navigator.userAgent);
     const isMobile = md.mobile() !== null;
@@ -94,7 +102,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                         gameState,
                         promptNewGame,
                         toggleSettings,
-                        toggleDebugHud
+                        toggleDebugHud,
+                        closeDialog,
+                        frontendState
                     );
                     interactionSetup = true;
                 }
@@ -148,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const promptNewGame = (onNewGameStarted?: () => void) => {
         // If game ended, no need to prompt
         if (gameState.ended) {
-            newGame(gameOptions);
+            newGame(frontendState.gameOptions);
             if (onNewGameStarted) {
                 onNewGameStarted();
             }
@@ -160,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderPromptDialog(dialogElem, {
             fadeIn: true,
             onConfirm: () => {
-                newGame(gameOptions);
+                newGame(frontendState.gameOptions);
                 if (onNewGameStarted) {
                     onNewGameStarted();
                 }
@@ -261,11 +271,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     newGameButton.addEventListener('click', (e) => {
         e.preventDefault();
         if (gameState.ended) {
-            newGame(gameOptions);
+            newGame(frontendState.gameOptions);
             return;
         }
         promptNewGame(() => {
-            newGame(gameOptions);
+            newGame(frontendState.gameOptions);
         });
     });
 
@@ -332,23 +342,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     const switchDifficulty = (difficulty: string, startNewGame: boolean) => {
         switch (difficulty) {
             case DIFFICULTY_MEDIUM:
-                gameOptions.boardWidth = 16;
-                gameOptions.boardHeight = 16;
-                gameOptions.numberOfMines = 40;
+                frontendState.gameOptions.boardWidth = 16;
+                frontendState.gameOptions.boardHeight = 16;
+                frontendState.gameOptions.numberOfMines = 40;
                 break;
             case DIFFICULTY_HARD:
-                gameOptions.boardWidth = 16;
-                gameOptions.boardHeight = 30;
-                gameOptions.numberOfMines = 99;
+                frontendState.gameOptions.boardWidth = 16;
+                frontendState.gameOptions.boardHeight = 30;
+                frontendState.gameOptions.numberOfMines = 99;
                 break;
             case DIFFICULTY_EASY:
             default:
-                gameOptions.boardWidth = 9;
-                gameOptions.boardHeight = 9;
-                gameOptions.numberOfMines = 10;
+                frontendState.gameOptions.boardWidth = 9;
+                frontendState.gameOptions.boardHeight = 9;
+                frontendState.gameOptions.numberOfMines = 10;
                 break;
         }
-        if (startNewGame) newGame(gameOptions);
+        if (startNewGame) newGame(frontendState.gameOptions);
         currDifficulty = difficulty;
     };
 
@@ -416,6 +426,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         toggleSettings(false);
+    });
+
+    const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
+    overlayBackElem.addEventListener('click', (e) => {
+        // Do not allow player to close the dialog if they're presented with a prompt dialog asking for Yes/No
+        if (frontendState.isPrompted) {
+            return;
+        }
+        const dialog = document.querySelector('.dialog') as HTMLDialogElement;
+        closeDialog(dialog, overlayBackElem);
     });
 
     // (document.querySelector("[data-feather='help-circle']") as HTMLElement).innerText = '?';
@@ -501,14 +521,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 
-        await initGame(gameOptions, eventHandler, gameStorage);
+        await initGame(frontendState.gameOptions, eventHandler, gameStorage);
     } catch (e) {
         // if (typeof Sentry !== 'undefined') Sentry.captureException(e);
         const elem = createDialogContentFromTemplate('#error-dialog-content');
         const errorContent = elem.querySelector('.error-text') as HTMLElement;
 
         console.error('Unknown error occurred', e);
-        errorContent.innerText = e.message;
+        if (e instanceof Error) {
+            errorContent.innerText = e.message;
+        } else {
+            errorContent.innerText = 'Unknown error occurred';
+        }
 
         renderDialog(elem, {
             fadeIn: true,
