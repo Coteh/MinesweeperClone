@@ -13,9 +13,15 @@
 .game-space > .game-board {
     width: 100%;
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     position: relative;
     height: 100%;
+}
+
+.game-space > .game-board > .row {
+    display: flex;
 }
 
 .back-rows {

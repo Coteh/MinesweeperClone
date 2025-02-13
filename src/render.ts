@@ -8,6 +8,7 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
     const zoomable = document.getElementById('zoomable') as HTMLElement;
     for (let i = 0; i < gameState.board.length; i++) {
         const row = document.createElement('div');
+        row.classList.add("row");
         // console.log('rendering', gameState.board[i], gameState.board[i].length);
         for (let j = 0; j < gameState.board[i].length; j++) {
             const elem = document.createElement('div');
