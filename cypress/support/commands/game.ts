@@ -33,6 +33,8 @@ Cypress.Commands.add('verifyBoardMatches', (expectedBoard: (MineBlock | undefine
                             expect(child).to.have.attr('src', 'img/Flag.png');
                         } else if (expectedVal && !expectedVal.isRevealed) {
                             expect(boxes.eq(j)).to.not.have.class('revealed');
+                            const child = boxes.eq(j).children();
+                            expect(child).to.have.length(0);
                         }
                     }
                 });
