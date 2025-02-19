@@ -4,18 +4,16 @@ import { FullscreenManager } from '../manager/fullscreen';
 import { MAX_ZOOM, MIN_ZOOM, TransformManager } from '../manager/transform';
 import { getPreferenceValue } from '../preferences';
 import { FrontendState } from '..';
+import { DEBUG_HUD_ENABLED_PREFERENCE_NAME, SETTING_ENABLED } from '../consts';
 
 const DIRECTION_LEFT = 'left';
 const DIRECTION_RIGHT = 'right';
 const DIRECTION_UP = 'up';
 const DIRECTION_DOWN = 'down';
 
-// TODO: Move these to global consts
-const SETTING_ENABLED = 'enabled';
-const SETTING_DISABLED = 'disabled';
-const DEBUG_HUD_ENABLED_PREFERENCE_NAME = 'debugHudEnabled';
+export type InteractionSubsystem = {};
 
-export function interactionSubsystem(
+export function setupInteractionSubsystem(
     transformManager: TransformManager,
     fullscreenManager: FullscreenManager,
     gameState: GameState,
@@ -24,7 +22,7 @@ export function interactionSubsystem(
     toggleDebugHud: Function,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
     frontendState: FrontendState
-) {
+): InteractionSubsystem {
     const zoomInButton = document.querySelector('#zoom-in') as HTMLElement;
     const zoomOutButton = document.querySelector('#zoom-out') as HTMLElement;
 
@@ -356,4 +354,6 @@ export function interactionSubsystem(
     }
 
     update();
+
+    return {};
 }
