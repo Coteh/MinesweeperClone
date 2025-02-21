@@ -1,4 +1,4 @@
-import { MineBlock } from "../../src/game";
+import { MineBlock } from '../../src/game';
 
 declare global {
     namespace Cypress {
@@ -7,6 +7,7 @@ declare global {
             grantClipboardPermission(): Chainable<Subject>;
             shouldNotBeActionable(done: Mocha.Done): Chainable<Element>;
             shouldBeInViewport(): Chainable<Subject>;
+            shouldNotBeInViewport(): Chainable<Subject>;
             waitUntilDialogAppears(): Chainable<Subject>;
             verifyBoardMatches(expectedBoard: (MineBlock | undefined)[][]): Chainable<Subject>;
             verifyBoardDoesNotMatch(expectedBoard: (MineBlock | undefined)[][]): Chainable<Subject>;

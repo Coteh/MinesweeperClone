@@ -24,22 +24,22 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
-Cypress.Commands.add("clearBrowserCache", () => {
+Cypress.Commands.add('clearBrowserCache', () => {
     // Call Chrome's API for clearing browser cache when running this test
     // https://stackoverflow.com/a/67858001
-    Cypress.automation("remote:debugger:protocol", {
-        command: "Network.clearBrowserCache",
+    Cypress.automation('remote:debugger:protocol', {
+        command: 'Network.clearBrowserCache',
     });
 });
 
 // Needed in order to make share tests work in headless
 // https://github.com/cypress-io/cypress/issues/8957
-Cypress.Commands.add("grantClipboardPermission", () => {
+Cypress.Commands.add('grantClipboardPermission', () => {
     cy.wrap(
-        Cypress.automation("remote:debugger:protocol", {
-            command: "Browser.grantPermissions",
+        Cypress.automation('remote:debugger:protocol', {
+            command: 'Browser.grantPermissions',
             params: {
-                permissions: ["clipboardReadWrite", "clipboardSanitizedWrite"],
+                permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
                 origin: window.location.origin,
             },
         }).catch((error) =>
@@ -51,11 +51,14 @@ Cypress.Commands.add("grantClipboardPermission", () => {
     );
 });
 
+// TODO: Adapt `shouldNotBeActionable` into an assertion
+// https://github.com/cypress-io/cypress-example-recipes/tree/master/examples/extending-cypress__chai-assertions
+
 // Adapted from https://github.com/cypress-io/cypress/discussions/21150#discussioncomment-2620947
-Cypress.Commands.add("shouldNotBeActionable", { prevSubject: "element" }, (subject, done) => {
-    cy.once("fail", (err) => {
-        expect(err.message).to.include("`cy.click()` failed because this element");
-        expect(err.message).to.include("is being covered by another element");
+Cypress.Commands.add('shouldNotBeActionable', { prevSubject: 'element' }, (subject, done) => {
+    cy.once('fail', (err) => {
+        expect(err.message).to.include('`cy.click()` failed because this element');
+        expect(err.message).to.include('is being covered by another element');
         done();
     });
 
@@ -64,14 +67,19 @@ Cypress.Commands.add("shouldNotBeActionable", { prevSubject: "element" }, (subje
             timeout: 100,
         })
         .then(() => {
-            done(new Error("Expected element NOT to be clickable, but click() succeeded"));
+            done(new Error('Expected element NOT to be clickable, but click() succeeded'));
         });
 });
 
+// TODO: Adapt `shouldBeInViewport` and `shouldNotBeInViewport` into an assertion
+// https://github.com/cypress-io/cypress-example-recipes/tree/master/examples/extending-cypress__chai-assertions
+// Then assertions can be made like this:
+// cy.contains('Settings').should('not.be.inViewport');
+
 // Adapted from https://github.com/cypress-io/cypress/issues/877#issuecomment-490504922
-Cypress.Commands.add("shouldBeInViewport", { prevSubject: true }, (subject) => {
+Cypress.Commands.add('shouldBeInViewport', { prevSubject: true }, (subject) => {
     // @ts-ignore TODO: Fix cy.state type error
-    const window = Cypress.$(cy.state("window"));
+    const window = Cypress.$(cy.state('window'));
     const bottom = window.height();
     const right = window.width();
     const rect = subject[0].getBoundingClientRect();
@@ -82,10 +90,25 @@ Cypress.Commands.add("shouldBeInViewport", { prevSubject: true }, (subject) => {
     expect(rect.right).not.to.be.greaterThan(right).and.not.to.be.lessThan(0);
 });
 
-Cypress.Commands.add("waitUntilDialogAppears", () => {
+Cypress.Commands.add('shouldNotBeInViewport', { prevSubject: true }, (subject) => {
+    // @ts-ignore TODO: Fix cy.state type error
+    const window = Cypress.$(cy.state('window'));
+    const bottom = window.height();
+    const right = window.width();
+    const rect = subject[0].getBoundingClientRect();
+
+    expect(rect).to.satisfy((rect) => {
+        return (
+            ((rect.top > bottom || rect.top < 0) && (rect.bottom > bottom || rect.bottom < 0)) ||
+            ((rect.left > right || rect.left < 0) && (rect.right > right || rect.right < 0))
+        );
+    });
+});
+
+Cypress.Commands.add('waitUntilDialogAppears', () => {
     cy.waitUntil(() =>
         cy.window().then((win) => {
-            cy.get(".dialog").then(
+            cy.get('.dialog').then(
                 (dialog) => parseInt(win.getComputedStyle(dialog[0]).opacity) === 1
             );
         })
@@ -94,6 +117,6 @@ Cypress.Commands.add("waitUntilDialogAppears", () => {
 
 // Extended cy.intercept to add a log when the request gets intercepted.
 // See https://glebbahmutov.com/blog/cypress-intercept-problems/
-Cypress.Commands.overwrite("intercept", (intercept, ...args) =>
-    cy.log("intercept", args).then(() => intercept(...args))
+Cypress.Commands.overwrite('intercept', (intercept, ...args) =>
+    cy.log('intercept', args).then(() => intercept(...args))
 );

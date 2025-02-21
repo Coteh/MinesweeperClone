@@ -15,16 +15,13 @@ const standardMineBlock: (
         y,
         isMine,
         isRevealed: false,
+        isLosingSpot: false,
         isFlagged: false,
         adjMinesCount,
     };
 };
 
 describe('settings', () => {
-    before(() => {
-        throw new Error('TODO: Implement these tests');
-    });
-
     beforeEach(() => {
         cy.clearBrowserCache();
         cy.visit('/', {
@@ -82,21 +79,29 @@ describe('settings', () => {
     });
 
     it('should alternate between game pane and settings pane when settings link is clicked', () => {
-        cy.get('.base-rows').should('be.visible');
-        cy.contains('Settings').should('not.be.visible');
+        cy.get('.game-board').should('be.visible');
+        cy.contains('Settings').shouldNotBeInViewport();
 
         cy.get('.settings-link').click();
 
-        cy.get('.base-rows').should('not.be.visible');
-        cy.contains('Settings').should('be.visible');
+        cy.wait(1000);
 
-        cy.get('.settings-link').click();
+        cy.get('.game-board').should('be.visible');
+        cy.contains('Settings').shouldBeInViewport();
 
-        cy.get('.base-rows').should('be.visible');
-        cy.contains('Settings').should('not.be.visible');
+        cy.get('.settings.pane').within(() => {
+            cy.get('.close').click();
+        });
+
+        cy.wait(1000);
+
+        cy.get('.game-board').should('be.visible');
+        cy.contains('Settings').shouldNotBeInViewport();
     });
 
     it('should disappear and show game pane again when close button is clicked in settings pane', () => {
+        throw new Error('TODO: Implement this test');
+
         cy.get('.settings-link').click();
 
         cy.get('.base-rows').should('not.be.visible');
@@ -109,6 +114,8 @@ describe('settings', () => {
     });
 
     it('should toggle a setting when clicked', () => {
+        throw new Error('TODO: Implement this test');
+
         cy.get('.settings-link').click();
 
         cy.contains('Settings').should('be.visible');
@@ -150,6 +157,8 @@ describe('settings', () => {
     });
 
     it("should reenable a setting if it's set to enabled in local storage and page is reloaded", () => {
+        throw new Error('TODO: Implement this test');
+
         window.localStorage.setItem(
             'preferences',
             JSON.stringify({
@@ -167,6 +176,8 @@ describe('settings', () => {
     });
 
     it('should show version number at the bottom of the settings pane', () => {
+        throw new Error('TODO: Implement this test');
+
         cy.get('.settings-link').click();
 
         cy.contains('Settings').should('be.visible');
@@ -174,6 +185,8 @@ describe('settings', () => {
     });
 
     it('should show copyright at the bottom of the settings pane', () => {
+        throw new Error('TODO: Implement this test');
+
         cy.get('.settings-link').click();
 
         cy.contains('Settings').should('be.visible');
@@ -181,6 +194,8 @@ describe('settings', () => {
     });
 
     it('should handle preferences value in local storage being in invalid state', () => {
+        throw new Error('TODO: Implement this test');
+
         // Set local storage preferences value to "invalid" to simulate an invalid state
         cy.visit('/', {
             onBeforeLoad: () => {
