@@ -15,6 +15,7 @@ export type MineBlock = {
     y: number;
     isMine: boolean;
     isRevealed: boolean;
+    isLosingSpot: boolean;
     isFlagged: boolean;
     adjMinesCount: number;
 };
@@ -60,6 +61,7 @@ const newState: (options: GameOptions) => GameState = (options) => {
                 y: i,
                 isMine: false, // piece
                 isRevealed: false,
+                isLosingSpot: false,
                 isFlagged: false,
                 adjMinesCount: 0,
             };
@@ -229,7 +231,7 @@ export const selectSpot = function (x: number, y: number) {
     if (gameState.ended || gameState.board[y][x].isRevealed) {
         return { hitInfo: 'alreadyhit' };
     }
-    var boardPiece = gameState.board[y][x].isMine;
+    let isMine = gameState.board[y][x].isMine;
     revealSpot(x, y);
     if (!gameState.firstBlockClicked) {
         // TODO: Setup a more accurate game timer that can count by the MS
@@ -240,9 +242,13 @@ export const selectSpot = function (x: number, y: number) {
         eventHandler('first_block_click', { gameState, persistentState });
     }
     gameState.firstBlockClicked = true;
+    // If a mine, need to mark this spot as the losing spot before re-rendering
+    if (isMine) {
+        gameState.board[y][x].isLosingSpot = true;
+    }
     // TODO: Should game state be passed into the draw?
     eventHandler('draw', { gameState, persistentState });
-    if (boardPiece) {
+    if (isMine) {
         gameState.ended = true;
         clearInterval(gameTimer);
         eventHandler('lose', { gameState, persistentState });
@@ -283,6 +289,10 @@ export const selectAdjacentSpots = function (x: number, y: number) {
             }
         }
         revealMultiple(adjacentSpots);
+    }
+    // If a mine, need to mark this spot as the losing spot before re-rendering
+    if (doesMineExist) {
+        gameState.board[y][x].isLosingSpot = true;
     }
     // TODO: Should game state be passed into the draw?
     eventHandler('draw', { gameState, persistentState });

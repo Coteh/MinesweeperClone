@@ -122,6 +122,10 @@
     border: 1px solid var(--box-border-color);
 }
 
+.box.losing {
+    background-color: var(--losing-block-color);
+}
+
 .box > .box-letter {
     user-select: none;
     -webkit-user-select: none;

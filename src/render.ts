@@ -8,7 +8,7 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
     const zoomable = document.getElementById('zoomable') as HTMLElement;
     for (let i = 0; i < gameState.board.length; i++) {
         const row = document.createElement('div');
-        row.classList.add("row");
+        row.classList.add('row');
         // console.log('rendering', gameState.board[i], gameState.board[i].length);
         for (let j = 0; j < gameState.board[i].length; j++) {
             const elem = document.createElement('div');
@@ -19,6 +19,9 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                     const mineImg = document.createElement('img');
                     mineImg.src = 'img/Mine.png';
                     elem.appendChild(mineImg);
+                    if (gameState.board[i][j].isLosingSpot) {
+                        elem.classList.add('losing');
+                    }
                 } else if (gameState.board[i][j].adjMinesCount > 0) {
                     const numElem = document.createElement('span');
                     numElem.style.color = `var(--mine-text-${gameState.board[i][j].adjMinesCount})`;

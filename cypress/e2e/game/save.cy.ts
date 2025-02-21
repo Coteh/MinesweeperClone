@@ -13,6 +13,7 @@ const standardMineBlock: (
         y,
         isMine,
         isRevealed: false,
+        isLosingSpot: false,
         isFlagged: false,
         adjMinesCount,
     };

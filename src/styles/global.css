@@ -54,6 +54,8 @@
     --standard-color: var(--gray-5);
     --standard-block-color: #808080;
 
+    --losing-block-color: #cc0000;
+
     --hovered-color: var(--yellow);
     --enabled-color: var(--green);
 
