@@ -286,13 +286,11 @@ export const selectAdjacentSpots = function (x: number, y: number) {
             }
             if (adjacentSpots[i].isMine) {
                 doesMineExist = true;
+                // Mark the mine as a losing spot
+                gameState.board[adjacentSpots[i].y][adjacentSpots[i].x].isLosingSpot = true;
             }
         }
         revealMultiple(adjacentSpots);
-    }
-    // If a mine, need to mark this spot as the losing spot before re-rendering
-    if (doesMineExist) {
-        gameState.board[y][x].isLosingSpot = true;
     }
     // TODO: Should game state be passed into the draw?
     eventHandler('draw', { gameState, persistentState });

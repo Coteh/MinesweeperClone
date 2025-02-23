@@ -30,6 +30,12 @@ Cypress.Commands.add('verifyBoardMatches', (expectedBoard: (MineBlock | undefine
                             const child = boxes.eq(j).children();
                             expect(child).to.have.length(1);
                             expect(child).to.have.attr('src', 'img/Mine.png');
+                            // If the mine is the losing mine, assert that the mine has the 'losing' class
+                            if (expectedVal.isLosingSpot) {
+                                expect(boxes.eq(j)).to.have.class('losing');
+                            } else {
+                                expect(boxes.eq(j)).to.not.have.class('losing');
+                            }
                         } else if (expectedVal && expectedVal.isFlagged) {
                             // Assert that child element has flag image
                             const child = boxes.eq(j).children();

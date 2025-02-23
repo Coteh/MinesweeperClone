@@ -20,9 +20,9 @@ const standardMineBlock: (
     };
 };
 
-// Expected box colours for classic theme
-const EXPECTED_HIGHLIGHTED_COLOR = 'rgb(255, 255, 0)';
-const EXPECTED_UNHIGHLIGHTED_COLOR = 'rgb(128, 128, 128)';
+// Expected block colours for classic theme
+const EXPECTED_BLOCK_HIGHLIGHTED_COLOR = 'rgb(255, 255, 0)';
+const EXPECTED_BLOCK_UNHIGHLIGHTED_COLOR = 'rgb(128, 128, 128)';
 
 describe('highlight', () => {
     beforeEach(() => {
@@ -32,26 +32,26 @@ describe('highlight', () => {
                     board: [
                         [
                             standardMineBlock(0, 0, false, 1),
-                            standardMineBlock(0, 1, false, 1),
-                            standardMineBlock(0, 2, false, 1),
-                            standardMineBlock(0, 3, false, 0),
-                        ],
-                        [
                             standardMineBlock(1, 0, false, 1),
+                            standardMineBlock(2, 0, false, 1),
+                            standardMineBlock(3, 0, false, 0),
+                        ],
+                        [
+                            standardMineBlock(0, 1, false, 1),
                             standardMineBlock(1, 1, true, 0),
-                            standardMineBlock(1, 2, false, 1),
-                            standardMineBlock(1, 3, false, 0),
+                            standardMineBlock(2, 1, false, 1),
+                            standardMineBlock(3, 1, false, 0),
                         ],
                         [
-                            standardMineBlock(2, 0, false, 2),
-                            standardMineBlock(2, 1, false, 2),
+                            standardMineBlock(0, 2, false, 2),
+                            standardMineBlock(1, 2, false, 2),
                             standardMineBlock(2, 2, false, 1),
-                            standardMineBlock(2, 3, false, 0),
+                            standardMineBlock(3, 2, false, 0),
                         ],
                         [
-                            standardMineBlock(3, 0, true, 0),
-                            standardMineBlock(3, 1, false, 1),
-                            standardMineBlock(3, 2, false, 0),
+                            standardMineBlock(0, 3, true, 0),
+                            standardMineBlock(1, 3, false, 1),
+                            standardMineBlock(2, 3, false, 0),
                             standardMineBlock(3, 3, false, 0),
                         ],
                     ],
@@ -91,7 +91,7 @@ describe('highlight', () => {
             .within(() => {
                 cy.get('.box')
                     .realHover()
-                    .should('have.css', 'background-color', EXPECTED_UNHIGHLIGHTED_COLOR);
+                    .should('have.css', 'background-color', EXPECTED_BLOCK_UNHIGHLIGHTED_COLOR);
             });
 
         cy.get('.settings-link').click();
@@ -107,7 +107,7 @@ describe('highlight', () => {
             .within(() => {
                 cy.get('.box')
                     .realHover()
-                    .should('have.css', 'background-color', EXPECTED_HIGHLIGHTED_COLOR);
+                    .should('have.css', 'background-color', EXPECTED_BLOCK_HIGHLIGHTED_COLOR);
             });
 
         cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');

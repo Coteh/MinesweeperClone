@@ -22,6 +22,12 @@ const standardMineBlock: (
     };
 };
 
+// Expected standard block background colour for classic theme
+const STANDARD_BLOCK_BACKGROUND_COLOR = "rgb(128, 128, 128)";
+
+// Expected losing block background colour for classic theme
+const LOSING_BLOCK_BACKGROUND_COLOR = "rgb(204, 0, 0)";
+
 describe('gameplay', () => {
     beforeEach(() => {
         cy.clearBrowserCache();
@@ -32,26 +38,26 @@ describe('gameplay', () => {
                     board: [
                         [
                             standardMineBlock(0, 0, false, 1, false, false, false),
-                            standardMineBlock(0, 1, false, 1, false, false, false),
-                            standardMineBlock(0, 2, false, 1, false, false, false),
-                            standardMineBlock(0, 3, false, 0, false, false, false),
-                        ],
-                        [
                             standardMineBlock(1, 0, false, 1, false, false, false),
+                            standardMineBlock(2, 0, false, 1, false, false, false),
+                            standardMineBlock(3, 0, false, 0, false, false, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, false, 1, false, false, false),
                             standardMineBlock(1, 1, true, 0, false, false, false),
-                            standardMineBlock(1, 2, false, 1, false, false, false),
-                            standardMineBlock(1, 3, false, 0, false, false, false),
+                            standardMineBlock(2, 1, false, 1, false, false, false),
+                            standardMineBlock(3, 1, false, 0, false, false, false),
                         ],
                         [
-                            standardMineBlock(2, 0, false, 2, false, false, false),
-                            standardMineBlock(2, 1, false, 2, false, false, false),
+                            standardMineBlock(0, 2, false, 2, false, false, false),
+                            standardMineBlock(1, 2, false, 2, false, false, false),
                             standardMineBlock(2, 2, false, 1, false, false, false),
-                            standardMineBlock(2, 3, false, 0, false, false, false),
+                            standardMineBlock(3, 2, false, 0, false, false, false),
                         ],
                         [
-                            standardMineBlock(3, 0, true, 0, false, false, false),
-                            standardMineBlock(3, 1, false, 1, false, false, false),
-                            standardMineBlock(3, 2, false, 0, false, false, false),
+                            standardMineBlock(0, 3, true, 0, false, false, false),
+                            standardMineBlock(1, 3, false, 1, false, false, false),
+                            standardMineBlock(2, 3, false, 0, false, false, false),
                             standardMineBlock(3, 3, false, 0, false, false, false),
                         ],
                     ],
@@ -85,26 +91,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, false, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -116,26 +122,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, true, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -148,26 +154,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, true, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -177,26 +183,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, false, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -222,26 +228,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, true, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -268,26 +274,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, true, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -297,26 +303,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, false, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -328,26 +334,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, false, true, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -359,26 +365,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, false, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -388,26 +394,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, false, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -431,26 +437,26 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, false, true, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
@@ -474,61 +480,56 @@ describe('gameplay', () => {
         cy.verifyBoardMatches([
             [
                 standardMineBlock(0, 0, false, 1, false, false, false),
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(0, 2, false, 1, false, false, false),
-                standardMineBlock(0, 3, false, 0, false, false, false),
-            ],
-            [
                 standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(0, 1, false, 1, false, false, false),
                 standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(1, 2, false, 1, false, false, false),
-                standardMineBlock(1, 3, false, 0, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(2, 0, false, 2, false, false, false),
-                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false),
                 standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
             ],
             [
-                standardMineBlock(3, 0, true, 0, false, false, false),
-                standardMineBlock(3, 1, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
                 standardMineBlock(3, 3, false, 0, false, false, false),
             ],
         ]);
     });
 
-    describe('lose', () => {
+    describe('lose from direct click', () => {
         beforeEach(() => {
-            cy.get('.game-board > .row')
-                .eq(1)
-                .within(() => {
-                    cy.get('.box').eq(1).should('not.have.class', 'losing');
-                });
             cy.verifyBoardMatches([
                 [
                     standardMineBlock(0, 0, false, 1, false, false, false),
-                    standardMineBlock(0, 1, false, 1, false, false, false),
-                    standardMineBlock(0, 2, false, 1, false, false, false),
-                    standardMineBlock(0, 3, false, 0, false, false, false),
-                ],
-                [
                     standardMineBlock(1, 0, false, 1, false, false, false),
+                    standardMineBlock(2, 0, false, 1, false, false, false),
+                    standardMineBlock(3, 0, false, 0, false, false, false),
+                ],
+                [
+                    standardMineBlock(0, 1, false, 1, false, false, false),
                     standardMineBlock(1, 1, true, 0, false, false, false),
-                    standardMineBlock(1, 2, false, 1, false, false, false),
-                    standardMineBlock(1, 3, false, 0, false, false, false),
+                    standardMineBlock(2, 1, false, 1, false, false, false),
+                    standardMineBlock(3, 1, false, 0, false, false, false),
                 ],
                 [
-                    standardMineBlock(2, 0, false, 2, false, false, false),
-                    standardMineBlock(2, 1, false, 2, false, false, false),
+                    standardMineBlock(0, 2, false, 2, false, false, false),
+                    standardMineBlock(1, 2, false, 2, false, false, false),
                     standardMineBlock(2, 2, false, 1, false, false, false),
-                    standardMineBlock(2, 3, false, 0, false, false, false),
+                    standardMineBlock(3, 2, false, 0, false, false, false),
                 ],
                 [
-                    standardMineBlock(3, 0, true, 0, false, false, false),
-                    standardMineBlock(3, 1, false, 1, false, false, false),
-                    standardMineBlock(3, 2, false, 0, false, false, false),
+                    standardMineBlock(0, 3, true, 0, false, false, false),
+                    standardMineBlock(1, 3, false, 1, false, false, false),
+                    standardMineBlock(2, 3, false, 0, false, false, false),
                     standardMineBlock(3, 3, false, 0, false, false, false),
                 ],
             ]);
@@ -540,26 +541,26 @@ describe('gameplay', () => {
             cy.verifyBoardMatches([
                 [
                     standardMineBlock(0, 0, false, 1, true, false, false),
-                    standardMineBlock(0, 1, false, 1, true, false, false),
-                    standardMineBlock(0, 2, false, 1, true, false, false),
-                    standardMineBlock(0, 3, false, 0, true, false, false),
-                ],
-                [
                     standardMineBlock(1, 0, false, 1, true, false, false),
+                    standardMineBlock(2, 0, false, 1, true, false, false),
+                    standardMineBlock(3, 0, false, 0, true, false, false),
+                ],
+                [
+                    standardMineBlock(0, 1, false, 1, true, false, false),
                     standardMineBlock(1, 1, true, 0, true, false, true),
-                    standardMineBlock(1, 2, false, 1, true, false, false),
-                    standardMineBlock(1, 3, false, 0, true, false, false),
+                    standardMineBlock(2, 1, false, 1, true, false, false),
+                    standardMineBlock(3, 1, false, 0, true, false, false),
                 ],
                 [
-                    standardMineBlock(2, 0, false, 2, true, false, false),
-                    standardMineBlock(2, 1, false, 2, true, false, false),
+                    standardMineBlock(0, 2, false, 2, true, false, false),
+                    standardMineBlock(1, 2, false, 2, true, false, false),
                     standardMineBlock(2, 2, false, 1, true, false, false),
-                    standardMineBlock(2, 3, false, 0, true, false, false),
+                    standardMineBlock(3, 2, false, 0, true, false, false),
                 ],
                 [
-                    standardMineBlock(3, 0, true, 0, true, false, false),
-                    standardMineBlock(3, 1, false, 1, true, false, false),
-                    standardMineBlock(3, 2, false, 0, true, false, false),
+                    standardMineBlock(0, 3, true, 0, true, false, false),
+                    standardMineBlock(1, 3, false, 1, true, false, false),
+                    standardMineBlock(2, 3, false, 0, true, false, false),
                     standardMineBlock(3, 3, false, 0, true, false, false),
                 ],
             ]);
@@ -572,44 +573,159 @@ describe('gameplay', () => {
             cy.verifyBoardMatches([
                 [
                     standardMineBlock(0, 0, false, 1, true, false, false),
-                    standardMineBlock(0, 1, false, 1, true, false, false),
-                    standardMineBlock(0, 2, false, 1, true, false, false),
-                    standardMineBlock(0, 3, false, 0, true, false, false),
-                ],
-                [
                     standardMineBlock(1, 0, false, 1, true, false, false),
+                    standardMineBlock(2, 0, false, 1, true, false, false),
+                    standardMineBlock(3, 0, false, 0, true, false, false),
+                ],
+                [
+                    standardMineBlock(0, 1, false, 1, true, false, false),
                     standardMineBlock(1, 1, true, 0, true, false, true),
-                    standardMineBlock(1, 2, false, 1, true, false, false),
-                    standardMineBlock(1, 3, false, 0, true, false, false),
+                    standardMineBlock(2, 1, false, 1, true, false, false),
+                    standardMineBlock(3, 1, false, 0, true, false, false),
                 ],
                 [
-                    standardMineBlock(2, 0, false, 2, true, false, false),
-                    standardMineBlock(2, 1, false, 2, true, false, false),
+                    standardMineBlock(0, 2, false, 2, true, false, false),
+                    standardMineBlock(1, 2, false, 2, true, false, false),
                     standardMineBlock(2, 2, false, 1, true, false, false),
-                    standardMineBlock(2, 3, false, 0, true, false, false),
+                    standardMineBlock(3, 2, false, 0, true, false, false),
                 ],
                 [
-                    standardMineBlock(3, 0, true, 0, true, false, false),
-                    standardMineBlock(3, 1, false, 1, true, false, false),
-                    standardMineBlock(3, 2, false, 0, true, false, false),
+                    standardMineBlock(0, 3, true, 0, true, false, false),
+                    standardMineBlock(1, 3, false, 1, true, false, false),
+                    standardMineBlock(2, 3, false, 0, true, false, false),
                     standardMineBlock(3, 3, false, 0, true, false, false),
                 ],
             ]);
         });
 
-        it('should highlight the spot where you lost in red', () => {
+        it('should highlight the spot where player lost in red', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(1).should('have.class', 'losing');
+                    cy.get('.box').eq(1).should('have.css', 'background-color', LOSING_BLOCK_BACKGROUND_COLOR);
                 });
 
+            // Even after refresh, it should still be there
             cy.reload();
 
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(1).should('have.class', 'losing');
+                    cy.get('.box').eq(1).should('have.css', 'background-color', LOSING_BLOCK_BACKGROUND_COLOR);
+                });
+        });
+    });
+
+    describe('lose from adjacent click', () => {
+        beforeEach(() => {
+            cy.get('.game-board > .row')
+                .eq(1)
+                .within(() => {
+                    cy.get('.box').eq(1).should('have.css', 'background-color', STANDARD_BLOCK_BACKGROUND_COLOR);
+                });
+            cy.get('.game-board > .row')
+                .eq(3)
+                .within(() => {
+                    cy.get('.box').eq(0).should('have.css', 'background-color', STANDARD_BLOCK_BACKGROUND_COLOR);
+                });
+            cy.verifyBoardMatches([
+                [
+                    standardMineBlock(0, 0, false, 1, false, false, false),
+                    standardMineBlock(1, 0, false, 1, false, false, false),
+                    standardMineBlock(2, 0, false, 1, false, false, false),
+                    standardMineBlock(3, 0, false, 0, false, false, false),
+                ],
+                [
+                    standardMineBlock(0, 1, false, 1, false, false, false),
+                    standardMineBlock(1, 1, true, 0, false, false, false),
+                    standardMineBlock(2, 1, false, 1, false, false, false),
+                    standardMineBlock(3, 1, false, 0, false, false, false),
+                ],
+                [
+                    standardMineBlock(0, 2, false, 2, false, false, false),
+                    standardMineBlock(1, 2, false, 2, false, false, false),
+                    standardMineBlock(2, 2, false, 1, false, false, false),
+                    standardMineBlock(3, 2, false, 0, false, false, false),
+                ],
+                [
+                    standardMineBlock(0, 3, true, 0, false, false, false),
+                    standardMineBlock(1, 3, false, 1, false, false, false),
+                    standardMineBlock(2, 3, false, 0, false, false, false),
+                    standardMineBlock(3, 3, false, 0, false, false, false),
+                ],
+            ]);
+            cy.get('.game-board > .row')
+                .eq(2)
+                .within(() => {
+                    cy.get('.box').eq(0).click();
+                });
+            cy.get('.game-board > .row')
+                .eq(1)
+                .within(() => {
+                    cy.get('.box').eq(0).rightclick();
+                });
+            cy.get('.game-board > .row')
+                .eq(3)
+                .within(() => {
+                    cy.get('.box').eq(1).rightclick();
+                });
+            cy.get('.game-board > .row')
+                .eq(2)
+                .within(() => {
+                    cy.get('.box').eq(0).click();
+                });
+            cy.verifyBoardMatches([
+                [
+                    standardMineBlock(0, 0, false, 1, true, false, false),
+                    standardMineBlock(1, 0, false, 1, true, false, false),
+                    standardMineBlock(2, 0, false, 1, true, false, false),
+                    standardMineBlock(3, 0, false, 0, true, false, false),
+                ],
+                [
+                    standardMineBlock(0, 1, false, 1, true, false, false),
+                    standardMineBlock(1, 1, true, 0, true, false, true),
+                    standardMineBlock(2, 1, false, 1, true, false, false),
+                    standardMineBlock(3, 1, false, 0, true, false, false),
+                ],
+                [
+                    standardMineBlock(0, 2, false, 2, true, false, false),
+                    standardMineBlock(1, 2, false, 2, true, false, false),
+                    standardMineBlock(2, 2, false, 1, true, false, false),
+                    standardMineBlock(3, 2, false, 0, true, false, false),
+                ],
+                [
+                    standardMineBlock(0, 3, true, 0, true, false, true),
+                    standardMineBlock(1, 3, false, 1, true, false, false),
+                    standardMineBlock(2, 3, false, 0, true, false, false),
+                    standardMineBlock(3, 3, false, 0, true, false, false),
+                ],
+            ]);
+        });
+
+        it('should highlight the spots where player lost in red', () => {
+            cy.get('.game-board > .row')
+                .eq(1)
+                .within(() => {
+                    cy.get('.box').eq(1).should('have.css', 'background-color', LOSING_BLOCK_BACKGROUND_COLOR);
+                });
+            cy.get('.game-board > .row')
+                .eq(3)
+                .within(() => {
+                    cy.get('.box').eq(0).should('have.css', 'background-color', LOSING_BLOCK_BACKGROUND_COLOR);
+                });
+
+            // Even after refresh, it should still be there
+            cy.reload();
+
+            cy.get('.game-board > .row')
+                .eq(1)
+                .within(() => {
+                    cy.get('.box').eq(1).should('have.css', 'background-color', LOSING_BLOCK_BACKGROUND_COLOR);
+                });
+            cy.get('.game-board > .row')
+                .eq(3)
+                .within(() => {
+                    cy.get('.box').eq(0).should('have.css', 'background-color', LOSING_BLOCK_BACKGROUND_COLOR);
                 });
         });
     });
