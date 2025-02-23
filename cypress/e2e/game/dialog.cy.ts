@@ -74,6 +74,7 @@ describe('dialogs', () => {
                 window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
             },
         });
+        cy.waitForGameReady();
     });
 
     describe('general dialog behaviour', () => {
@@ -83,10 +84,6 @@ describe('dialogs', () => {
 
             cy.get('.dialog').should('be.visible');
             cy.get('.overlay-back').should('be.visible');
-        });
-
-        it.skip('prevents player from making any more inputs with physical keyboard', () => {
-            throw new Error('Currently no physical keyboard inputs');
         });
     });
 

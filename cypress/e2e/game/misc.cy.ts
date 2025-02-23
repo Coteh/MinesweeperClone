@@ -14,6 +14,7 @@ describe('misc', () => {
                 window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
             },
         });
+        cy.waitForGameReady();
     });
 
     describe('noscript', () => {

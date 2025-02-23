@@ -6,15 +6,18 @@ const standardMineBlock: (
     x: number,
     y: number,
     isMine: boolean,
-    adjMinesCount: number
-) => MineBlock = (x, y, isMine, adjMinesCount) => {
+    adjMinesCount: number,
+    isRevealed: boolean,
+    isFlagged: boolean,
+    isLosingSpot: boolean
+) => MineBlock = (x, y, isMine, adjMinesCount, isRevealed, isFlagged, isLosingSpot) => {
     return {
         x,
         y,
         isMine,
-        isRevealed: false,
-        isLosingSpot: false,
-        isFlagged: false,
+        isRevealed,
+        isLosingSpot,
+        isFlagged,
         adjMinesCount,
     };
 };
@@ -25,30 +28,31 @@ describe('retrieving saved progress', () => {
         cy.visit('/', {
             onBeforeLoad: () => {
                 const gameState: GameState = {
+                    // TODO: Expand the board used for testing from 4x4 to 9x9 easy mode board
                     board: [
                         [
-                            standardMineBlock(0, 0, false, 1),
-                            standardMineBlock(0, 1, false, 1),
-                            standardMineBlock(0, 2, false, 1),
-                            standardMineBlock(0, 3, false, 0),
+                            standardMineBlock(0, 0, false, 1, false, false, false),
+                            standardMineBlock(0, 1, false, 1, false, false, false),
+                            standardMineBlock(0, 2, false, 1, false, false, false),
+                            standardMineBlock(0, 3, false, 0, false, false, false),
                         ],
                         [
-                            standardMineBlock(1, 0, false, 1),
-                            standardMineBlock(1, 1, true, 0),
-                            standardMineBlock(1, 2, false, 1),
-                            standardMineBlock(1, 3, false, 0),
+                            standardMineBlock(1, 0, false, 1, false, false, false),
+                            standardMineBlock(1, 1, true, 0, false, false, false),
+                            standardMineBlock(1, 2, false, 1, false, false, false),
+                            standardMineBlock(1, 3, false, 0, false, false, false),
                         ],
                         [
-                            standardMineBlock(2, 0, false, 2),
-                            standardMineBlock(2, 1, false, 2),
-                            standardMineBlock(2, 2, false, 1),
-                            standardMineBlock(2, 3, false, 0),
+                            standardMineBlock(2, 0, false, 2, false, false, false),
+                            standardMineBlock(2, 1, false, 2, false, false, false),
+                            standardMineBlock(2, 2, false, 1, false, false, false),
+                            standardMineBlock(2, 3, false, 0, false, false, false),
                         ],
                         [
-                            standardMineBlock(3, 0, true, 0),
-                            standardMineBlock(3, 1, false, 1),
-                            standardMineBlock(3, 2, false, 0),
-                            standardMineBlock(3, 3, false, 0),
+                            standardMineBlock(3, 0, true, 0, false, false, false),
+                            standardMineBlock(3, 1, false, 1, false, false, false),
+                            standardMineBlock(3, 2, false, 0, false, false, false),
+                            standardMineBlock(3, 3, false, 0, false, false, false),
                         ],
                     ],
                     ended: false,
@@ -74,37 +78,97 @@ describe('retrieving saved progress', () => {
                 window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
             },
         });
+        cy.waitForGameReady();
     });
 
-    it('should load saved state', () => {
-        throw new Error('TODO: Implement this test');
-
-        // First check to see if game state loads up
+    it('should save changes', () => {
         cy.verifyBoardMatches([
-            [2, 0, 0, 0],
-            [4, 0, 0, 0],
-            [8, 0, 0, 0],
-            [16, 0, 0, 0],
+            [
+                standardMineBlock(0, 0, false, 1, false, false, false),
+                standardMineBlock(0, 1, false, 1, false, false, false),
+                standardMineBlock(0, 2, false, 1, false, false, false),
+                standardMineBlock(0, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(1, 1, true, 0, false, false, false),
+                standardMineBlock(1, 2, false, 1, false, false, false),
+                standardMineBlock(1, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(2, 0, false, 2, false, false, false),
+                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(2, 2, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(3, 0, true, 0, false, false, false),
+                standardMineBlock(3, 1, false, 1, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(3, 3, false, 0, false, false, false),
+            ],
         ]);
 
-        // Then check if persistent state loads up
-        cy.contains('Best 1234').should('be.visible');
+        cy.get('.game-board > .row')
+            .eq(0)
+            .within(() => {
+                cy.get('.box').eq(0).click();
+            });
 
-        // Finally check if preferences are loaded
-        cy.get('body').should('have.class', 'dark');
-        cy.get('body').should('have.class', 'tileset-dark');
-
-        // Now load up a game state where the player lost, a lose popup should appear as well.
-        cy.contains('You lose!').should('not.exist');
-
-        cy.get('.debug-link#debug').click();
-        cy.contains('New Losing Game').click();
-        cy.get('body').type('{rightArrow}');
-
-        cy.contains('You lose!').should('be.visible');
+        cy.verifyBoardMatches([
+            [
+                standardMineBlock(0, 0, false, 1, true, false, false),
+                standardMineBlock(0, 1, false, 1, false, false, false),
+                standardMineBlock(0, 2, false, 1, false, false, false),
+                standardMineBlock(0, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(1, 1, true, 0, false, false, false),
+                standardMineBlock(1, 2, false, 1, false, false, false),
+                standardMineBlock(1, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(2, 0, false, 2, false, false, false),
+                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(2, 2, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(3, 0, true, 0, false, false, false),
+                standardMineBlock(3, 1, false, 1, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(3, 3, false, 0, false, false, false),
+            ],
+        ]);
 
         cy.reload();
 
-        cy.contains('You lose!').should('be.visible');
+        cy.verifyBoardMatches([
+            [
+                standardMineBlock(0, 0, false, 1, true, false, false),
+                standardMineBlock(0, 1, false, 1, false, false, false),
+                standardMineBlock(0, 2, false, 1, false, false, false),
+                standardMineBlock(0, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(1, 0, false, 1, false, false, false),
+                standardMineBlock(1, 1, true, 0, false, false, false),
+                standardMineBlock(1, 2, false, 1, false, false, false),
+                standardMineBlock(1, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(2, 0, false, 2, false, false, false),
+                standardMineBlock(2, 1, false, 2, false, false, false),
+                standardMineBlock(2, 2, false, 1, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false),
+            ],
+            [
+                standardMineBlock(3, 0, true, 0, false, false, false),
+                standardMineBlock(3, 1, false, 1, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(3, 3, false, 0, false, false, false),
+            ],
+        ]);
     });
 });

@@ -76,108 +76,83 @@ describe('settings', () => {
                 window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
             },
         });
+        cy.waitForGameReady();
     });
 
-    it('should alternate between game pane and settings pane when settings link is clicked', () => {
+    it('should be able to open settings and close it using close button', () => {
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldNotBeInViewport();
 
         cy.get('.settings-link').click();
-
-        cy.wait(1000);
+        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
 
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
 
         cy.get('.settings.pane').within(() => {
             cy.get('.close').click();
+            cy.wait(1000); // need to delay to give the settings pane time to disappear fully from screen
         });
-
-        cy.wait(1000);
 
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldNotBeInViewport();
     });
 
-    it('should disappear and show game pane again when close button is clicked in settings pane', () => {
-        throw new Error('TODO: Implement this test');
+    it('should be able to open settings and close it using overlay', () => {
+        cy.get('.game-board').should('be.visible');
+        cy.contains('Settings').shouldNotBeInViewport();
 
         cy.get('.settings-link').click();
+        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
 
-        cy.get('.base-rows').should('not.be.visible');
-        cy.contains('Settings').should('be.visible');
+        cy.get('.game-board').should('be.visible');
+        cy.contains('Settings').shouldBeInViewport();
 
-        cy.get('.close').click();
+        cy.get('.game-overlay').click('left');
+        cy.wait(1000); // need to delay to give the settings pane time to disappear fully from screen
 
-        cy.get('.base-rows').should('be.visible');
-        cy.contains('Settings').should('not.be.visible');
+        cy.get('.game-board').should('be.visible');
+        cy.contains('Settings').shouldNotBeInViewport();
     });
 
     it('should toggle a setting when clicked', () => {
-        throw new Error('TODO: Implement this test');
-
         cy.get('.settings-link').click();
+        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
 
-        cy.contains('Settings').should('be.visible');
+        cy.get('.game-board').should('be.visible');
+        cy.contains('Settings').shouldBeInViewport();
 
-        cy.get('.settings-item.animations .knob').should('not.have.class', 'enabled');
-        cy.window().then((win) => {
-            // TODO: In production, the two debug hud options will not be enabled,
-            // AFAIK, there is no way to turn off Vite dev mode for just one test, so this will have to do for now.
-            expect(JSON.parse(win.localStorage.getItem('preferences'))).to.deep.equal({
-                theme: 'dark',
-                debugHudEnabled: 'enabled',
-                debugHudVisible: 'enabled',
-            });
-        });
+        cy.get('.settings.pane').within(() => {
+            cy.get('.settings-item.highlight .knob').should('not.have.class', 'enabled');
 
-        cy.get('.settings-item.animations').click();
+            cy.get('.settings-item.highlight').should('be.visible').click();
 
-        cy.get('.settings-item.animations .knob').should('have.class', 'enabled');
-        cy.window().then((win) => {
-            expect(JSON.parse(win.localStorage.getItem('preferences'))).to.deep.equal({
-                theme: 'dark',
-                animations: 'enabled',
-                debugHudEnabled: 'enabled',
-                debugHudVisible: 'enabled',
-            });
-        });
-
-        cy.get('.settings-item.animations').click();
-
-        cy.get('.settings-item.animations .knob').should('not.have.class', 'enabled');
-        cy.window().then((win) => {
-            expect(JSON.parse(win.localStorage.getItem('preferences'))).to.deep.equal({
-                theme: 'dark',
-                animations: 'disabled',
-                debugHudEnabled: 'enabled',
-                debugHudVisible: 'enabled',
-            });
+            cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');
         });
     });
 
     it("should reenable a setting if it's set to enabled in local storage and page is reloaded", () => {
-        throw new Error('TODO: Implement this test');
-
         window.localStorage.setItem(
             'preferences',
             JSON.stringify({
-                animations: 'enabled',
+                highlight: 'enabled',
             })
         );
 
         cy.reload();
 
         cy.get('.settings-link').click();
+        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
 
-        cy.contains('Settings').should('be.visible');
+        cy.get('.game-board').should('be.visible');
+        cy.contains('Settings').shouldBeInViewport();
 
-        cy.get('.settings-item.animations .knob').should('have.class', 'enabled');
+        cy.get('.settings.pane').within(() => {
+            cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');
+        });
     });
 
     it('should show version number at the bottom of the settings pane', () => {
-        throw new Error('TODO: Implement this test');
-
         cy.get('.settings-link').click();
 
         cy.contains('Settings').should('be.visible');
@@ -185,8 +160,6 @@ describe('settings', () => {
     });
 
     it('should show copyright at the bottom of the settings pane', () => {
-        throw new Error('TODO: Implement this test');
-
         cy.get('.settings-link').click();
 
         cy.contains('Settings').should('be.visible');
@@ -194,8 +167,6 @@ describe('settings', () => {
     });
 
     it('should handle preferences value in local storage being in invalid state', () => {
-        throw new Error('TODO: Implement this test');
-
         // Set local storage preferences value to "invalid" to simulate an invalid state
         cy.visit('/', {
             onBeforeLoad: () => {
@@ -207,7 +178,7 @@ describe('settings', () => {
 
         cy.contains('Settings').should('be.visible');
 
-        cy.get('.settings-item.animations .knob').should('not.have.class', 'enabled');
+        cy.get('.settings-item.highlight .knob').should('not.have.class', 'enabled');
         cy.window().then((win) => {
             // The invalid value should be replaced with the default value,
             // which will be set to debug hud options in dev mode
@@ -224,23 +195,23 @@ describe('settings', () => {
             // at all upon invalid value in production.
         });
 
-        cy.get('.settings-item.animations').click();
+        cy.get('.settings-item.highlight').click();
 
-        cy.get('.settings-item.animations .knob').should('have.class', 'enabled');
+        cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');
         cy.window().then((win) => {
             expect(JSON.parse(win.localStorage.getItem('preferences'))).to.deep.equal({
-                animations: 'enabled',
+                highlight: 'enabled',
                 debugHudEnabled: 'enabled',
                 debugHudVisible: 'enabled',
             });
         });
 
-        cy.get('.settings-item.animations').click();
+        cy.get('.settings-item.highlight').click();
 
-        cy.get('.settings-item.animations .knob').should('not.have.class', 'enabled');
+        cy.get('.settings-item.highlight .knob').should('not.have.class', 'enabled');
         cy.window().then((win) => {
             expect(JSON.parse(win.localStorage.getItem('preferences'))).to.deep.equal({
-                animations: 'disabled',
+                highlight: 'disabled',
                 debugHudEnabled: 'enabled',
                 debugHudVisible: 'enabled',
             });

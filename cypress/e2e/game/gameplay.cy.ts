@@ -78,6 +78,7 @@ describe('gameplay', () => {
                 window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
             },
         });
+        cy.waitForGameReady();
     });
 
     it('should allow player to click on a tile', () => {

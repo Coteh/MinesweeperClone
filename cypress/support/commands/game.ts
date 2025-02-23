@@ -1,4 +1,8 @@
-import { MineBlock } from "../../../src/game";
+import { MineBlock } from '../../../src/game';
+
+Cypress.Commands.add('waitForGameReady', () => {
+    cy.get('.game-board').should('be.visible');
+});
 
 Cypress.Commands.add('verifyBoardMatches', (expectedBoard: (MineBlock | undefined)[][]) => {
     cy.get('.game-board > .row').should('have.length', expectedBoard.length);

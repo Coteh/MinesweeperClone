@@ -14,16 +14,13 @@ const standardMineBlock: (
         y,
         isMine,
         isRevealed: false,
+        isLosingSpot: false,
         isFlagged: false,
         adjMinesCount,
     };
 };
 
 describe('fullscreen', () => {
-    before(() => {
-        throw new Error('TODO: Implement these tests');
-    });
-
     before(() => {
         cy.log(`
             NOTE: Fullscreen testing in Cypress is unreliable at the moment. 
@@ -89,6 +86,7 @@ describe('fullscreen', () => {
             cy.stub(doc.documentElement, 'requestFullscreen').as('requestFullscreen');
             cy.stub(doc, 'exitFullscreen').as('exitFullscreen');
         });
+        cy.waitForGameReady();
     });
 
     // TODO: Fix issue where using 'f' key toggles Cypress sidebar instead of toggling fullscreen mode
@@ -112,13 +110,13 @@ describe('fullscreen', () => {
     it('should toggle fullscreen mode on and off using settings option', () => {
         cy.get('.settings-link').click();
         cy.get('@requestFullscreen').should('not.have.been.called');
-        cy.contains('Fullscreen').realClick();
+        cy.get('.settings-item.fullscreen').realClick();
         cy.get('@requestFullscreen').should('have.been.called');
         cy.window().then((win) => {
             cy.stub(win.document, 'fullscreenElement').value(win.document.documentElement);
         });
         cy.get('@exitFullscreen').should('not.have.been.called');
-        cy.contains('Fullscreen').realClick();
+        cy.get('.settings-item.fullscreen').realClick();
         cy.get('@exitFullscreen').should('have.been.called');
     });
 
@@ -169,10 +167,12 @@ describe('fullscreen', () => {
     it('should show fullscreen option on desktop', () => {
         cy.viewport(1024, 768);
         cy.get('.settings-link').click();
+        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
         cy.get('.setting.fullscreen').should('be.visible');
     });
 
     it('should hide fullscreen option on phones', () => {
+        cy.viewport('iphone-6');
         cy.visit('/', {
             onBeforeLoad: (win) => {
                 Object.defineProperty(win.navigator, 'userAgent', {
@@ -181,8 +181,9 @@ describe('fullscreen', () => {
                 });
             },
         });
-        cy.viewport('iphone-6');
+        cy.waitForGameReady();
         cy.get('.settings-link').click();
+        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
         cy.get('.setting.fullscreen').should('not.exist');
     });
 });

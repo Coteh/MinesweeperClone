@@ -9,6 +9,7 @@ declare global {
             shouldBeInViewport(): Chainable<Subject>;
             shouldNotBeInViewport(): Chainable<Subject>;
             waitUntilDialogAppears(): Chainable<Subject>;
+            waitForGameReady(): Chainable<Subject>;
             verifyBoardMatches(expectedBoard: (MineBlock | undefined)[][]): Chainable<Subject>;
             verifyBoardDoesNotMatch(expectedBoard: (MineBlock | undefined)[][]): Chainable<Subject>;
         }
