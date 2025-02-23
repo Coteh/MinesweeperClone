@@ -7,5 +7,13 @@
 # Build output
 build/
 
+# Cypress output
+cypress/videos
+cypress/screenshots/*
+
+# Whitelist manual visual regression screenshot directories
+!cypress/screenshots/viewport.cy.ts
+!cypress/screenshots/screenshot.cy.ts
+
 # Test report output
 results/*.xml
