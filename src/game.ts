@@ -242,17 +242,14 @@ export const selectSpot = function (x: number, y: number) {
         eventHandler('first_block_click', { gameState, persistentState });
     }
     gameState.firstBlockClicked = true;
-    // If a mine, need to mark this spot as the losing spot before re-rendering
     if (isMine) {
         gameState.board[y][x].isLosingSpot = true;
-    }
-    // TODO: Should game state be passed into the draw?
-    eventHandler('draw', { gameState, persistentState });
-    if (isMine) {
         gameState.ended = true;
         clearInterval(gameTimer);
         eventHandler('lose', { gameState, persistentState });
         gameStorage.saveGame(gameState);
+        // TODO: Should game state be passed into the draw?
+        eventHandler('draw', { gameState, persistentState });
         return { hitInfo: 'mine', win: false };
     }
     const won = checkForWin();
@@ -262,6 +259,8 @@ export const selectSpot = function (x: number, y: number) {
         clearInterval(gameTimer);
         eventHandler('win', { gameState, persistentState });
     }
+    // TODO: Should game state be passed into the draw?
+    eventHandler('draw', { gameState, persistentState });
     gameStorage.saveGame(gameState);
     return { hitInfo: 'land', win: won };
 };
@@ -292,13 +291,13 @@ export const selectAdjacentSpots = function (x: number, y: number) {
         }
         revealMultiple(adjacentSpots);
     }
-    // TODO: Should game state be passed into the draw?
-    eventHandler('draw', { gameState, persistentState });
     if (doesMineExist) {
         gameState.ended = true;
         clearInterval(gameTimer);
         eventHandler('lose', { gameState, persistentState });
         gameStorage.saveGame(gameState);
+        // TODO: Should game state be passed into the draw?
+        eventHandler('draw', { gameState, persistentState });
         return { hitInfo: 'mine', win: false };
     }
     const won = checkForWin();
@@ -308,6 +307,8 @@ export const selectAdjacentSpots = function (x: number, y: number) {
         clearInterval(gameTimer);
         eventHandler('win', { gameState, persistentState });
     }
+    // TODO: Should game state be passed into the draw?
+    eventHandler('draw', { gameState, persistentState });
     gameStorage.saveGame(gameState);
     return { hitInfo: 'land', win: won };
 };

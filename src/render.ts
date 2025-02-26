@@ -14,22 +14,35 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
             const elem = document.createElement('div');
             elem.classList.add('box');
             if (gameState.board[i][j].isRevealed) {
-                elem.classList.add('revealed');
-                if (gameState.board[i][j].isMine) {
-                    const mineImg = document.createElement('img');
-                    mineImg.src = 'img/Mine.png';
-                    elem.appendChild(mineImg);
-                    if (gameState.board[i][j].isLosingSpot) {
-                        elem.classList.add('losing');
+                if (gameState.board[i][j].isFlagged) {
+                    if (!gameState.ended || gameState.board[i][j].isMine) {
+                        const flagImg = document.createElement('img');
+                        flagImg.src = 'img/Flag.png';
+                        elem.appendChild(flagImg);
+                    } else {
+                        elem.classList.add('incorrect');
+                        const mineImg = document.createElement('img');
+                        mineImg.src = 'img/Mine.png';
+                        elem.appendChild(mineImg);
                     }
-                } else if (gameState.board[i][j].adjMinesCount > 0) {
-                    const numElem = document.createElement('span');
-                    numElem.style.color = `var(--mine-text-${gameState.board[i][j].adjMinesCount})`;
-                    numElem.innerText =
-                        gameState.board[i][j].adjMinesCount > 0
-                            ? gameState.board[i][j].adjMinesCount.toString()
-                            : '';
-                    elem.appendChild(numElem);
+                } else {
+                    elem.classList.add('revealed');
+                    if (gameState.board[i][j].isMine) {
+                        const mineImg = document.createElement('img');
+                        mineImg.src = 'img/Mine.png';
+                        elem.appendChild(mineImg);
+                        if (gameState.board[i][j].isLosingSpot) {
+                            elem.classList.add('losing');
+                        }
+                    } else if (gameState.board[i][j].adjMinesCount > 0) {
+                        const numElem = document.createElement('span');
+                        numElem.style.color = `var(--mine-text-${gameState.board[i][j].adjMinesCount})`;
+                        numElem.innerText =
+                            gameState.board[i][j].adjMinesCount > 0
+                                ? gameState.board[i][j].adjMinesCount.toString()
+                                : '';
+                        elem.appendChild(numElem);
+                    }
                 }
             } else if (gameState.board[i][j].isFlagged) {
                 const flagImg = document.createElement('img');

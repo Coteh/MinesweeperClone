@@ -1,5 +1,9 @@
 import { MineBlock } from '../../src/game';
 
+interface VerifyBoardOptions {
+    isGameOver?: boolean;
+}
+
 declare global {
     namespace Cypress {
         interface Chainable<Subject = any> {
@@ -10,8 +14,10 @@ declare global {
             shouldNotBeInViewport(): Chainable<Subject>;
             waitUntilDialogAppears(): Chainable<Subject>;
             waitForGameReady(): Chainable<Subject>;
-            verifyBoardMatches(expectedBoard: (MineBlock | undefined)[][]): Chainable<Subject>;
-            verifyBoardDoesNotMatch(expectedBoard: (MineBlock | undefined)[][]): Chainable<Subject>;
+            verifyBoardMatches(
+                expectedBoard: (MineBlock | undefined)[][],
+                options?: VerifyBoardOptions
+            ): Chainable<Subject>;
         }
     }
 }
