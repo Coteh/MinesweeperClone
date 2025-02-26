@@ -243,6 +243,9 @@ export const selectSpot = function (x: number, y: number) {
     }
     gameState.firstBlockClicked = true;
     if (isMine) {
+        // Unflag the block if a flag has been placed on it
+        gameState.board[y][x].isFlagged = false;
+        // Mark the mine as a losing spot
         gameState.board[y][x].isLosingSpot = true;
         gameState.ended = true;
         clearInterval(gameTimer);
