@@ -38,8 +38,8 @@ export function setupSettingsSubsystem(
                 frontendState.gameOptions.numberOfMines = 40;
                 break;
             case DIFFICULTY_HARD:
-                frontendState.gameOptions.boardWidth = 16;
-                frontendState.gameOptions.boardHeight = 30;
+                frontendState.gameOptions.boardWidth = 30;
+                frontendState.gameOptions.boardHeight = 16;
                 frontendState.gameOptions.numberOfMines = 99;
                 break;
             case DIFFICULTY_EASY:
