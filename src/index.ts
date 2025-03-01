@@ -202,6 +202,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         await assetManager.loadAssets([
+            'img/digits/0.png',
+            'img/digits/1.png',
+            'img/digits/2.png',
+            'img/digits/3.png',
+            'img/digits/4.png',
+            'img/digits/5.png',
+            'img/digits/6.png',
+            'img/digits/7.png',
+            'img/digits/8.png',
+            'img/digits/9.png',
+            'img/digits/-.png',
             'img/Flag.png',
             'img/Mine.png',
             'img/Logo.png',
