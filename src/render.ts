@@ -95,7 +95,14 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
 };
 
 export const renderDigits = (parentElem: HTMLElement, digits: number) => {
-    const digitStr = digits.toString();
+    let digitStr;
+    if (digits < 0) {
+        digitStr = Math.abs(digits).toString().padStart(3, '0');
+        digitStr = '-' + digitStr.slice(1);
+    } else {
+        digitStr = digits.toString();
+    }
+
     const children = parentElem.children;
 
     if (digitStr.length > children.length) {
@@ -113,6 +120,8 @@ export const renderDigits = (parentElem: HTMLElement, digits: number) => {
         item.src = `img/digits/${digit}.png`;
         j++;
     }
+
+    parentElem.dataset.count = digits.toString();
 };
 
 export type DialogOptions = {

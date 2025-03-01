@@ -96,9 +96,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                             ),
                         0
                     );
-                if (unflaggedCount < 0) {
-                    unflaggedCount = 0;
-                }
                 renderDigits(mineCountBoard, unflaggedCount);
                 break;
             case 'error':

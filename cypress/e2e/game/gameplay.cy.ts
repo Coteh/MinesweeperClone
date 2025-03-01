@@ -1139,4 +1139,163 @@ describe('gameplay', () => {
                     });
             });
     });
+
+    describe('negative mine count', () => {
+        describe('low negative mine count', () => {
+            it('should display it with a minus sign', () => {
+                cy.get('#mine-count-board > img')
+                    .eq(0)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board > img')
+                    .eq(1)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board > img')
+                    .eq(2)
+                    .should('have.attr', 'src', 'img/digits/2.png');
+                cy.get('#mine-count-board[data-count="2"]').should('exist');
+                cy.get('.game-board > .row')
+                    .eq(0)
+                    .within(() => {
+                        cy.get('.box').eq(0).rightclick();
+                    });
+                cy.get('#mine-count-board > img')
+                    .eq(0)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board > img')
+                    .eq(1)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board > img')
+                    .eq(2)
+                    .should('have.attr', 'src', 'img/digits/1.png');
+                cy.get('#mine-count-board[data-count="1"]').should('exist');
+                cy.get('.game-board > .row')
+                    .eq(0)
+                    .within(() => {
+                        cy.get('.box').eq(1).rightclick();
+                    });
+                cy.get('#mine-count-board > img')
+                    .eq(0)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board > img')
+                    .eq(1)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board > img')
+                    .eq(2)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board[data-count="0"]').should('exist');
+                cy.get('.game-board > .row')
+                    .eq(0)
+                    .within(() => {
+                        cy.get('.box').eq(2).rightclick();
+                    });
+                cy.get('#mine-count-board > img')
+                    .eq(0)
+                    .should('have.attr', 'src', 'img/digits/-.png');
+                cy.get('#mine-count-board > img')
+                    .eq(1)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board > img')
+                    .eq(2)
+                    .should('have.attr', 'src', 'img/digits/1.png');
+                cy.get('#mine-count-board[data-count="-1"]').should('exist');
+                cy.get('.game-board > .row')
+                    .eq(0)
+                    .within(() => {
+                        cy.get('.box').eq(3).rightclick();
+                    });
+                cy.get('#mine-count-board > img')
+                    .eq(0)
+                    .should('have.attr', 'src', 'img/digits/-.png');
+                cy.get('#mine-count-board > img')
+                    .eq(1)
+                    .should('have.attr', 'src', 'img/digits/0.png');
+                cy.get('#mine-count-board > img')
+                    .eq(2)
+                    .should('have.attr', 'src', 'img/digits/2.png');
+                cy.get('#mine-count-board[data-count="-2"]').should('exist');
+            });
+        });
+
+        describe('high negative mine count', () => {
+            beforeEach(() => {
+                cy.fixture('high-negative-mine-count-game-state.json').then((gameState) => {
+                    cy.visit('/', {
+                        onBeforeLoad: () => {
+                            const persistentState: GamePersistentState = {
+                                highscore: 0,
+                                unlockables: {},
+                                hasPlayedBefore: true,
+                            };
+                            window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                            window.localStorage.setItem(
+                                'persistent-state',
+                                JSON.stringify(persistentState)
+                            );
+                        },
+                    });
+                    cy.waitForGameReady();
+                });
+            });
+
+            describe('digit board', () => {
+                it('should handle three digit negative number by trimming the first digit, and the full digit value should be in data attribute', () => {
+                    cy.get('#mine-count-board > img')
+                        .eq(0)
+                        .should('have.attr', 'src', 'img/digits/-.png');
+                    cy.get('#mine-count-board > img')
+                        .eq(1)
+                        .should('have.attr', 'src', 'img/digits/9.png');
+                    cy.get('#mine-count-board > img')
+                        .eq(2)
+                        .should('have.attr', 'src', 'img/digits/8.png');
+                    cy.get('#mine-count-board[data-count="-98"]').should('exist');
+                    cy.get('.game-board > .row')
+                        .eq(5)
+                        .within(() => {
+                            cy.get('.box').eq(17).rightclick();
+                        });
+                    cy.get('#mine-count-board > img')
+                        .eq(0)
+                        .should('have.attr', 'src', 'img/digits/-.png');
+                    cy.get('#mine-count-board > img')
+                        .eq(1)
+                        .should('have.attr', 'src', 'img/digits/9.png');
+                    cy.get('#mine-count-board > img')
+                        .eq(2)
+                        .should('have.attr', 'src', 'img/digits/9.png');
+                    cy.get('#mine-count-board[data-count="-99"]').should('exist');
+                    cy.get('.game-board > .row')
+                        .eq(6)
+                        .within(() => {
+                            cy.get('.box').eq(17).rightclick();
+                        });
+                    cy.get('#mine-count-board > img')
+                        .eq(0)
+                        .should('have.attr', 'src', 'img/digits/-.png');
+                    cy.get('#mine-count-board > img')
+                        .eq(1)
+                        .should('have.attr', 'src', 'img/digits/0.png');
+                    cy.get('#mine-count-board > img')
+                        .eq(2)
+                        .should('have.attr', 'src', 'img/digits/0.png');
+                    cy.get('#mine-count-board[data-count="-100"]').should('exist');
+                    cy.get('.game-board > .row')
+                        .eq(7)
+                        .within(() => {
+                            cy.get('.box').eq(17).rightclick();
+                        });
+                    cy.get('#mine-count-board > img')
+                        .eq(0)
+                        .should('have.attr', 'src', 'img/digits/-.png');
+                    cy.get('#mine-count-board > img')
+                        .eq(1)
+                        .should('have.attr', 'src', 'img/digits/0.png');
+                    cy.get('#mine-count-board > img')
+                        .eq(2)
+                        .should('have.attr', 'src', 'img/digits/1.png');
+                    cy.get('#mine-count-board[data-count="-101"]').should('exist');
+                });
+            });
+        });
+    });
 });
