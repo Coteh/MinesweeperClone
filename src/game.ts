@@ -242,9 +242,9 @@ export const selectSpot = function (x: number, y: number) {
         eventHandler('first_block_click', { gameState, persistentState });
     }
     gameState.firstBlockClicked = true;
+    // Unflag the block if a flag has been placed on it
+    gameState.board[y][x].isFlagged = false;
     if (isMine) {
-        // Unflag the block if a flag has been placed on it
-        gameState.board[y][x].isFlagged = false;
         // Mark the mine as a losing spot
         gameState.board[y][x].isLosingSpot = true;
         gameState.ended = true;
@@ -341,9 +341,9 @@ const revealSpot = function (x: number, y: number) {
         adjacentSpots: MineBlock[]
     ) {
         if (!isMine) {
-            // If mine count is 0, then recursively call revealSpot on all adjacent spots
+            // If mine count is 0, then recursively call revealSpot on all adjacent spots that are not flagged
             if (amountOfAdjMines <= 0) {
-                revealMultiple(adjacentSpots);
+                revealMultiple(adjacentSpots.filter((spot) => !spot.isFlagged));
             }
         } else {
             for (var a = 0; a < gameState.gameOptions.boardWidth; a++) {
