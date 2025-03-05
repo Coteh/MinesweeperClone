@@ -29,9 +29,9 @@
                         <a id="debug" class="debug-link link-icon" href="#" style="display:none">
                             <i data-feather="tool"></i>
                         </a>
-                        <!-- <a class="help-link link-icon" href="#">
+                        <a class="help-link link-icon" href="#">
                             <i data-feather="help-circle"></i>
-                        </a> -->
+                        </a>
                         <a popovertarget="settings" popovertargetaction="show" class="settings-link link-icon" href="#">
                             <i data-feather="settings"></i>
                         </a>
@@ -249,6 +249,90 @@
             <button class="button new-game">
                 <span>New Game</span>
             </button>
+        </template>
+        <template id="how-to-play">
+            <div class="how-to-play">
+                <div class="how-to-play-content">
+                    <div class="instructions">
+                        <div class="section">
+                            <h2>How to Play</h2>
+                        </div>
+                    
+                        <div class="section">
+                            <p>Left-click (or tap) to reveal a block. If it's a mine, the game is over.</p>
+                            <div class="sample game-space">
+                                <div class="game-board">
+                                    <div class="row">
+                                        <div class="box"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="section">
+                            <p>Right-click (or hold tap) to flag or unflag a block as a suspected mine.</p>
+                            <div class="sample game-space">
+                                <div class="game-board">
+                                    <div class="row">
+                                        <div class="box"><img src="img/Flag.png"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="section">
+                            <p>Numbers on revealed blocks indicate how many mines are in the surrounding eight blocks.</p>
+                            <div class="sample game-space">
+                                <div class="game-board">
+                                    <div class="row">
+                                        <div class="box revealed"><span style="color: var(--mine-text-1);">1</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="section">
+                            <p>Reveal all safe blocks to win the game!</p>
+                            <!-- Image can go here -->
+                        </div>
+                    
+                        <div class="section">
+                            <h3>Tips</h3>
+                        </div>
+                    
+                        <div class="section">
+                            <p>Use numbers to determine where mines are and flag them accordingly.</p>
+                            <div class="sample game-space">
+                                <div class="game-board">
+                                    <div class="row">
+                                        <div class="box"></div>
+                                        <div class="box"></div>
+                                        <div class="box"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="box"></div>
+                                        <div class="box"><img src="img/Flag.png"></div>
+                                        <div class="box revealed"><span style="color: var(--mine-text-3);">3</span></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="box revealed"><span style="color: var(--mine-text-2);">2</span></div>
+                                        <div class="box revealed"><span style="color: var(--mine-text-2);">2</span></div>
+                                        <div class="box revealed"><span style="color: var(--mine-text-1);">1</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="section">
+                            <p>If you're unsure about a move, try to reveal blocks with fewer mines nearby first.</p>
+                        </div>
+
+                        <div class="section">
+                            <p>Good luck!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </template>
         <template id="prompt-dialog-content">
             <span class="prompt-text"></span><br/>
