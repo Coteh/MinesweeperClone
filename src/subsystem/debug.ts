@@ -1,9 +1,19 @@
-import { DEBUG_HUD_ENABLED_PREFERENCE_NAME, DEBUG_HUD_VISIBLE_PREFERENCE_NAME, SETTING_DISABLED, SETTING_ENABLED } from "../consts";
-import { newGame } from "../game";
-import { ActionIconManager } from "../manager/action-icon";
-import { TransformManager } from "../manager/transform";
-import { getPreferenceValue, savePreferenceValue } from "../preferences";
-import { createDialogContentFromTemplate, renderDialog, renderNotification, renderPromptDialog } from "../render";
+import {
+    DEBUG_HUD_ENABLED_PREFERENCE_NAME,
+    DEBUG_HUD_VISIBLE_PREFERENCE_NAME,
+    SETTING_DISABLED,
+    SETTING_ENABLED,
+} from '../consts';
+import { newGame } from '../game';
+import { ActionIconManager } from '../manager/action-icon';
+import { TransformManager } from '../manager/transform';
+import { getPreferenceValue, savePreferenceValue } from '../preferences';
+import {
+    createDialogContentFromTemplate,
+    renderDialog,
+    renderNotification,
+    renderPromptDialog,
+} from '../render';
 
 export type DebugSubsystem = {
     toggleDebugHud: (isVisible: boolean) => void;
@@ -12,7 +22,7 @@ export type DebugSubsystem = {
 export function setupDebugSubsystem(
     actionIconManager: ActionIconManager,
     transformManager: TransformManager,
-    closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
+    closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void
 ): DebugSubsystem {
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;
     const debugMenuButton = document.querySelector('.link-icon#debug') as HTMLElement;
@@ -23,6 +33,7 @@ export function setupDebugSubsystem(
         e.preventDefault();
         renderDialog(createDialogContentFromTemplate('#debug-dialog-content'), {
             fadeIn: true,
+            effect: 'expand',
         });
         const closeDialogAndOverlay = () => {
             const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
@@ -50,11 +61,13 @@ export function setupDebugSubsystem(
                 (dialogElem.querySelector('.prompt-text') as HTMLSpanElement).innerText = 'Answer?';
                 renderPromptDialog(dialogElem, {
                     fadeIn: true,
+                    effect: 'expand',
                     onConfirm: () => {
                         const dialogElem = document.createElement('span');
                         dialogElem.innerText = 'Confirmed';
                         renderDialog(dialogElem, {
                             fadeIn: true,
+                            effect: 'expand',
                         });
                     },
                 });
@@ -69,6 +82,7 @@ export function setupDebugSubsystem(
                     'Testing a dialog that does not close. You will need to refresh the page.';
                 renderDialog(dialogElem, {
                     fadeIn: true,
+                    effect: 'expand',
                     closable: false,
                 });
             }
@@ -135,4 +149,4 @@ export function setupDebugSubsystem(
     return {
         toggleDebugHud,
     };
-};
+}

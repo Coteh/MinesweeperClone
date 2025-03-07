@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'Are you sure you want to start a new game? All progress will be lost.';
         renderPromptDialog(dialogElem, {
             fadeIn: true,
+            effect: 'expand',
             onConfirm: () => {
                 newGame(frontendState.gameOptions);
                 if (onNewGameStarted) {
@@ -191,16 +192,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     (document.querySelector(".settings [data-feather='x']") as HTMLElement).innerText = 'X';
     feather.replace();
 
-    const helpLink = document.querySelector(".help-link") as HTMLElement;
-    helpLink.addEventListener("click", (e) => {
+    const helpLink = document.querySelector('.help-link') as HTMLElement;
+    helpLink.addEventListener('click', (e) => {
         e.preventDefault();
-        const howToPlayElem = createDialogContentFromTemplate("#how-to-play");
+        const howToPlayElem = createDialogContentFromTemplate('#how-to-play');
         renderDialog(howToPlayElem, {
             fadeIn: true,
+            effect: 'pop',
             style: {
-                width: "75%",
-                height: "75%",
-                maxWidth: "600px",
+                width: '75%',
+                height: '75%',
+                maxWidth: '600px',
             },
         });
         helpLink.blur();
@@ -262,6 +264,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         renderDialog(elem, {
             fadeIn: true,
+            effect: 'expand',
             closable: false,
         });
     }

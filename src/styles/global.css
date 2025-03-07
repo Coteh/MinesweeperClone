@@ -8,6 +8,7 @@
 
 @import url('./game/menu.css');
 @import url('./game/panes/index.css');
+@import url('./game/how-to-play.css');
 
 @import url('./themes/classic.css');
 @import url('./themes/snow.css');
@@ -67,7 +68,7 @@
     --background-color: var(--beige);
     --fallback-background-color: var(--background-color);
     --item-background-color: rgba(0, 0, 0, 0);
-    --dialog-background-color: var(--beige);
+    --dialog-background-color: var(--gray-7);
 
     --text-color: var(--black);
     --letter-text-color: var(--white);
@@ -216,33 +217,4 @@ a {
 */
 .loader > span {
     font-size: 1.6rem;
-}
-
-/* TODO: Move How to Play CSS into its own component */
-
-.dialog>.dialog-content>.how-to-play {
-    height: 100%;
-    position: relative;
-}
-
-.dialog>.dialog-content>.how-to-play>.how-to-play-content {
-    padding: 0 0 16px 0;
-}
-
-.dialog>.dialog-content>.how-to-play>.how-to-play-content>.instructions>.section {
-    display: flex;
-    align-items: center;
-}
-
-.dialog>.dialog-content>.how-to-play>.how-to-play-content>.instructions>.section>* {
-    padding-right: 16px;
-    padding-left: 16px;
-}
-
-.how-to-play h1,
-.how-to-play h2,
-.how-to-play h3,
-.how-to-play h4,
-.how-to-play h5 {
-    text-transform: uppercase;
 }

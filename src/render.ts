@@ -124,8 +124,11 @@ export const renderDigits = (parentElem: HTMLElement, digits: number) => {
     parentElem.dataset.count = digits.toString();
 };
 
+export type DialogEffect = 'expand' | 'pop';
+
 export type DialogOptions = {
     fadeIn?: boolean;
+    effect?: DialogEffect;
     closable?: boolean;
     style?: CSS.Properties;
 };
@@ -156,6 +159,14 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
                 dialog.style.opacity = '';
                 dialog.style.transform = 'translate(-50%, -50%)';
             }, 10);
+        }
+
+        switch (options.effect) {
+            case 'expand':
+                dialog.classList.add('expand-effect');
+                break;
+            case 'pop':
+                dialog.classList.add('pop-effect');
         }
 
         const closeBtn = clone.querySelector('button.close') as HTMLElement;
@@ -189,6 +200,7 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
 
 export type PromptDialogOptions = {
     fadeIn?: boolean;
+    effect?: DialogEffect;
     style?: CSS.Properties;
     onConfirm?: Function;
     onCancel?: Function;
@@ -222,6 +234,14 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
                 dialog.style.opacity = '';
                 dialog.style.transform = 'translate(-50%, -50%)';
             }, 10);
+        }
+
+        switch (options.effect) {
+            case 'expand':
+                dialog.classList.add('expand-effect');
+                break;
+            case 'pop':
+                dialog.classList.add('pop-effect');
         }
 
         if (options.style) {

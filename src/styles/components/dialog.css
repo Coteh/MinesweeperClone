@@ -18,7 +18,16 @@
 
     opacity: 1;
 
-    transition: transform 0.5s, opacity 0.75s;
+    transition: opacity 0.25s;
+}
+
+.dialog.expand-effect {
+    transition: transform 0.5s, opacity 0.25s;
+}
+
+.dialog.pop-effect {
+    transition: transform 0.2s ease-out, opacity 0.25s;
+    animation: pop 0.3s ease-out;
 }
 
 .dialog > div.dialog-content {
@@ -40,4 +49,16 @@
     position: absolute;
     top: 0;
     right: 0;
+}
+
+@keyframes pop {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
 }

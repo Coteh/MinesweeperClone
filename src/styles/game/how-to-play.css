@@ -1,0 +1,27 @@
+.dialog > .dialog-content > .how-to-play {
+    height: 100%;
+    position: relative;
+}
+
+.dialog > .dialog-content > .how-to-play > .how-to-play-content > .instructions > .section {
+    display: flex;
+    align-items: center;
+}
+
+.dialog > .dialog-content > .how-to-play > .how-to-play-content > .instructions > .section > * {
+    padding: 0 16px 0 16px;
+}
+
+@media (max-width: 480px) {
+    .dialog > .dialog-content > .how-to-play > .how-to-play-content > .instructions > .section > * {
+        padding: 0 8px 0 8px;
+    }
+}
+
+.how-to-play h1,
+.how-to-play h2,
+.how-to-play h3,
+.how-to-play h4,
+.how-to-play h5 {
+    text-transform: uppercase;
+}

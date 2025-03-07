@@ -84,12 +84,12 @@
 /* NTS: Hover color still appears and won't go away after tapping elsewhere on iOS.
     Workaround for now to disable hover color on iOS - https://stackoverflow.com/a/40617793 */
 @media (hover) {
-    body[data-can-highlight=''] .box:hover {
+    body[data-can-highlight=''] .game-space:not(.sample) .box:hover {
         background-color: #ffff00;
     }
 }
 
-.box:active {
+.game-space:not(.sample) .box:active {
     /* !important is added here to make sure it gets priority over :hover color */
     /* It also allows revealed blocks to use this color for its :active as well without creating another specifier for it. */
     background-color: #1a1a1a !important;
