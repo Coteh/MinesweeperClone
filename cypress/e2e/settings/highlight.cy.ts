@@ -68,6 +68,7 @@ describe('highlight', () => {
                         revealBoardOnLoss: true,
                     },
                     elapsedTimeMS: 0,
+                    spareMineSpot: { x: 0, y: 0 },
                 };
                 const persistentState: GamePersistentState = {
                     highscore: 0,

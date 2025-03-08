@@ -1,7 +1,7 @@
 import { BoardOverfillException } from './errors';
 import { IGameStorage } from './storage';
 
-let debugEnabled = true;
+let debugEnabled = false;
 
 export type GameOptions = {
     boardWidth: number;
@@ -20,6 +20,11 @@ export type MineBlock = {
     adjMinesCount: number;
 };
 
+export type Position = {
+    x: number;
+    y: number;
+};
+
 export type GameBoard = MineBlock[][];
 
 export type GameState = {
@@ -32,6 +37,7 @@ export type GameState = {
     achievedHighscore: boolean;
     gameOptions: GameOptions;
     elapsedTimeMS: number;
+    spareMineSpot: Position;
 };
 
 // Game state to last between games
@@ -78,6 +84,7 @@ const newState: (options: GameOptions) => GameState = (options) => {
         achievedHighscore: false,
         gameOptions: options,
         elapsedTimeMS: 0,
+        spareMineSpot: { x: -1, y: -1 },
     };
 };
 
@@ -155,19 +162,31 @@ export const newGame = (gameOptions: GameOptions, debugState?: GameState) => {
     gameStorage.clearGame();
 
     const amountOfMines = gameOptions.numberOfMines;
-    const determinedMines = determineMineSpots(
+    const mineSpots = determineMineSpots(
         gameOptions.boardWidth * gameOptions.boardHeight,
         amountOfMines
     );
-    console.log(determinedMines);
+    if (debugEnabled) console.log(mineSpots);
+    const mineSpotsToUse = mineSpots.slice(0, -1);
+    gameState.spareMineSpot = {
+        x: mineSpots[mineSpots.length - 1] % gameOptions.boardWidth,
+        y: Math.floor(mineSpots[mineSpots.length - 1] / gameOptions.boardWidth),
+    };
     //Spot 1 is at [0,0], Spot (boardWidth * boardHeight) is at [boardWidth - 1, boardHeight - 1]
-    for (var k = 0; k < determinedMines.length; k++) {
-        var yCoord = Math.floor(determinedMines[k] / gameOptions.boardWidth);
-        var xCoord = determinedMines[k] % gameOptions.boardWidth;
+    for (var k = 0; k < mineSpotsToUse.length; k++) {
+        var yCoord = Math.floor(mineSpotsToUse[k] / gameOptions.boardWidth);
+        var xCoord = mineSpotsToUse[k] % gameOptions.boardWidth;
         gameState.board[yCoord][xCoord].isMine = true;
+        if (debugEnabled) console.log('coords of spot', mineSpotsToUse[k], 'are:', xCoord, yCoord);
     }
-
-    console.log(gameState);
+    if (debugEnabled)
+        console.log(
+            'coords of replacement spot',
+            mineSpots[mineSpots.length - 1],
+            'are:',
+            gameState.spareMineSpot.x,
+            gameState.spareMineSpot.y
+        );
 
     // @ts-ignore TODO: Fix gameTimer used before assigned
     clearInterval(gameTimer);
@@ -184,7 +203,7 @@ const determineMineSpots = (amountOfBoardPieces: number, amountOfMines: number) 
 
     if (amountOfMines < amountOfBoardPieces) {
         var i = 0;
-        while (i < amountOfMines) {
+        while (i < amountOfMines + 1) {
             var randomSelection = Math.floor(Math.random() * (amountOfBoardPieces - 1)); //from 0 to amountOfBoardPieces - 1
             var isAlreadyThere = false;
             for (var j = 0; j < mineSpots.length; j++) {
@@ -200,11 +219,9 @@ const determineMineSpots = (amountOfBoardPieces: number, amountOfMines: number) 
             i++;
         }
     } else if (amountOfMines == amountOfBoardPieces) {
-        //It'd be an impossible game, but whatever, you asked for it...
-        //Skip randomization entirely and just add each possible spot for amountOfBoardPieces
-        for (var i = 0; i < amountOfMines; i++) {
-            mineSpots.push(i);
-        }
+        throw new BoardOverfillException(
+            'Amount of mines to generate is equal to the amount of board pieces.'
+        );
     } else {
         //amountOfMines > amountOfBoardPieces
         throw new BoardOverfillException(
@@ -232,6 +249,15 @@ export const selectSpot = function (x: number, y: number) {
         return { hitInfo: 'alreadyhit' };
     }
     let isMine = gameState.board[y][x].isMine;
+    if (!gameState.firstBlockClicked) {
+        // If the first block clicked is a mine, then regenerate its location
+        if (isMine && gameState.spareMineSpot.x >= 0 && gameState.spareMineSpot.y >= 0) {
+            gameState.board[y][x].isMine = false;
+            gameState.board[gameState.spareMineSpot.y][gameState.spareMineSpot.x].isMine = true;
+            isMine = false;
+            if (debugEnabled) console.log('Mine replaced!');
+        }
+    }
     revealSpot(x, y);
     if (!gameState.firstBlockClicked) {
         // TODO: Setup a more accurate game timer that can count by the MS
@@ -492,7 +518,14 @@ const checkForWin = function () {
     return false;
 };
 
-// To be used for tests
+/* Used for toggling debug console logs */
+
+export const setDebugEnabled = (enabled: boolean) => {
+    debugEnabled = !!enabled;
+};
+
+/* To be used for tests */
+
 export const getGameState: () => GameState = () => {
     return gameState;
 };

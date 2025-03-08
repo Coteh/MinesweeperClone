@@ -1,4 +1,4 @@
-import { GameState, initGame, newGame, GameOptions } from './game';
+import { GameState, initGame, newGame, GameOptions, setDebugEnabled } from './game';
 import { BrowserGameStorage } from './storage/browser';
 import {
     createDialogContentFromTemplate,
@@ -248,6 +248,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         settingsSubsystem = setupSettingsSubsystem(gameStorage, fullscreenManager, frontendState);
         // Debug subsystem needs settings subsystem to be set up first to ensure that preferences are loaded
         debugSubsystem = setupDebugSubsystem(actionIconManager, transformManager, closeDialog);
+
+        setDebugEnabled(import.meta.env.VITE_DEBUG_ENABLED);
 
         await initGame(frontendState.gameOptions, eventHandler, gameStorage);
     } catch (e) {

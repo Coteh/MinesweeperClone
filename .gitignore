@@ -4,6 +4,10 @@
 # Image Editor files
 *.xcf
 
+# Environment variable files
+*.env*
+!*.env.example
+
 # Build output
 build/
 
