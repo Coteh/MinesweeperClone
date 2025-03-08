@@ -880,13 +880,18 @@ describe('gameplay', () => {
             ],
         ]);
         cy.get('.game-board > .row')
+            .eq(0)
+            .within(() => {
+                cy.get('.box').eq(0).click();
+            });
+        cy.get('.game-board > .row')
             .eq(1)
             .within(() => {
                 cy.get('.box').eq(1).rightclick();
             });
         cy.verifyBoardMatches([
             [
-                standardMineBlock(0, 0, false, 1, false, false, false),
+                standardMineBlock(0, 0, false, 1, true, false, false),
                 standardMineBlock(1, 0, false, 1, false, false, false),
                 standardMineBlock(2, 0, false, 1, false, false, false),
                 standardMineBlock(3, 0, false, 0, false, false, false),
@@ -976,6 +981,11 @@ describe('gameplay', () => {
                     standardMineBlock(3, 3, false, 0, false, false, false),
                 ],
             ]);
+            cy.get('.game-board > .row')
+                .eq(0)
+                .within(() => {
+                    cy.get('.box').eq(0).click();
+                });
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
@@ -1269,6 +1279,11 @@ describe('gameplay', () => {
                 standardMineBlock(3, 3, false, 0, false, true, false),
             ],
         ]);
+        cy.get('.game-board > .row')
+            .eq(0)
+            .within(() => {
+                cy.get('.box').eq(0).click();
+            });
         // Mine click
         cy.get('.game-board > .row')
             .eq(1)
