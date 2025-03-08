@@ -8,7 +8,7 @@ Simple clone of the well-known Minesweeper game. Created using JavaScript, Node.
 
 ## Features
 - Simple and familiar Minesweeper gameplay
-- Ability to initialize a Minesweeper instance with specified height and width of board, and amount of mines
+- Ability to initialize a Minesweeper instance with specified height and width of board, and number of mines
 - Game rendering with PixiJS
 
 ## Screenshots
@@ -51,9 +51,7 @@ To run the game locally, follow these steps:
     Then open http://localhost:5173 to play the game locally in development mode. The game will reload on changes in the source.
 
 ## Issues
-- Unit and Integration testing is limited
 - Stack overflow (RangeError) when recursive revealing boards with dimensions 100x100 or greater [#3](https://github.com/Coteh/MinesweeperClone/issues/3)
 
 ## Future Additions
-- Microsoft Mode (first click guaranteed not a mine)
 - Timed Mode
