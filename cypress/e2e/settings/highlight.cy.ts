@@ -91,6 +91,7 @@ describe('highlight', () => {
             .eq(0)
             .within(() => {
                 cy.get('.box')
+                    .eq(0)
                     .realHover()
                     .should('have.css', 'background-color', EXPECTED_BLOCK_UNHIGHLIGHTED_COLOR);
             });
@@ -101,15 +102,18 @@ describe('highlight', () => {
         cy.get('.settings-item.highlight').click();
         cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');
 
-        cy.get('.game-overlay').click('left');
+        cy.get('.overlay-back').click('left');
 
         cy.get('.game-board > .row')
             .eq(0)
             .within(() => {
                 cy.get('.box')
+                    .eq(0)
                     .realHover()
                     .should('have.css', 'background-color', EXPECTED_BLOCK_HIGHLIGHTED_COLOR);
             });
+
+        cy.get('.settings-link').click();
 
         cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');
         cy.get('.settings-item.highlight').click();

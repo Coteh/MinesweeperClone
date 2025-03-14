@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let gameState: GameState;
     let gameStorage = new BrowserGameStorage();
-    let fullscreenManager = new FullscreenManager(gameStorage);
+    let fullscreenManager = new FullscreenManager();
     let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
     let actionIconManager = new ActionIconManager();
     let backgroundManager = new BackgroundManager(assetManager);
@@ -189,7 +189,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // (document.querySelector("[data-feather='help-circle']") as HTMLElement).innerText = '?';
     (document.querySelector("[data-feather='settings']") as HTMLElement).innerText = '⚙';
-    (document.querySelector(".settings [data-feather='x']") as HTMLElement).innerText = 'X';
     feather.replace();
 
     const helpLink = document.querySelector('.help-link') as HTMLElement;
@@ -209,13 +208,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
-
-    const versionElem = document.querySelector('.version-number') as HTMLElement;
-    versionElem.innerText = `v${GAME_VERSION}`;
-
-    const commitElem = document.querySelector('.commit-hash') as HTMLElement;
-    commitElem.innerText = COMMIT_HASH;
-    (commitElem.parentElement as HTMLAnchorElement).href += COMMIT_HASH;
 
     try {
         await assetManager.loadAssets([
@@ -245,7 +237,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 
-        settingsSubsystem = setupSettingsSubsystem(gameStorage, fullscreenManager, frontendState);
+        settingsSubsystem = setupSettingsSubsystem(
+            gameStorage,
+            fullscreenManager,
+            frontendState,
+            closeDialog
+        );
         // Debug subsystem needs settings subsystem to be set up first to ensure that preferences are loaded
         debugSubsystem = setupDebugSubsystem(actionIconManager, transformManager, closeDialog);
 

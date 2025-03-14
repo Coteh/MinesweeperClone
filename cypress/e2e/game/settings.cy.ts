@@ -82,7 +82,7 @@ describe('settings', () => {
 
     it('should be able to open settings and close it using close button', () => {
         cy.get('.game-board').should('be.visible');
-        cy.contains('Settings').shouldNotBeInViewport();
+        cy.contains('Settings').should('not.exist');
 
         cy.get('.settings-link').click();
         cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
@@ -90,18 +90,18 @@ describe('settings', () => {
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
 
-        cy.get('.settings.pane').within(() => {
+        cy.get('.dialog').within(() => {
             cy.get('.close').click();
             cy.wait(1000); // need to delay to give the settings pane time to disappear fully from screen
         });
 
         cy.get('.game-board').should('be.visible');
-        cy.contains('Settings').shouldNotBeInViewport();
+        cy.contains('Settings').should('not.exist');
     });
 
     it('should be able to open settings and close it using overlay', () => {
         cy.get('.game-board').should('be.visible');
-        cy.contains('Settings').shouldNotBeInViewport();
+        cy.contains('Settings').should('not.exist');
 
         cy.get('.settings-link').click();
         cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
@@ -109,11 +109,11 @@ describe('settings', () => {
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
 
-        cy.get('.game-overlay').click('left');
+        cy.get('.overlay-back').click('left');
         cy.wait(1000); // need to delay to give the settings pane time to disappear fully from screen
 
         cy.get('.game-board').should('be.visible');
-        cy.contains('Settings').shouldNotBeInViewport();
+        cy.contains('Settings').should('not.exist');
     });
 
     it('should toggle a setting when clicked', () => {
@@ -123,7 +123,7 @@ describe('settings', () => {
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
 
-        cy.get('.settings.pane').within(() => {
+        cy.get('.settings').within(() => {
             cy.get('.settings-item.highlight .knob').should('not.have.class', 'enabled');
 
             cy.get('.settings-item.highlight').should('be.visible').click();
@@ -148,7 +148,7 @@ describe('settings', () => {
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
 
-        cy.get('.settings.pane').within(() => {
+        cy.get('.settings').within(() => {
             cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');
         });
     });

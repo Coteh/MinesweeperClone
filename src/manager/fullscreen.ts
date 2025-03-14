@@ -1,19 +1,16 @@
-import { IGameStorage } from "../storage";
+import { savePreferenceValue } from '../preferences';
 
 export class FullscreenManager {
     private isFullscreen: boolean = false;
-    private gameStorage: IGameStorage;
 
-    constructor(gameStorage: IGameStorage) {
-        this.gameStorage = gameStorage;
-    }
+    constructor() {}
 
     public isFullscreenEnabled() {
         return this.isFullscreen;
     }
 
     public toggleFullscreen(fullscreen?: boolean) {
-        if (typeof fullscreen === "undefined") {
+        if (typeof fullscreen === 'undefined') {
             fullscreen = !this.isFullscreen;
         }
         if (fullscreen) {
@@ -35,8 +32,6 @@ export class FullscreenManager {
     }
 
     private saveFullscreenPreference(fullscreen: boolean) {
-        const preferences = this.gameStorage.loadPreferences();
-        preferences.fullscreen = fullscreen ? "enabled" : "disabled";
-        this.gameStorage.savePreferences(preferences);
+        savePreferenceValue('fullscreen', fullscreen ? 'enabled' : 'disabled');
     }
 }

@@ -151,6 +151,10 @@ describe('fullscreen', () => {
             cy.contains('Yes').realClick();
             cy.get('@exitFullscreen').should('not.have.been.called');
             cy.get('@requestFullscreen').should('have.been.called');
+
+            cy.get('.settings-link').click();
+
+            cy.get('.settings-item.fullscreen .knob').should('have.class', 'enabled');
         });
 
         it('should not enable fullscreen if user cancels the prompt', () => {
@@ -162,6 +166,10 @@ describe('fullscreen', () => {
             cy.contains('Cancel').click();
             cy.get('@requestFullscreen').should('not.have.been.called');
             cy.get('@exitFullscreen').should('have.been.called');
+
+            cy.get('.settings-link').click();
+
+            cy.get('.settings-item.fullscreen .knob').should('not.have.class', 'enabled');
         });
     });
 

@@ -1,38 +1,17 @@
-/* Settings Pane */
-
-.settings.pane {
-    font-family: var(--text-font-family);
-    position: absolute;
-    height: 100%;
-    width: 50vw;
-    transform: translate(100vw);
-    transition: transform 0.5s, opacity 0.5s;
-}
-
-.settings.pane.toggled {
-    transform: translate(50%);
-}
-
-@media (max-width: 480px) {
-    .settings.pane {
-        width: 75vw;
-    }
-
-    .settings.pane.toggled {
-        transform: translate(15%);
-    }
-}
-
 /* Settings */
 
 .settings {
-    position: relative;
+    font-family: var(--text-font-family);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
 }
 
-.settings > button.close {
-    position: absolute;
-    top: 0;
-    right: 0;
+/* Settings Content */
+
+.settings {
+    position: relative;
 }
 
 .settings > .settings-item-group {
@@ -76,6 +55,10 @@
 
 .settings .settings-item .settings-item-column > .toggle {
     text-transform: capitalize;
+}
+
+.settings .space {
+    flex: 1;
 }
 
 /* Settings Footer */
