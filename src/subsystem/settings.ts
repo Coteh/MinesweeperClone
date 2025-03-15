@@ -18,7 +18,10 @@ import {
     SETTING_DISABLED,
     FULLSCREEN_PREFERENCE_NAME,
 } from '../consts';
-import { isMobile } from 'pixi.js';
+
+export type SwitchDifficultyOptions = {
+    startNewGame: boolean;
+};
 
 export type SettingsSubsystem = {
     toggleSettings: (enabled: boolean) => void;
@@ -40,7 +43,7 @@ export function setupSettingsSubsystem(
     let currDifficulty = getPreferenceValue(DIFFICULTY_PREFERENCE_NAME) || DIFFICULTY_EASY;
 
     // Helper to update game options based on difficulty
-    function switchDifficulty(difficulty: string, startNewGame: boolean) {
+    function switchDifficulty(difficulty: string, options: SwitchDifficultyOptions) {
         switch (difficulty) {
             case DIFFICULTY_MEDIUM:
                 frontendState.gameOptions.boardWidth = 16;
@@ -59,7 +62,7 @@ export function setupSettingsSubsystem(
                 frontendState.gameOptions.numberOfMines = 10;
                 break;
         }
-        if (startNewGame) {
+        if (options.startNewGame) {
             newGame(frontendState.gameOptions);
         }
         currDifficulty = difficulty;
@@ -124,7 +127,6 @@ export function setupSettingsSubsystem(
         if (difficultyToggleElem) {
             difficultyToggleElem.innerText = currDifficulty;
         }
-        switchDifficulty(currDifficulty, false);
 
         // Set up event listeners for each settings element
         const settings = document.querySelectorAll('.setting');
@@ -137,7 +139,9 @@ export function setupSettingsSubsystem(
                     const nextIndex =
                         (difficulties.indexOf(currDifficulty) + 1) % difficulties.length;
                     const nextDifficulty = difficulties[nextIndex];
-                    switchDifficulty(nextDifficulty, true);
+                    switchDifficulty(nextDifficulty, {
+                        startNewGame: true,
+                    });
                     savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, nextDifficulty);
                     toggle.innerText = nextDifficulty;
                 } else if (elem.classList.contains(HIGHLIGHT_SETTING_NAME)) {
@@ -203,6 +207,11 @@ export function setupSettingsSubsystem(
     // Set up settings pane toggling
     settingsButton?.addEventListener('click', () => {
         toggleSettings(true);
+    });
+
+    // Set up game difficulty based on current setting
+    switchDifficulty(currDifficulty, {
+        startNewGame: false,
     });
 
     // Mobile-specific behavior
