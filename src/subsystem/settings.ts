@@ -170,23 +170,21 @@ export function setupSettingsSubsystem(
         });
 
         const highlightSettingElem = document.querySelector(`.setting.${HIGHLIGHT_SETTING_NAME}`);
-        if (isMobile && highlightSettingElem) {
-            highlightSettingElem.remove();
-        } else if (highlightSettingElem) {
-            const canHighlight = getPreferenceValue(HIGHLIGHT_PREFERENCE_NAME);
-            if (canHighlight === SETTING_ENABLED) {
-                document.body.dataset.canHighlight = '';
-                const knob = highlightSettingElem.querySelector('.knob');
-                if (knob) {
-                    knob.classList.add('enabled');
+        if (highlightSettingElem) {
+            if (isMobile) {
+                highlightSettingElem.remove();
+            } else {
+                const canHighlight = getPreferenceValue(HIGHLIGHT_PREFERENCE_NAME);
+                if (canHighlight === SETTING_ENABLED) {
+                    const knob = highlightSettingElem.querySelector('.knob');
+                    if (knob) {
+                        knob.classList.add('enabled');
+                    }
                 }
             }
         }
 
         const fullscreenOptionElem = document.querySelector(`.setting.${FULLSCREEN_SETTING_NAME}`);
-        if (isMobile && fullscreenOptionElem) {
-            fullscreenOptionElem.remove();
-        }
         if (fullscreenOptionElem) {
             if (isMobile) {
                 fullscreenOptionElem.remove();
@@ -210,6 +208,11 @@ export function setupSettingsSubsystem(
     // Mobile-specific behavior
     const md = new MobileDetect(window.navigator.userAgent);
     const isMobile = md.mobile() !== null;
+
+    // Enable highlighting if player had it enabled previously
+    if (!isMobile && getPreferenceValue(HIGHLIGHT_PREFERENCE_NAME) === SETTING_ENABLED) {
+        document.body.dataset.canHighlight = '';
+    }
 
     // Prompt for fullscreen if player had it enabled previously
     if (!isMobile && getPreferenceValue(FULLSCREEN_PREFERENCE_NAME) === SETTING_ENABLED) {

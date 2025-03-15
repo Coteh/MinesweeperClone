@@ -120,6 +120,27 @@ describe('highlight', () => {
         cy.get('.settings-item.highlight .knob').should('not.have.class', 'enabled');
     });
 
+    it('should allow for highlighting blocks on page load if enabled', () => {
+        cy.visit('/', {
+            onBeforeLoad: (win) => {
+                const preferences: Preferences = {
+                    highlight: 'enabled',
+                };
+                win.localStorage.setItem('preferences', JSON.stringify(preferences));
+            },
+        });
+        cy.waitForGameReady();
+
+        cy.get('.game-board > .row')
+            .eq(0)
+            .within(() => {
+                cy.get('.box')
+                    .eq(0)
+                    .realHover()
+                    .should('have.css', 'background-color', EXPECTED_BLOCK_HIGHLIGHTED_COLOR);
+            });
+    });
+
     it('should show highlight option on desktop', () => {
         cy.viewport(1024, 768);
         cy.get('.settings-link').click();
