@@ -1,0 +1,12 @@
+/* Selector */
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: transparent;
+    border: none;
+    font-size: inherit;
+    color: inherit;
+    text-align: center;
+}

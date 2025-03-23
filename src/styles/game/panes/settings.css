@@ -37,6 +37,10 @@
     pointer-events: none;
 }
 
+.settings .settings-item select {
+    pointer-events: initial;
+}
+
 .settings .settings-item a {
     text-decoration: none;
 }

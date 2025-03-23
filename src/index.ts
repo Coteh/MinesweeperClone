@@ -82,6 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         frontendState
                     );
                 }
+                settingsSubsystem.setGameState(gameState);
                 break;
             case 'draw':
                 renderBoard(gameBoard, gameState);
@@ -240,6 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         settingsSubsystem = setupSettingsSubsystem(
             gameStorage,
             fullscreenManager,
+            backgroundManager,
             frontendState,
             closeDialog
         );

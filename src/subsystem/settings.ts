@@ -3,7 +3,7 @@ import { getPreferenceValue, initPreferences, savePreferenceValue } from '../pre
 import { createDialogContentFromTemplate, renderDialog, renderPromptDialog } from '../render';
 import { FrontendState } from '..';
 import { FullscreenManager } from '../manager/fullscreen';
-import { newGame } from '../game';
+import { GameState, newGame } from '../game';
 import { IGameStorage } from '../storage';
 import {
     DIFFICULTY_PREFERENCE_NAME,
@@ -17,7 +17,12 @@ import {
     SETTING_ENABLED,
     SETTING_DISABLED,
     FULLSCREEN_PREFERENCE_NAME,
+    THEME_PREFERENCE_NAME,
+    CLASSIC_THEME,
+    OCEAN_THEME,
+    BASIC_THEME,
 } from '../consts';
+import { BackgroundManager } from '../manager/background';
 
 export type SwitchDifficultyOptions = {
     startNewGame: boolean;
@@ -25,14 +30,24 @@ export type SwitchDifficultyOptions = {
 
 export type SettingsSubsystem = {
     toggleSettings: (enabled: boolean) => void;
+    setGameState: (gameState: GameState) => void;
 };
 
 export function setupSettingsSubsystem(
     gameStorage: IGameStorage,
     fullscreenManager: FullscreenManager,
+    backgroundManager: BackgroundManager,
     frontendState: FrontendState,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void
 ): SettingsSubsystem {
+    let gameState: GameState;
+
+    const setGameState = (_gameState: GameState) => {
+        gameState = _gameState;
+    };
+
+    const selectableThemes = [BASIC_THEME, OCEAN_THEME, CLASSIC_THEME];
+
     // Get elements for settings
     const settingsButton = document.querySelector('.settings-link') as HTMLElement;
 
@@ -41,6 +56,9 @@ export function setupSettingsSubsystem(
 
     // Get stored difficulty or default to easy
     let currDifficulty = getPreferenceValue(DIFFICULTY_PREFERENCE_NAME) || DIFFICULTY_EASY;
+
+    // Get stored theme
+    let selectedTheme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
 
     // Helper to update game options based on difficulty
     function switchDifficulty(difficulty: string, options: SwitchDifficultyOptions) {
@@ -67,6 +85,34 @@ export function setupSettingsSubsystem(
         }
         currDifficulty = difficulty;
     }
+
+    const switchTheme = (theme: string) => {
+        if (!theme || !selectableThemes.includes(theme)) {
+            theme = BASIC_THEME;
+        }
+        document.body.classList.remove(selectedTheme);
+        if (theme !== CLASSIC_THEME) {
+            document.body.classList.add(theme);
+        }
+        let themeColor = '#000';
+        switch (theme) {
+            case OCEAN_THEME:
+                themeColor = '#1E3A5F';
+                break;
+            case CLASSIC_THEME:
+                themeColor = '#888888';
+                break;
+            case BASIC_THEME:
+                themeColor = '#BBBBBB';
+                break;
+        }
+        (document.querySelector("meta[name='theme-color']") as HTMLMetaElement).setAttribute(
+            'content',
+            themeColor
+        );
+        selectedTheme = theme;
+        backgroundManager.switchTheme(theme);
+    };
 
     function promptFullscreen() {
         const dialogElem = createDialogContentFromTemplate('#prompt-dialog-content');
@@ -202,6 +248,21 @@ export function setupSettingsSubsystem(
                 }
             }
         }
+
+        const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement;
+        themeSelector.addEventListener('change', (e) => {
+            const themeValue = (e.target as HTMLSelectElement).value;
+            switchTheme(themeValue);
+            if (gameState.ended) {
+                if (gameState.won) {
+                    backgroundManager.renderWin();
+                } else {
+                    backgroundManager.renderLose();
+                }
+            }
+            savePreferenceValue(THEME_PREFERENCE_NAME, selectedTheme);
+        });
+        themeSelector.selectedIndex = selectableThemes.indexOf(selectedTheme);
     }
 
     // Set up settings pane toggling
@@ -213,6 +274,9 @@ export function setupSettingsSubsystem(
     switchDifficulty(currDifficulty, {
         startNewGame: false,
     });
+
+    // Set up game theme based on current setting
+    switchTheme(selectedTheme);
 
     // Mobile-specific behavior
     const md = new MobileDetect(window.navigator.userAgent);
@@ -231,5 +295,6 @@ export function setupSettingsSubsystem(
     // Return helper functions needed by other subsystems
     return {
         toggleSettings,
+        setGameState,
     };
 }

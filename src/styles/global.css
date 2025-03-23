@@ -5,6 +5,7 @@
 @import url('./components/swipe.css');
 @import url('./components/zoom.css');
 @import url('./components/landscape.css');
+@import url('./components/selector.css');
 
 @import url('./game/menu.css');
 @import url('./game/panes/index.css');

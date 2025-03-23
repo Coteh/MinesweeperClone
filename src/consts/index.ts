@@ -1,4 +1,6 @@
 export const STANDARD_THEME = 'standard';
+export const BASIC_THEME = 'basic';
+export const OCEAN_THEME = 'ocean';
 export const CLASSIC_THEME = 'classic';
 
 export const THEME_PREFERENCE_NAME = 'theme';
