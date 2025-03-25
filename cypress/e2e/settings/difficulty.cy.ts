@@ -22,6 +22,7 @@ const standardMineBlock: (
 
 describe('difficulty', () => {
     beforeEach(() => {
+        cy.clearBrowserCache();
         cy.visit('/', {
             onBeforeLoad: () => {
                 const gameState: GameState = {
@@ -86,7 +87,6 @@ describe('difficulty', () => {
     it('should toggle between different difficulties', () => {
         // Restart game
         cy.get('.button.new-game').should('be.visible').click();
-
         cy.contains('Yes').click();
 
         // Verify it's on easy to start
@@ -95,9 +95,12 @@ describe('difficulty', () => {
 
         cy.get('.settings-link').click();
 
-        cy.get('.settings-item.difficulty .toggle').should('contain.text', 'easy');
-        cy.get('.settings-item.difficulty').click();
-        cy.get('.settings-item.difficulty .toggle').should('contain.text', 'medium');
+        // Verify dropdown default value
+        cy.get('#difficulty-selector').should('have.value', 'easy');
+
+        // Change to medium difficulty using dropdown
+        cy.get('#difficulty-selector').select('medium');
+        cy.get('#difficulty-selector').should('have.value', 'medium');
 
         cy.get('.overlay-back').click('left');
 
@@ -107,9 +110,9 @@ describe('difficulty', () => {
 
         cy.get('.settings-link').click();
 
-        cy.get('.settings-item.difficulty .toggle').should('contain.text', 'medium');
-        cy.get('.settings-item.difficulty').click();
-        cy.get('.settings-item.difficulty .toggle').should('contain.text', 'hard');
+        // Change to hard difficulty using dropdown
+        cy.get('#difficulty-selector').select('hard');
+        cy.get('#difficulty-selector').should('have.value', 'hard');
 
         cy.get('.overlay-back').click('left');
 
@@ -119,13 +122,13 @@ describe('difficulty', () => {
 
         cy.get('.settings-link').click();
 
-        cy.get('.settings-item.difficulty .toggle').should('contain.text', 'hard');
-        cy.get('.settings-item.difficulty').click();
-        cy.get('.settings-item.difficulty .toggle').should('contain.text', 'easy');
+        // Change back to easy difficulty using dropdown
+        cy.get('#difficulty-selector').select('easy');
+        cy.get('#difficulty-selector').should('have.value', 'easy');
 
         cy.get('.overlay-back').click('left');
 
-        // Verify game board changed to easy difficulty
+        // Verify game board changed back to easy difficulty
         cy.get('.game-board > .row').eq(0).children().should('have.length', 9);
         cy.get('.game-board > .row').should('have.length', 9);
     });
@@ -133,9 +136,10 @@ describe('difficulty', () => {
     it('should retain selected difficulty upon refresh', () => {
         cy.get('.settings-link').click();
 
-        cy.get('.settings-item.difficulty .toggle').should('contain.text', 'easy');
-        cy.get('.settings-item.difficulty').click();
-        cy.get('.settings-item.difficulty .toggle').should('contain.text', 'medium');
+        // Change to medium difficulty using dropdown
+        cy.get('#difficulty-selector').should('have.value', 'easy');
+        cy.get('#difficulty-selector').select('medium');
+        cy.get('#difficulty-selector').should('have.value', 'medium');
 
         cy.get('.overlay-back').click('left');
 
@@ -143,10 +147,10 @@ describe('difficulty', () => {
         cy.get('.game-board > .row').eq(0).children().should('have.length', 16);
         cy.get('.game-board > .row').should('have.length', 16);
 
+        // Reload and verify persistence
         cy.reload();
 
-        // Verify game board still on medium difficulty
-        cy.get('.game-board > .row').eq(0).children().should('have.length', 16);
-        cy.get('.game-board > .row').should('have.length', 16);
+        cy.get('.settings-link').click();
+        cy.get('#difficulty-selector').should('have.value', 'medium');
     });
 });

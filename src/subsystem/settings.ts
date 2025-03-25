@@ -46,6 +46,7 @@ export function setupSettingsSubsystem(
         gameState = _gameState;
     };
 
+    const selectableDifficulties = [DIFFICULTY_EASY, DIFFICULTY_MEDIUM, DIFFICULTY_HARD];
     const selectableThemes = [BASIC_THEME, OCEAN_THEME, CLASSIC_THEME];
 
     // Get elements for settings
@@ -167,30 +168,22 @@ export function setupSettingsSubsystem(
 
     function initializeSettingsContent() {
         // Initialize the difficulty UI element
-        const difficultyToggleElem = document.querySelector(
-            `.setting.${DIFFICULTY_SETTING_NAME} .toggle`
-        ) as HTMLElement;
-        if (difficultyToggleElem) {
-            difficultyToggleElem.innerText = currDifficulty;
-        }
+        const difficultySelector = document.getElementById('difficulty-selector') as HTMLSelectElement;
+        difficultySelector.addEventListener('change', (e) => {
+            const difficultyValue = (e.target as HTMLSelectElement).value;
+            switchDifficulty(difficultyValue, {
+                startNewGame: true,
+            });
+            savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, difficultyValue);
+        });
+        difficultySelector.selectedIndex = selectableDifficulties.indexOf(currDifficulty);
 
         // Set up event listeners for each settings element
         const settings = document.querySelectorAll('.setting');
         settings.forEach((setting) => {
             setting.addEventListener('click', (e) => {
                 const elem = e.target as HTMLElement;
-                const toggle = setting.querySelector('.toggle') as HTMLElement;
-                if (elem.classList.contains(DIFFICULTY_SETTING_NAME)) {
-                    const difficulties = [DIFFICULTY_EASY, DIFFICULTY_MEDIUM, DIFFICULTY_HARD];
-                    const nextIndex =
-                        (difficulties.indexOf(currDifficulty) + 1) % difficulties.length;
-                    const nextDifficulty = difficulties[nextIndex];
-                    switchDifficulty(nextDifficulty, {
-                        startNewGame: true,
-                    });
-                    savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, nextDifficulty);
-                    toggle.innerText = nextDifficulty;
-                } else if (elem.classList.contains(HIGHLIGHT_SETTING_NAME)) {
+                if (elem.classList.contains(HIGHLIGHT_SETTING_NAME)) {
                     const canHighlight = document.body.dataset.canHighlight != null;
                     if (!canHighlight) {
                         document.body.dataset.canHighlight = '';
