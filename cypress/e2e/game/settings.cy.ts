@@ -85,14 +85,12 @@ describe('settings', () => {
         cy.contains('Settings').should('not.exist');
 
         cy.get('.settings-link').click();
-        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
 
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
 
         cy.get('.dialog').within(() => {
             cy.get('.close').click();
-            cy.wait(1000); // need to delay to give the settings pane time to disappear fully from screen
         });
 
         cy.get('.game-board').should('be.visible');
@@ -104,13 +102,11 @@ describe('settings', () => {
         cy.contains('Settings').should('not.exist');
 
         cy.get('.settings-link').click();
-        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
 
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
 
         cy.get('.overlay-back').click('left');
-        cy.wait(1000); // need to delay to give the settings pane time to disappear fully from screen
 
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').should('not.exist');
@@ -118,7 +114,6 @@ describe('settings', () => {
 
     it('should toggle a setting when clicked', () => {
         cy.get('.settings-link').click();
-        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
 
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
@@ -141,9 +136,9 @@ describe('settings', () => {
         );
 
         cy.reload();
+        cy.waitForGameReady();
 
         cy.get('.settings-link').click();
-        cy.wait(1000); // need to delay to give the settings pane time to appear fully on screen
 
         cy.get('.game-board').should('be.visible');
         cy.contains('Settings').shouldBeInViewport();
@@ -174,6 +169,7 @@ describe('settings', () => {
                 window.localStorage.setItem('preferences', 'invalid');
             },
         });
+        cy.waitForGameReady();
 
         cy.get('.settings-link').click();
 
@@ -217,5 +213,29 @@ describe('settings', () => {
                 debugHudVisible: 'enabled',
             });
         });
+    });
+
+    it('should open the difficulty selector when clicking on the difficulty settings item', () => {
+        cy.get('.settings-link').click();
+
+        cy.get('.settings-item.difficulty').realClick();
+        cy.get('#difficulty-selector').should('be.focused');
+    });
+
+    it('should open the theme selector when clicking on the theme settings item', () => {
+        cy.get('.settings-link').click();
+
+        cy.get('.settings-item.theme-switch').realClick();
+        cy.get('#theme-selector').should('be.focused');
+    });
+
+    it('should associate labels with their corresponding select elements', () => {
+        cy.get('.settings-link').click();
+
+        cy.get('label[for="difficulty-selector"]').realClick();
+        cy.get('#difficulty-selector').should('be.focused');
+
+        cy.get('label[for="theme-selector"]').realClick();
+        cy.get('#theme-selector').should('be.focused');
     });
 });

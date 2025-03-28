@@ -256,6 +256,22 @@ export function setupSettingsSubsystem(
             savePreferenceValue(THEME_PREFERENCE_NAME, selectedTheme);
         });
         themeSelector.selectedIndex = selectableThemes.indexOf(selectedTheme);
+    
+        document.querySelector('.settings-item.difficulty')?.addEventListener('click', () => {
+            const difficultySelector = document.getElementById('difficulty-selector') as HTMLSelectElement;
+            if (difficultySelector) {
+                difficultySelector.focus();
+                difficultySelector.showPicker();
+            }
+        });
+        
+        document.querySelector('.settings-item.theme-switch')?.addEventListener('click', () => {
+            const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement;
+            if (themeSelector) {
+                themeSelector.focus();
+                themeSelector.showPicker();
+            }
+        });
     }
 
     // Set up settings pane toggling
