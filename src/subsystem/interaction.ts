@@ -5,7 +5,7 @@ import { MAX_ZOOM, MIN_ZOOM, TransformManager } from '../manager/transform';
 import { getPreferenceValue } from '../preferences';
 import { FrontendState } from '..';
 import { DEBUG_HUD_ENABLED_PREFERENCE_NAME, SETTING_ENABLED } from '../consts';
-import { AudioManger, SoundEffect } from '../manager/audio';
+import { AudioManager, SoundEffect } from '../manager/audio';
 
 const DIRECTION_LEFT = 'left';
 const DIRECTION_RIGHT = 'right';
@@ -17,7 +17,7 @@ export type InteractionSubsystem = {};
 export function setupInteractionSubsystem(
     transformManager: TransformManager,
     fullscreenManager: FullscreenManager,
-    audioManager: AudioManger,
+    audioManager: AudioManager,
     gameState: GameState,
     promptNewGame: (onNewGameStarted?: () => void) => void,
     toggleSettings: (enabled: boolean) => void,

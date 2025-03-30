@@ -49,7 +49,7 @@ const soundEffectsMap: { [theme in Theme]: { [soundEffect in SoundEffect]: strin
     },
 };
 
-export class AudioManger {
+export class AudioManager {
     private assetManager: AssetManager;
     private themeManager: ThemeManager;
 

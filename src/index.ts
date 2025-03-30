@@ -18,7 +18,7 @@ import { InteractionSubsystem, setupInteractionSubsystem } from './subsystem/int
 import './styles/global.css';
 import { SettingsSubsystem, setupSettingsSubsystem } from './subsystem/settings';
 import { DebugSubsystem, setupDebugSubsystem } from './subsystem/debug';
-import { AudioManger, SoundEffect } from './manager/audio';
+import { AudioManager, SoundEffect } from './manager/audio';
 import { ThemeManager } from './manager/theme';
 
 export type FrontendState = {
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let backgroundManager = new BackgroundManager(assetManager);
     let transformManager = new TransformManager(middleElem);
     let themeManager = new ThemeManager(backgroundManager);
-    let audioManager = new AudioManger(assetManager, themeManager);
+    let audioManager = new AudioManager(assetManager, themeManager);
 
     let timeBoardInterval: NodeJS.Timeout;
 

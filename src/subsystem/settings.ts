@@ -26,7 +26,7 @@ import {
     THEME_SETTING_NAME,
 } from '../consts';
 import { BackgroundManager } from '../manager/background';
-import { AudioManger, SoundEffect } from '../manager/audio';
+import { AudioManager, SoundEffect } from '../manager/audio';
 import { SELECTABLE_THEMES, Theme, ThemeManager } from '../manager/theme';
 import { ActionIconManager } from '../manager/action-icon';
 
@@ -44,7 +44,7 @@ export function setupSettingsSubsystem(
     fullscreenManager: FullscreenManager,
     themeManager: ThemeManager,
     backgroundManager: BackgroundManager,
-    audioManager: AudioManger,
+    audioManager: AudioManager,
     actionIconManager: ActionIconManager,
     frontendState: FrontendState,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void
