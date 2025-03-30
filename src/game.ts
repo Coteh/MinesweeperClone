@@ -140,9 +140,13 @@ export const initGame = async (
 
     if (gameState.ended) {
         if (gameState.won) {
-            eventHandler('win');
+            eventHandler('win', {
+                onInitialization: true,
+            });
         } else {
-            eventHandler('lose');
+            eventHandler('lose', {
+                onInitialization: true,
+            });
         }
         clearInterval(gameTimer);
     }

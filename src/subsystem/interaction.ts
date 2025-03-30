@@ -5,6 +5,7 @@ import { MAX_ZOOM, MIN_ZOOM, TransformManager } from '../manager/transform';
 import { getPreferenceValue } from '../preferences';
 import { FrontendState } from '..';
 import { DEBUG_HUD_ENABLED_PREFERENCE_NAME, SETTING_ENABLED } from '../consts';
+import { AudioManger, SoundEffect } from '../manager/audio';
 
 const DIRECTION_LEFT = 'left';
 const DIRECTION_RIGHT = 'right';
@@ -16,6 +17,7 @@ export type InteractionSubsystem = {};
 export function setupInteractionSubsystem(
     transformManager: TransformManager,
     fullscreenManager: FullscreenManager,
+    audioManager: AudioManger,
     gameState: GameState,
     promptNewGame: (onNewGameStarted?: () => void) => void,
     toggleSettings: (enabled: boolean) => void,
@@ -149,14 +151,17 @@ export function setupInteractionSubsystem(
     zoomInButton.addEventListener('click', (e) => {
         e.preventDefault();
         transformManager.zoomIn();
+        audioManager.playSoundEffect(SoundEffect.ZoomIn);
     });
     zoomOutButton.addEventListener('click', (e) => {
         e.preventDefault();
         transformManager.zoomOut();
+        audioManager.playSoundEffect(SoundEffect.ZoomOut);
     });
     (document.querySelector('#zoom-reset') as HTMLElement).addEventListener('click', (e) => {
         e.preventDefault();
         transformManager.resetZoom(false);
+        audioManager.playSoundEffect(SoundEffect.ZoomReset);
     });
 
     const zoomable = document.getElementById('zoomable') as HTMLElement;

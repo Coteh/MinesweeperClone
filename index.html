@@ -176,56 +176,109 @@
             <div class="settings">
                 <h1>Settings</h1>
                 <div class="space"></div>
+                <h2>General</h2>
                 <div class="settings-item-group">
                     <div class="settings-item setting difficulty">
-                        <div class="settings-item-column">
-                            <label for="difficulty-selector">Difficulty</label>
-                        </div>
-                        <div class="settings-item-column">
-                            <span class="toggle">
-                                <select id="difficulty-selector">
-                                    <option value="easy">Easy</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="hard">Hard</option>
-                                </select>
-                            </span>
+                        <div class="settings-item-row">
+                            <div class="settings-item-column">
+                                <label for="difficulty-selector">Difficulty</label>
+                            </div>
+                            <div class="settings-item-column">
+                                <span class="toggle">
+                                    <select id="difficulty-selector">
+                                        <option value="easy">Easy</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="hard">Hard</option>
+                                    </select>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="settings-item setting theme-switch">
-                        <div class="settings-item-column">
-                            <label for="theme-selector">Theme</label>
-                        </div>
-                        <div class="settings-item-column">
-                            <span class="toggle">
-                                <select id="theme-selector">
-                                    <option value="basic">Basic</option>
-                                    <option value="ocean">Ocean</option>
-                                    <option value="classic">Classic</option>
-                                </select>
-                            </span>
+                        <div class="settings-item-row">
+                            <div class="settings-item-column">
+                                <label for="theme-selector">Theme</label>
+                            </div>
+                            <div class="settings-item-column">
+                                <span class="toggle">
+                                    <select id="theme-selector">
+                                        <option value="basic">Basic</option>
+                                        <option value="ocean">Ocean</option>
+                                        <option value="classic">Classic</option>
+                                    </select>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     <div class="settings-item setting highlight">
-                        <div class="settings-item-column">
-                            <span>Highlight Effect</span>
-                        </div>
-                        <div class="settings-item-column">
-                            <div class="knob">
-                                <div class="knob-inside">
+                        <div class="settings-item-row">
+                            <div class="settings-item-column">
+                                <span>Highlight Effect</span>
+                            </div>
+                            <div class="settings-item-column">
+                                <div class="knob">
+                                    <div class="knob-inside">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="settings-item setting fullscreen">
-                        <div class="settings-item-column">
-                            <span>Fullscreen</span>
-                        </div>
-                        <div class="settings-item-column">
-                            <div class="knob">
-                                <div class="knob-inside">
+                        <div class="settings-item-row">
+                            <div class="settings-item-column">
+                                <span>Fullscreen</span>
+                            </div>
+                            <div class="settings-item-column">
+                                <div class="knob">
+                                    <div class="knob-inside">
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <h2>Sound</h2>
+                <div class="settings-item-group">
+                    <!-- <div class="settings-item setting music">
+                        <div class="settings-item-row">
+                            <div class="settings-item-column">
+                                <span>Background Music</span>
+                            </div>
+                            <div class="settings-item-column">
+                                <div class="knob">
+                                    <i data-feather="volume-2"></i>
+                                    <div class="knob-inside">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-item-row">
+                            <div class="setting-controls">
+                                <span class="slider"></span>
+                                <input type="range" min="0" max="100" />
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="settings-item setting sound">
+                        <div class="settings-item-row">
+                            <div class="settings-item-column">
+                                <span>Sound Effects</span>
+                            </div>
+                            <div class="settings-item-column">
+                                <div class="knob">
+                                    <i data-feather="volume-2"></i>
+                                    <div class="knob-inside">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- TODO: Add range slider -->
+                        <!-- <div class="settings-item-row">
+                            <div class="setting-controls">
+                                <span class="slider"></span>
+                                <input type="range" min="0" max="100" />
+                            </div>
+                        </div> -->
                     </div>
                 </div>
                 <span style="height: 40px"></span>

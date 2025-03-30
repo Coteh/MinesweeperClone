@@ -18,6 +18,8 @@ import { InteractionSubsystem, setupInteractionSubsystem } from './subsystem/int
 import './styles/global.css';
 import { SettingsSubsystem, setupSettingsSubsystem } from './subsystem/settings';
 import { DebugSubsystem, setupDebugSubsystem } from './subsystem/debug';
+import { AudioManger, SoundEffect } from './manager/audio';
+import { ThemeManager } from './manager/theme';
 
 export type FrontendState = {
     gameOptions: GameOptions;
@@ -52,6 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let actionIconManager = new ActionIconManager();
     let backgroundManager = new BackgroundManager(assetManager);
     let transformManager = new TransformManager(middleElem);
+    let themeManager = new ThemeManager(backgroundManager);
+    let audioManager = new AudioManger(assetManager, themeManager);
 
     let timeBoardInterval: NodeJS.Timeout;
 
@@ -74,6 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     interactionSubsystem = setupInteractionSubsystem(
                         transformManager,
                         fullscreenManager,
+                        audioManager,
                         gameState,
                         promptNewGame,
                         settingsSubsystem.toggleSettings,
@@ -107,6 +112,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 clearInterval(timeBoardInterval);
                 transformManager.resetZoom(true);
                 backgroundManager.renderLose();
+                if (!data.onInitialization) {
+                    audioManager.playSoundEffect(SoundEffect.Explode);
+                }
                 break;
             }
             case 'win': {
@@ -148,6 +156,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                     onNewGameStarted();
                 }
             },
+        });
+        const buttons = document.querySelectorAll('dialog button');
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+                audioManager.playSoundEffect(SoundEffect.Click);
+            });
         });
     };
 
@@ -206,6 +220,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
         });
         helpLink.blur();
+        audioManager.playSoundEffect(SoundEffect.Click);
+        const buttons = document.querySelectorAll('dialog button');
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+                audioManager.playSoundEffect(SoundEffect.Click);
+            });
+        });
+    });
+
+    const buttons = document.querySelectorAll('.button');
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            audioManager.playSoundEffect(SoundEffect.Click);
+        });
     });
 
     (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
@@ -232,6 +260,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             'img/Checkbox_unchecked.png',
             'img/Checkbox_checked.png',
             'img/Tiles.png',
+            'sound/Explode.mp3',
+            'sound/Button click.wav',
         ]);
 
         await backgroundManager.initialize();
@@ -241,7 +271,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         settingsSubsystem = setupSettingsSubsystem(
             gameStorage,
             fullscreenManager,
+            themeManager,
             backgroundManager,
+            audioManager,
+            actionIconManager,
             frontendState,
             closeDialog
         );

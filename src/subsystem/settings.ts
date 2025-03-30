@@ -21,8 +21,14 @@ import {
     CLASSIC_THEME,
     OCEAN_THEME,
     BASIC_THEME,
+    SOUND_SETTING_NAME,
+    SOUND_PREFERENCE_NAME,
+    THEME_SETTING_NAME,
 } from '../consts';
 import { BackgroundManager } from '../manager/background';
+import { AudioManger, SoundEffect } from '../manager/audio';
+import { SELECTABLE_THEMES, Theme, ThemeManager } from '../manager/theme';
+import { ActionIconManager } from '../manager/action-icon';
 
 export type SwitchDifficultyOptions = {
     startNewGame: boolean;
@@ -36,7 +42,10 @@ export type SettingsSubsystem = {
 export function setupSettingsSubsystem(
     gameStorage: IGameStorage,
     fullscreenManager: FullscreenManager,
+    themeManager: ThemeManager,
     backgroundManager: BackgroundManager,
+    audioManager: AudioManger,
+    actionIconManager: ActionIconManager,
     frontendState: FrontendState,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void
 ): SettingsSubsystem {
@@ -47,13 +56,14 @@ export function setupSettingsSubsystem(
     };
 
     const selectableDifficulties = [DIFFICULTY_EASY, DIFFICULTY_MEDIUM, DIFFICULTY_HARD];
-    const selectableThemes = [BASIC_THEME, OCEAN_THEME, CLASSIC_THEME];
 
     // Get elements for settings
     const settingsButton = document.querySelector('.settings-link') as HTMLElement;
 
     // Initialize settings based on stored preferences
-    initPreferences(gameStorage, {});
+    initPreferences(gameStorage, {
+        [SOUND_PREFERENCE_NAME]: SETTING_ENABLED,
+    });
 
     // Get stored difficulty or default to easy
     let currDifficulty = getPreferenceValue(DIFFICULTY_PREFERENCE_NAME) || DIFFICULTY_EASY;
@@ -86,34 +96,6 @@ export function setupSettingsSubsystem(
         }
         currDifficulty = difficulty;
     }
-
-    const switchTheme = (theme: string) => {
-        if (!theme || !selectableThemes.includes(theme)) {
-            theme = BASIC_THEME;
-        }
-        document.body.classList.remove(selectedTheme);
-        if (theme !== CLASSIC_THEME) {
-            document.body.classList.add(theme);
-        }
-        let themeColor = '#000';
-        switch (theme) {
-            case OCEAN_THEME:
-                themeColor = '#1E3A5F';
-                break;
-            case CLASSIC_THEME:
-                themeColor = '#888888';
-                break;
-            case BASIC_THEME:
-                themeColor = '#BBBBBB';
-                break;
-        }
-        (document.querySelector("meta[name='theme-color']") as HTMLMetaElement).setAttribute(
-            'content',
-            themeColor
-        );
-        selectedTheme = theme;
-        backgroundManager.switchTheme(theme);
-    };
 
     function promptFullscreen() {
         const dialogElem = createDialogContentFromTemplate('#prompt-dialog-content');
@@ -159,6 +141,27 @@ export function setupSettingsSubsystem(
             (commitElem.parentElement as HTMLAnchorElement).href += COMMIT_HASH;
 
             initializeSettingsContent();
+
+            const buttons = document.querySelectorAll('dialog button');
+            buttons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    audioManager.playSoundEffect(SoundEffect.Click);
+                });
+            });
+
+            const settingsItems = document.querySelectorAll('.settings-item');
+            settingsItems.forEach((settingsItem) => {
+                settingsItem.addEventListener('click', () => {
+                    audioManager.playSoundEffect(SoundEffect.Click);
+                });
+            });
+
+            const inputElems = document.querySelectorAll('input');
+            inputElems.forEach((inputElem) => {
+                inputElem.addEventListener('select', () => {
+                    audioManager.playSoundEffect(SoundEffect.Click);
+                });
+            });
         } else {
             const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
             const dialog = document.querySelector('.dialog') as HTMLDialogElement;
@@ -168,7 +171,9 @@ export function setupSettingsSubsystem(
 
     function initializeSettingsContent() {
         // Initialize the difficulty UI element
-        const difficultySelector = document.getElementById('difficulty-selector') as HTMLSelectElement;
+        const difficultySelector = document.getElementById(
+            'difficulty-selector'
+        ) as HTMLSelectElement;
         difficultySelector.addEventListener('change', (e) => {
             const difficultyValue = (e.target as HTMLSelectElement).value;
             switchDifficulty(difficultyValue, {
@@ -208,6 +213,22 @@ export function setupSettingsSubsystem(
                     } else {
                         knob.classList.remove('enabled');
                     }
+                } else if (elem.classList.contains(SOUND_SETTING_NAME)) {
+                    audioManager.toggleSoundEffects();
+                    savePreferenceValue(
+                        SOUND_PREFERENCE_NAME,
+                        audioManager.isSoundEffectsEnabled() ? SETTING_ENABLED : SETTING_DISABLED
+                    );
+                    const knob = setting.querySelector('.knob') as HTMLElement;
+                    if (audioManager.isSoundEffectsEnabled()) {
+                        knob.classList.add('enabled');
+                    } else {
+                        knob.classList.remove('enabled');
+                    }
+                    actionIconManager.changeIcon(
+                        knob,
+                        audioManager.isSoundEffectsEnabled() ? 'volume-2' : 'volume-x'
+                    );
                 }
             });
         });
@@ -245,7 +266,7 @@ export function setupSettingsSubsystem(
         const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement;
         themeSelector.addEventListener('change', (e) => {
             const themeValue = (e.target as HTMLSelectElement).value;
-            switchTheme(themeValue);
+            themeManager.switchTheme(themeValue as Theme);
             if (gameState.ended) {
                 if (gameState.won) {
                     backgroundManager.renderWin();
@@ -255,28 +276,51 @@ export function setupSettingsSubsystem(
             }
             savePreferenceValue(THEME_PREFERENCE_NAME, selectedTheme);
         });
-        themeSelector.selectedIndex = selectableThemes.indexOf(selectedTheme);
-    
-        document.querySelector('.settings-item.difficulty')?.addEventListener('click', () => {
-            const difficultySelector = document.getElementById('difficulty-selector') as HTMLSelectElement;
-            if (difficultySelector) {
-                difficultySelector.focus();
-                difficultySelector.showPicker();
+        themeSelector.selectedIndex = SELECTABLE_THEMES.indexOf(selectedTheme);
+
+        document
+            .querySelector(`.settings-item.${DIFFICULTY_SETTING_NAME}`)
+            ?.addEventListener('click', () => {
+                const difficultySelector = document.getElementById(
+                    'difficulty-selector'
+                ) as HTMLSelectElement;
+                if (difficultySelector) {
+                    difficultySelector.focus();
+                    difficultySelector.showPicker();
+                }
+            });
+
+        document
+            .querySelector(`.settings-item.${THEME_SETTING_NAME}`)
+            ?.addEventListener('click', () => {
+                const themeSelector = document.getElementById(
+                    'theme-selector'
+                ) as HTMLSelectElement;
+                if (themeSelector) {
+                    themeSelector.focus();
+                    themeSelector.showPicker();
+                }
+            });
+
+        const soundEffectsSettingElem = document.querySelector(`.setting.${SOUND_SETTING_NAME}`);
+        if (soundEffectsSettingElem) {
+            const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
+            audioManager.toggleSoundEffects(soundsEnabled === SETTING_ENABLED);
+            const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
+            actionIconManager.changeIcon(
+                knob,
+                audioManager.isSoundEffectsEnabled() ? 'volume-2' : 'volume-x'
+            );
+            if (soundsEnabled === SETTING_ENABLED) {
+                knob.classList.add('enabled');
             }
-        });
-        
-        document.querySelector('.settings-item.theme-switch')?.addEventListener('click', () => {
-            const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement;
-            if (themeSelector) {
-                themeSelector.focus();
-                themeSelector.showPicker();
-            }
-        });
+        }
     }
 
     // Set up settings pane toggling
     settingsButton?.addEventListener('click', () => {
         toggleSettings(true);
+        audioManager.playSoundEffect(SoundEffect.Click);
     });
 
     // Set up game difficulty based on current setting
@@ -285,7 +329,7 @@ export function setupSettingsSubsystem(
     });
 
     // Set up game theme based on current setting
-    switchTheme(selectedTheme);
+    themeManager.switchTheme(selectedTheme);
 
     // Mobile-specific behavior
     const md = new MobileDetect(window.navigator.userAgent);

@@ -21,12 +21,13 @@
 .settings .settings-item {
     color: var(--text-color);
     display: flex;
+    flex-direction: column;
     width: 100%;
     justify-content: space-around;
     align-items: center;
     border-top: var(--settings-item-border-color);
     border-bottom: none;
-    height: 2em;
+    min-height: 2em;
 }
 
 .settings .settings-item:last-child {
@@ -45,11 +46,18 @@
     text-decoration: none;
 }
 
+.settings .settings-item .settings-item-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .settings .settings-item .settings-item-column {
     width: 100%;
     display: flex;
     justify-content: center;
-    align-items: baseline;
+    align-items: center;
     gap: 0.5em;
 }
 
@@ -63,6 +71,13 @@
 
 .settings .space {
     flex: 1;
+}
+
+.settings .settings-item .knob > svg {
+    position: absolute;
+    left: -32px;
+    transform: translateY(-50%);
+    top: 50%;
 }
 
 /* Settings Footer */

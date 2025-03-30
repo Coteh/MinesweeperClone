@@ -9,11 +9,15 @@ export const HIGHLIGHT_PREFERENCE_NAME = 'highlight';
 export const DEBUG_HUD_ENABLED_PREFERENCE_NAME = 'debugHudEnabled';
 export const DEBUG_HUD_VISIBLE_PREFERENCE_NAME = 'debugHudVisible';
 export const FULLSCREEN_PREFERENCE_NAME = 'fullscreen';
+export const MUSIC_PREFERENCE_NAME = 'music';
+export const SOUND_PREFERENCE_NAME = 'sound';
 
 export const THEME_SETTING_NAME = 'theme-switch';
 export const DIFFICULTY_SETTING_NAME = 'difficulty';
 export const HIGHLIGHT_SETTING_NAME = 'highlight';
 export const FULLSCREEN_SETTING_NAME = 'fullscreen';
+export const MUSIC_SETTING_NAME = 'music';
+export const SOUND_SETTING_NAME = 'sound';
 export const CLEAR_DATA_SETTING_NAME = 'clear-all-data';
 
 export const SETTING_ENABLED = 'enabled';
