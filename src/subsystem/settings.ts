@@ -68,9 +68,6 @@ export function setupSettingsSubsystem(
     // Get stored difficulty or default to easy
     let currDifficulty = getPreferenceValue(DIFFICULTY_PREFERENCE_NAME) || DIFFICULTY_EASY;
 
-    // Get stored theme
-    let selectedTheme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
-
     // Helper to update game options based on difficulty
     function switchDifficulty(difficulty: string, options: SwitchDifficultyOptions) {
         switch (difficulty) {
@@ -274,10 +271,10 @@ export function setupSettingsSubsystem(
                     backgroundManager.renderLose();
                 }
             }
-            selectedTheme = themeValue;
-            savePreferenceValue(THEME_PREFERENCE_NAME, selectedTheme);
+            savePreferenceValue(THEME_PREFERENCE_NAME, themeValue);
         });
-        themeSelector.selectedIndex = SELECTABLE_THEMES.indexOf(selectedTheme);
+        const currTheme = themeManager.getCurrentTheme();
+        themeSelector.selectedIndex = SELECTABLE_THEMES.indexOf(currTheme);
 
         document
             .querySelector(`.settings-item.${DIFFICULTY_SETTING_NAME}`)
@@ -329,8 +326,11 @@ export function setupSettingsSubsystem(
         startNewGame: false,
     });
 
+    // Get stored theme
+    const storedTheme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
+
     // Set up game theme based on current setting
-    themeManager.switchTheme(selectedTheme);
+    themeManager.switchTheme(storedTheme);
 
     // Mobile-specific behavior
     const md = new MobileDetect(window.navigator.userAgent);
