@@ -274,6 +274,7 @@ export function setupSettingsSubsystem(
                     backgroundManager.renderLose();
                 }
             }
+            selectedTheme = themeValue;
             savePreferenceValue(THEME_PREFERENCE_NAME, selectedTheme);
         });
         themeSelector.selectedIndex = SELECTABLE_THEMES.indexOf(selectedTheme);
