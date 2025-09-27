@@ -76,7 +76,7 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                 blockPressed = false;
             });
             elem.addEventListener('click', (e) => {
-                console.log('this work?');
+                console.log(`selecting spot (${j}, ${i})`);
                 if (gameState.board[i][j].isRevealed) {
                     selectAdjacentSpots(j, i);
                     return;
