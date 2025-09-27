@@ -17,30 +17,30 @@ const soundEffectsMap: { [theme in Theme]: { [soundEffect in SoundEffect]: strin
     [BASIC_THEME]: {
         [SoundEffect.Click]: 'sound/Button click.wav',
         [SoundEffect.Explode]: 'sound/Explode.mp3',
+        [SoundEffect.Reveal]: 'sound/Tile click.wav',
         // TODO: Add new sound effects for these
-        [SoundEffect.Reveal]: 'sound/Button click.wav',
         [SoundEffect.Flag]: 'sound/Button click.wav',
         [SoundEffect.Win]: 'sound/Button click.wav',
         [SoundEffect.ZoomIn]: 'sound/Button click.wav',
         [SoundEffect.ZoomOut]: 'sound/Button click.wav',
         [SoundEffect.ZoomReset]: 'sound/Button click.wav',
     },
+    // TODO: Add new sound effects for this theme
     [OCEAN_THEME]: {
         [SoundEffect.Click]: 'sound/Button click.wav',
         [SoundEffect.Explode]: 'sound/Explode.mp3',
-        // TODO: Add new sound effects for these
-        [SoundEffect.Reveal]: 'sound/Button click.wav',
+        [SoundEffect.Reveal]: 'sound/Tile click.wav',
         [SoundEffect.Flag]: 'sound/Button click.wav',
         [SoundEffect.Win]: 'sound/Button click.wav',
         [SoundEffect.ZoomIn]: 'sound/Button click.wav',
         [SoundEffect.ZoomOut]: 'sound/Button click.wav',
         [SoundEffect.ZoomReset]: 'sound/Button click.wav',
     },
+    // TODO: Add new sound effects for this theme
     [CLASSIC_THEME]: {
         [SoundEffect.Click]: 'sound/Button click.wav',
         [SoundEffect.Explode]: 'sound/Explode.mp3',
-        // TODO: Add new sound effects for these
-        [SoundEffect.Reveal]: 'sound/Button click.wav',
+        [SoundEffect.Reveal]: 'sound/Tile click.wav',
         [SoundEffect.Flag]: 'sound/Button click.wav',
         [SoundEffect.Win]: 'sound/Button click.wav',
         [SoundEffect.ZoomIn]: 'sound/Button click.wav',
@@ -79,7 +79,8 @@ export class AudioManager {
         const soundEffectName = soundEffectsMap[currentTheme][soundEffect];
         const sound = this.assetManager.getSoundEffect(soundEffectName);
         if (!sound) {
-            throw new Error('Sound not loaded');
+            console.error('Sound not loaded');
+            return;
         }
         sound.play();
     }

@@ -292,6 +292,7 @@ export const selectSpot = function (x: number, y: number) {
         clearInterval(gameTimer);
         eventHandler('win', { gameState, persistentState });
     }
+    eventHandler('reveal', { x, y });
     // TODO: Should game state be passed into the draw?
     eventHandler('draw', { gameState, persistentState });
     gameStorage.saveGame(gameState);
@@ -324,6 +325,7 @@ export const selectAdjacentSpots = function (x: number, y: number) {
         }
         revealMultiple(adjacentSpots);
     }
+    eventHandler('reveal', { x, y });
     if (doesMineExist) {
         gameState.ended = true;
         clearInterval(gameTimer);

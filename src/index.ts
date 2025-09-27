@@ -104,6 +104,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     );
                 renderDigits(mineCountBoard, unflaggedCount);
                 break;
+            case 'reveal':
+                if (!gameState.ended) {
+                    audioManager.playSoundEffect(SoundEffect.Reveal);
+                }
+                break;
             case 'error':
                 break;
             case 'lose': {
@@ -262,6 +267,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             'img/Tiles.png',
             'sound/Explode.mp3',
             'sound/Button click.wav',
+            'sound/Tile click.wav',
         ]);
 
         await backgroundManager.initialize();
