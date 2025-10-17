@@ -118,6 +118,10 @@
     pointer-events: none;
 }
 
+.box.incorrect > img {
+    filter: grayscale(1);
+}
+
 /* Digit Board */
 
 .digit-board {
