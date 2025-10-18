@@ -491,6 +491,7 @@ export const flagSpot = function (x: number, y: number, expression?: boolean) {
         expression = !gameState.board[y][x].isFlagged;
     }
     gameState.board[y][x].isFlagged = expression; //spot at x, y is flagged/unflagged
+    eventHandler('flag', { gameState });
     // TODO: Should game state be passed into the draw?
     eventHandler('draw', { gameState, persistentState });
     gameStorage.saveGame(gameState);

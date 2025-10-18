@@ -13,14 +13,19 @@ export enum SoundEffect {
     ZoomReset,
 }
 
+export type SoundSettings = {
+    volume?: number;
+    seconds?: number;
+};
+
 const soundEffectsMap: { [theme in Theme]: { [soundEffect in SoundEffect]: string } } = {
     [BASIC_THEME]: {
         [SoundEffect.Click]: 'sound/Button click.wav',
         [SoundEffect.Explode]: 'sound/Explode.mp3',
         [SoundEffect.Reveal]: 'sound/Tile click.wav',
+        [SoundEffect.Flag]: 'sound/Flag.wav',
+        [SoundEffect.Win]: 'sound/Win.wav',
         // TODO: Add new sound effects for these
-        [SoundEffect.Flag]: 'sound/Button click.wav',
-        [SoundEffect.Win]: 'sound/Button click.wav',
         [SoundEffect.ZoomIn]: 'sound/Button click.wav',
         [SoundEffect.ZoomOut]: 'sound/Button click.wav',
         [SoundEffect.ZoomReset]: 'sound/Button click.wav',
@@ -30,8 +35,8 @@ const soundEffectsMap: { [theme in Theme]: { [soundEffect in SoundEffect]: strin
         [SoundEffect.Click]: 'sound/Button click.wav',
         [SoundEffect.Explode]: 'sound/Explode.mp3',
         [SoundEffect.Reveal]: 'sound/Tile click.wav',
-        [SoundEffect.Flag]: 'sound/Button click.wav',
-        [SoundEffect.Win]: 'sound/Button click.wav',
+        [SoundEffect.Flag]: 'sound/Flag.wav',
+        [SoundEffect.Win]: 'sound/Win.wav',
         [SoundEffect.ZoomIn]: 'sound/Button click.wav',
         [SoundEffect.ZoomOut]: 'sound/Button click.wav',
         [SoundEffect.ZoomReset]: 'sound/Button click.wav',
@@ -41,8 +46,8 @@ const soundEffectsMap: { [theme in Theme]: { [soundEffect in SoundEffect]: strin
         [SoundEffect.Click]: 'sound/Button click.wav',
         [SoundEffect.Explode]: 'sound/Explode.mp3',
         [SoundEffect.Reveal]: 'sound/Tile click.wav',
-        [SoundEffect.Flag]: 'sound/Button click.wav',
-        [SoundEffect.Win]: 'sound/Button click.wav',
+        [SoundEffect.Flag]: 'sound/Flag.wav',
+        [SoundEffect.Win]: 'sound/Win.wav',
         [SoundEffect.ZoomIn]: 'sound/Button click.wav',
         [SoundEffect.ZoomOut]: 'sound/Button click.wav',
         [SoundEffect.ZoomReset]: 'sound/Button click.wav',
@@ -73,7 +78,7 @@ export class AudioManager {
         this.soundEffectsEnabled = !this.soundEffectsEnabled;
     }
 
-    playSoundEffect(soundEffect: SoundEffect) {
+    playSoundEffect(soundEffect: SoundEffect, settings?: SoundSettings) {
         if (!this.soundEffectsEnabled) return;
         const currentTheme = this.themeManager.getCurrentTheme();
         const soundEffectName = soundEffectsMap[currentTheme][soundEffect];
@@ -81,6 +86,14 @@ export class AudioManager {
         if (!sound) {
             console.error('Sound not loaded');
             return;
+        }
+        if (typeof settings !== 'undefined') {
+            if (typeof settings.seconds !== 'undefined') {
+                sound.seek(settings.seconds);
+            }
+            if (typeof settings.volume !== 'undefined') {
+                sound.volume(settings.volume);
+            }
         }
         sound.play();
     }

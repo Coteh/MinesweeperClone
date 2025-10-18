@@ -109,6 +109,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     audioManager.playSoundEffect(SoundEffect.Reveal);
                 }
                 break;
+            case 'flag':
+                audioManager.playSoundEffect(SoundEffect.Flag, {
+                    volume: 0.25,
+                });
+                break;
             case 'error':
                 break;
             case 'lose': {
@@ -127,6 +132,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 newGameImage.src = 'img/Smiley_proud.png';
                 transformManager.resetZoom(true);
                 backgroundManager.renderWin();
+                if (!data.onInitialization) {
+                    audioManager.playSoundEffect(SoundEffect.Win, {
+                        seconds: 0.3,
+                    });
+                }
                 break;
             }
         }
@@ -268,6 +278,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             'sound/Explode.mp3',
             'sound/Button click.wav',
             'sound/Tile click.wav',
+            'sound/Flag.wav',
+            'sound/Win.wav',
         ]);
 
         await backgroundManager.initialize();
