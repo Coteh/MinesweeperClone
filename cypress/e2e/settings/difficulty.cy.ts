@@ -16,6 +16,7 @@ const standardMineBlock: (
         isRevealed: false,
         isLosingSpot: false,
         isFlagged: false,
+        isQuestionMark: false,
         adjMinesCount,
     };
 };
@@ -99,6 +100,7 @@ describe('difficulty', () => {
         cy.get('#difficulty-selector').should('have.value', 'easy');
 
         // Change to medium difficulty using dropdown
+        // TODO: Fix test failure due to requiring user gesture
         cy.get('#difficulty-selector').select('medium');
         cy.get('#difficulty-selector').should('have.value', 'medium');
 
@@ -137,6 +139,7 @@ describe('difficulty', () => {
         cy.get('.settings-link').click();
 
         // Change to medium difficulty using dropdown
+        // TODO: Fix test failure due to requiring user gesture
         cy.get('#difficulty-selector').should('have.value', 'easy');
         cy.get('#difficulty-selector').select('medium');
         cy.get('#difficulty-selector').should('have.value', 'medium');

@@ -17,6 +17,7 @@ const standardMineBlock: (
         isRevealed: false,
         isLosingSpot: false,
         isFlagged: false,
+        isQuestionMark: false,
         adjMinesCount,
     };
 };
@@ -152,6 +153,7 @@ describe('settings', () => {
         cy.get('.settings-link').click();
 
         cy.contains('Settings').should('be.visible');
+        cy.get('.dialog-content').scrollTo('bottom');
         cy.contains(`v${version}`).should('be.visible');
     });
 
@@ -159,6 +161,7 @@ describe('settings', () => {
         cy.get('.settings-link').click();
 
         cy.contains('Settings').should('be.visible');
+        cy.get('.dialog-content').scrollTo('bottom');
         cy.contains(/© .* James Cote/i).should('be.visible');
     });
 

@@ -15,6 +15,7 @@ const standardMineBlock: (
         isRevealed: false,
         isLosingSpot: false,
         isFlagged: false,
+        isQuestionMark: false,
         adjMinesCount,
     };
 };

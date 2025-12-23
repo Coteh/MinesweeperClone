@@ -27,11 +27,6 @@ describe('misc', () => {
     specify('gameplay screenshot', () => {
         cy.viewport('iphone-6');
 
-        // Hide debug elements from the screenshot
-        cy.get('.debug-link').then((elem) => {
-            elem.remove();
-        });
-
         // TODO: Create a video screenshot for the readme.
         // What needs to be fixed:
         // - screenshot.sh needs to reposition the ffmpeg crop to where the game is located on the page
@@ -39,6 +34,11 @@ describe('misc', () => {
 
         // After this delay, the video screenshot should start.
         cy.wait(1000);
+
+        // Hide debug elements from the screenshot
+        cy.get('.debug-link').then((elem) => {
+            elem.css('display', 'none');
+        });
 
         // Static screenshot taken for now
         cy.screenshot('readme/screenshot', {
