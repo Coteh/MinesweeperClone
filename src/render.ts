@@ -1,5 +1,13 @@
 import feather from 'feather-icons';
-import { GameState, GameOptions, selectSpot, flagSpot, selectAdjacentSpots } from './game';
+import {
+    GameState,
+    GameOptions,
+    selectSpot,
+    flagSpot,
+    selectAdjacentSpots,
+    questionMarkSpot,
+} from './game';
+import { getQuestionMode } from './inputMode';
 import type * as CSS from 'csstype';
 
 export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
@@ -48,6 +56,11 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                 const flagImg = document.createElement('img');
                 flagImg.src = 'img/Flag.png';
                 elem.appendChild(flagImg);
+            } else if (gameState.board[i][j].isQuestionMark) {
+                const qm = document.createElement('span');
+                qm.classList.add('question-mark');
+                qm.innerText = '?';
+                elem.appendChild(qm);
             }
             let pressStartTime: number;
             let blockPressed: boolean;
@@ -72,7 +85,11 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                     selectAdjacentSpots(j, i);
                     return;
                 }
-                selectSpot(j, i);
+                if (getQuestionMode()) {
+                    questionMarkSpot(j, i);
+                } else {
+                    selectSpot(j, i);
+                }
                 blockPressed = false;
             });
             elem.addEventListener('click', (e) => {
@@ -81,7 +98,11 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                     selectAdjacentSpots(j, i);
                     return;
                 }
-                selectSpot(j, i);
+                if (getQuestionMode()) {
+                    questionMarkSpot(j, i);
+                } else {
+                    selectSpot(j, i);
+                }
             });
             elem.addEventListener('contextmenu', (e) => {
                 e.preventDefault();

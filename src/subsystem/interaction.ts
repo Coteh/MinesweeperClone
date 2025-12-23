@@ -4,6 +4,7 @@ import { FullscreenManager } from '../manager/fullscreen';
 import { MAX_ZOOM, MIN_ZOOM, TransformManager } from '../manager/transform';
 import { getPreferenceValue } from '../preferences';
 import { FrontendState } from '..';
+import { toggleQuestionMode } from '../inputMode';
 import { DEBUG_HUD_ENABLED_PREFERENCE_NAME, SETTING_ENABLED } from '../consts';
 import { AudioManager, SoundEffect } from '../manager/audio';
 
@@ -163,6 +164,21 @@ export function setupInteractionSubsystem(
         transformManager.resetZoom(false);
         audioManager.playSoundEffect(SoundEffect.ZoomReset);
     });
+
+    // Question mark input mode toggle
+    const questionModeButton = document.querySelector('#question-mode') as HTMLElement;
+    if (questionModeButton) {
+        questionModeButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const enabled = toggleQuestionMode();
+            if (enabled) {
+                questionModeButton.classList.add('enabled');
+            } else {
+                questionModeButton.classList.remove('enabled');
+            }
+            audioManager.playSoundEffect(SoundEffect.Click);
+        });
+    }
 
     const zoomable = document.getElementById('zoomable') as HTMLElement;
     let startDistance = 0;

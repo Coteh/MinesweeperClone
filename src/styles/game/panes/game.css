@@ -131,6 +131,15 @@
     background-color: black;
 }
 
+/* Question Marks */
+
+.question-mark {
+    font-weight: bold;
+    font-size: 18px;
+    display: inline-block;
+    line-height: 1;
+}
+
 /* Colours */
 
 .standard {
@@ -168,4 +177,24 @@
 
 .game.pane > .commands a.link-icon.disabled > * {
     color: grey;
+}
+
+/* Question Mark Input Mode Toggle */
+
+.question-link svg {
+    display: inline-block;
+}
+/* By default show the tile icon (second svg) and hide the question icon */
+.question-link svg:first-of-type {
+    display: none;
+}
+.question-link svg:last-of-type {
+    display: inline-block;
+}
+/* When enabled show the question icon and hide the tile icon */
+.question-link.enabled svg:first-of-type {
+    display: inline-block;
+}
+.question-link.enabled svg:last-of-type {
+    display: none;
 }

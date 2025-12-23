@@ -17,6 +17,7 @@ export type MineBlock = {
     isRevealed: boolean;
     isLosingSpot: boolean;
     isFlagged: boolean;
+    isQuestionMark: boolean;
     adjMinesCount: number;
 };
 
@@ -69,6 +70,7 @@ const newState: (options: GameOptions) => GameState = (options) => {
                 isRevealed: false,
                 isLosingSpot: false,
                 isFlagged: false,
+                isQuestionMark: false,
                 adjMinesCount: 0,
             };
         }
@@ -350,6 +352,8 @@ export const selectAdjacentSpots = function (x: number, y: number) {
 
 const performSpotReveal = function (x: number, y: number, callback?: Function) {
     gameState.board[y][x].isRevealed = true;
+    // Clear any question mark when revealing
+    gameState.board[y][x].isQuestionMark = false;
     let adjacentSpots: Array<MineBlock> | null = null;
     let amountOfAdjMines = 0;
     const isMine = gameState.board[y][x].isMine;
@@ -467,6 +471,41 @@ const calculateAdjacentFlags = function (adjacentSpots: MineBlock[]) {
     return amountOfAdjFlags;
 };
 
+export const questionMarkSpot = function (x: number, y: number) {
+    // if game has ended already, do not perform the action
+    if (gameState.ended) {
+        return;
+    }
+    // only allow setting a question mark if it hasn't been revealed yet and exists
+    if (
+        x == null ||
+        y == null ||
+        x < 0 ||
+        x >= gameState.gameOptions.boardWidth ||
+        y < 0 ||
+        y >= gameState.gameOptions.boardHeight
+    ) {
+        return { qmInfo: 'nonexistent' };
+    }
+
+    if (gameState.board[y][x].isRevealed) {
+        return { qmInfo: 'alreadyrevealed' };
+    }
+
+    // Do not allow a question mark to replace an existing flag
+    if (gameState.board[y][x].isFlagged) {
+        return { qmInfo: 'flagged' };
+    }
+
+    gameState.board[y][x].isQuestionMark = !gameState.board[y][x].isQuestionMark;
+
+    // Notify and persist
+    eventHandler('draw', { gameState, persistentState });
+    gameStorage.saveGame(gameState);
+
+    return { qmInfo: gameState.board[y][x].isQuestionMark ? 'questioned' : 'unquestioned' };
+};
+
 export const flagSpot = function (x: number, y: number, expression?: boolean) {
     // if game has ended already, do not perform the action
     if (gameState.ended) {
@@ -490,6 +529,11 @@ export const flagSpot = function (x: number, y: number, expression?: boolean) {
         //flag argument not provided
         expression = !gameState.board[y][x].isFlagged;
     }
+    // If flagging a spot, clear any question mark it previously had
+    if (expression) {
+        gameState.board[y][x].isQuestionMark = false;
+    }
+
     gameState.board[y][x].isFlagged = expression; //spot at x, y is flagged/unflagged
     eventHandler('flag', { gameState });
     // TODO: Should game state be passed into the draw?

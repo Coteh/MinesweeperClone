@@ -100,7 +100,7 @@ export function setupDebugSubsystem(
     const updateDebugHudState = (isEnabled: boolean, isVisible: boolean) => {
         debugHudButton.style.display = isEnabled ? '' : 'none';
         debugOverlay.style.display = isVisible ? '' : 'none';
-        actionIconManager.changeIcon(debugHudButton, isVisible ? 'eye-off' : 'eye');
+        actionIconManager.changeIcon(debugHudButton, isVisible ? 'eye' : 'eye-off');
         (document.querySelector(
             '#x'
         ) as HTMLSpanElement).innerText = transformManager.boardTransform.x.toString();

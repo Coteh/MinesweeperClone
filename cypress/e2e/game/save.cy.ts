@@ -9,8 +9,18 @@ const standardMineBlock: (
     adjMinesCount: number,
     isRevealed: boolean,
     isFlagged: boolean,
-    isLosingSpot: boolean
-) => MineBlock = (x, y, isMine, adjMinesCount, isRevealed, isFlagged, isLosingSpot) => {
+    isLosingSpot: boolean,
+    isQuestionMark: boolean
+) => MineBlock = (
+    x,
+    y,
+    isMine,
+    adjMinesCount,
+    isRevealed,
+    isFlagged,
+    isLosingSpot,
+    isQuestionMark
+) => {
     return {
         x,
         y,
@@ -18,6 +28,7 @@ const standardMineBlock: (
         isRevealed,
         isLosingSpot,
         isFlagged,
+        isQuestionMark,
         adjMinesCount,
     };
 };
@@ -31,28 +42,28 @@ describe('retrieving saved progress', () => {
                     // TODO: Expand the board used for testing from 4x4 to 9x9 easy mode board
                     board: [
                         [
-                            standardMineBlock(0, 0, false, 1, false, false, false),
-                            standardMineBlock(1, 0, false, 1, false, false, false),
-                            standardMineBlock(2, 0, false, 1, false, false, false),
-                            standardMineBlock(3, 0, false, 0, false, false, false),
+                            standardMineBlock(0, 0, false, 1, false, false, false, false),
+                            standardMineBlock(1, 0, false, 1, false, false, false, false),
+                            standardMineBlock(2, 0, false, 1, false, false, false, false),
+                            standardMineBlock(3, 0, false, 0, false, false, false, false),
                         ],
                         [
-                            standardMineBlock(0, 1, false, 1, false, false, false),
-                            standardMineBlock(1, 1, true, 0, false, false, false),
-                            standardMineBlock(2, 1, false, 1, false, false, false),
-                            standardMineBlock(3, 1, false, 0, false, false, false),
+                            standardMineBlock(0, 1, false, 1, false, false, false, false),
+                            standardMineBlock(1, 1, true, 0, false, false, false, false),
+                            standardMineBlock(2, 1, false, 1, false, false, false, false),
+                            standardMineBlock(3, 1, false, 0, false, false, false, false),
                         ],
                         [
-                            standardMineBlock(0, 2, false, 2, false, false, false),
-                            standardMineBlock(1, 2, false, 2, false, false, false),
-                            standardMineBlock(2, 2, false, 1, false, false, false),
-                            standardMineBlock(3, 2, false, 0, false, false, false),
+                            standardMineBlock(0, 2, false, 2, false, false, false, false),
+                            standardMineBlock(1, 2, false, 2, false, false, false, false),
+                            standardMineBlock(2, 2, false, 1, false, false, false, false),
+                            standardMineBlock(3, 2, false, 0, false, false, false, false),
                         ],
                         [
-                            standardMineBlock(0, 3, true, 0, false, false, false),
-                            standardMineBlock(1, 3, false, 1, false, false, false),
-                            standardMineBlock(2, 3, false, 0, false, false, false),
-                            standardMineBlock(3, 3, false, 0, false, false, false),
+                            standardMineBlock(0, 3, true, 0, false, false, false, false),
+                            standardMineBlock(1, 3, false, 1, false, false, false, false),
+                            standardMineBlock(2, 3, false, 0, false, false, false, false),
+                            standardMineBlock(3, 3, false, 0, false, false, false, false),
                         ],
                     ],
                     ended: false,
@@ -85,28 +96,28 @@ describe('retrieving saved progress', () => {
     it('should save changes', () => {
         cy.verifyBoardMatches([
             [
-                standardMineBlock(0, 0, false, 1, false, false, false),
-                standardMineBlock(1, 0, false, 1, false, false, false),
-                standardMineBlock(2, 0, false, 1, false, false, false),
-                standardMineBlock(3, 0, false, 0, false, false, false),
+                standardMineBlock(0, 0, false, 1, false, false, false, false),
+                standardMineBlock(1, 0, false, 1, false, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(2, 1, false, 1, false, false, false),
-                standardMineBlock(3, 1, false, 0, false, false, false),
+                standardMineBlock(0, 1, false, 1, false, false, false, false),
+                standardMineBlock(1, 1, true, 0, false, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 2, false, 2, false, false, false),
-                standardMineBlock(1, 2, false, 2, false, false, false),
-                standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false, false),
+                standardMineBlock(2, 2, false, 1, false, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 3, true, 0, false, false, false),
-                standardMineBlock(1, 3, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
-                standardMineBlock(3, 3, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false, false),
+                standardMineBlock(3, 3, false, 0, false, false, false, false),
             ],
         ]);
 
@@ -118,28 +129,28 @@ describe('retrieving saved progress', () => {
 
         cy.verifyBoardMatches([
             [
-                standardMineBlock(0, 0, false, 1, true, false, false),
-                standardMineBlock(1, 0, false, 1, false, false, false),
-                standardMineBlock(2, 0, false, 1, false, false, false),
-                standardMineBlock(3, 0, false, 0, false, false, false),
+                standardMineBlock(0, 0, false, 1, true, false, false, false),
+                standardMineBlock(1, 0, false, 1, false, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(2, 1, false, 1, false, false, false),
-                standardMineBlock(3, 1, false, 0, false, false, false),
+                standardMineBlock(0, 1, false, 1, false, false, false, false),
+                standardMineBlock(1, 1, true, 0, false, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 2, false, 2, false, false, false),
-                standardMineBlock(1, 2, false, 2, false, false, false),
-                standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false, false),
+                standardMineBlock(2, 2, false, 1, false, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 3, true, 0, false, false, false),
-                standardMineBlock(1, 3, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
-                standardMineBlock(3, 3, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false, false),
+                standardMineBlock(3, 3, false, 0, false, false, false, false),
             ],
         ]);
 
@@ -147,28 +158,28 @@ describe('retrieving saved progress', () => {
 
         cy.verifyBoardMatches([
             [
-                standardMineBlock(0, 0, false, 1, true, false, false),
-                standardMineBlock(1, 0, false, 1, false, false, false),
-                standardMineBlock(2, 0, false, 1, false, false, false),
-                standardMineBlock(3, 0, false, 0, false, false, false),
+                standardMineBlock(0, 0, false, 1, true, false, false, false),
+                standardMineBlock(1, 0, false, 1, false, false, false, false),
+                standardMineBlock(2, 0, false, 1, false, false, false, false),
+                standardMineBlock(3, 0, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 1, false, 1, false, false, false),
-                standardMineBlock(1, 1, true, 0, false, false, false),
-                standardMineBlock(2, 1, false, 1, false, false, false),
-                standardMineBlock(3, 1, false, 0, false, false, false),
+                standardMineBlock(0, 1, false, 1, false, false, false, false),
+                standardMineBlock(1, 1, true, 0, false, false, false, false),
+                standardMineBlock(2, 1, false, 1, false, false, false, false),
+                standardMineBlock(3, 1, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 2, false, 2, false, false, false),
-                standardMineBlock(1, 2, false, 2, false, false, false),
-                standardMineBlock(2, 2, false, 1, false, false, false),
-                standardMineBlock(3, 2, false, 0, false, false, false),
+                standardMineBlock(0, 2, false, 2, false, false, false, false),
+                standardMineBlock(1, 2, false, 2, false, false, false, false),
+                standardMineBlock(2, 2, false, 1, false, false, false, false),
+                standardMineBlock(3, 2, false, 0, false, false, false, false),
             ],
             [
-                standardMineBlock(0, 3, true, 0, false, false, false),
-                standardMineBlock(1, 3, false, 1, false, false, false),
-                standardMineBlock(2, 3, false, 0, false, false, false),
-                standardMineBlock(3, 3, false, 0, false, false, false),
+                standardMineBlock(0, 3, true, 0, false, false, false, false),
+                standardMineBlock(1, 3, false, 1, false, false, false, false),
+                standardMineBlock(2, 3, false, 0, false, false, false, false),
+                standardMineBlock(3, 3, false, 0, false, false, false, false),
             ],
         ]);
     });
