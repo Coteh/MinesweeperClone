@@ -61,7 +61,6 @@
     height: 30px;
     padding: 2px;
     margin: 0;
-    border: 1px solid black;
     line-height: 1.9em;
     text-align: center;
     position: relative;
@@ -72,6 +71,22 @@
     font-weight: bold;
 
     transition: transform 0.25s ease, top 0.1s ease, left 0.1s ease;
+}
+
+.box {
+    border-left: 1px solid black;
+}
+
+.box:last-child {
+    border-right: 1px solid black;
+}
+
+.row > .box {
+    border-top: 1px solid black;
+}
+
+.row:last-child > .box {
+    border-bottom: 1px solid black;
 }
 
 /* NTS: Hover color still appears and won't go away after tapping elsewhere on iOS.
@@ -148,7 +163,9 @@
 
 .box {
     background-color: var(--standard-block-color);
-    border: 1px solid var(--box-border-color);
+    /* The !important here is to override all the specific border colour settings 
+    for .box without having to provide separate override rules for each */
+    border-color: var(--box-border-color) !important;
 }
 
 .box.losing {
