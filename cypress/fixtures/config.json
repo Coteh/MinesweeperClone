@@ -1,0 +1,40 @@
+{
+    "difficulty": {
+        "easy": {
+            "displayName": "Easy",
+            "boardWidth": 9,
+            "boardHeight": 9,
+            "numberOfMines": 10,
+            "bounds": {
+                "minX": -200,
+                "minY": -200,
+                "maxX": 200,
+                "maxY": 200
+            }
+        },
+        "medium": {
+            "displayName": "Medium",
+            "boardWidth": 16,
+            "boardHeight": 16,
+            "numberOfMines": 40,
+            "bounds": {
+                "minX": -400,
+                "minY": -300,
+                "maxX": 400,
+                "maxY": 300
+            }
+        },
+        "hard": {
+            "displayName": "Hard",
+            "boardWidth": 30,
+            "boardHeight": 16,
+            "numberOfMines": 99,
+            "bounds": {
+                "minX": -700,
+                "minY": -300,
+                "maxX": 700,
+                "maxY": 300
+            }
+        }
+    }
+}

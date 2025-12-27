@@ -10,10 +10,13 @@ export type TransformEventFunction = () => void;
 export const MIN_ZOOM = 0.5;
 export const MAX_ZOOM = 2;
 
+import type { Bounds } from '../config';
+
 export class TransformManager {
     private boardElem: HTMLElement;
     private _boardTransform: BoardTransform;
     private eventListeners: Map<TransformEvent, TransformEventFunction[]>;
+    private bounds?: Bounds | null;
 
     constructor(boardElem: HTMLElement) {
         this.boardElem = boardElem;
@@ -23,6 +26,13 @@ export class TransformManager {
             scale: 1,
         };
         this.eventListeners = new Map<TransformEvent, TransformEventFunction[]>();
+        this.bounds = null;
+    }
+
+    public setBounds(bounds: Bounds | null) {
+        this.bounds = bounds;
+        // Ensure current transform respects new bounds
+        this.adjustBoardTransform(false);
     }
 
     public get boardTransform(): BoardTransform {
@@ -72,6 +82,67 @@ export class TransformManager {
     }
 
     adjustBoardTransform(useTransition: boolean) {
+        // If bounds are set, clamp x/y to the bounds values.
+        if (this.bounds) {
+            let minXAllowed: number, maxXAllowed: number, minYAllowed: number, maxYAllowed: number;
+            // Compute board pixel dimensions based on DOM and use them with viewport to derive allowed translate ranges.
+            // If the scaled board is smaller than the viewport, keep it centered and prevent moving out of view.
+            // If the scaled board is larger than the viewport, allow panning so edges can be reached.
+            try {
+                let allowedExtentX = 0; // positive number: maximum absolute translate allowed by viewport
+                let allowedExtentY = 0;
+                const boardElem = document.querySelector('#board') as HTMLElement | null;
+                const cellElem = document.querySelector('.box') as HTMLElement | null;
+                if (boardElem && cellElem) {
+                    const rows = boardElem.querySelectorAll('.row');
+                    const rowCount = rows.length || 0;
+                    const colCount = rows[0] ? rows[0].children.length : 0;
+                    const cellRect = cellElem.getBoundingClientRect();
+                    const cellW = cellRect.width || 30;
+                    const cellH = cellRect.height || 30;
+                    const boardWidth = colCount * cellW;
+                    const boardHeight = rowCount * cellH;
+                    const viewportW = window.innerWidth;
+                    const viewportH = window.innerHeight;
+                    const scaledBoardWidth = boardWidth * this._boardTransform.scale;
+                    const scaledBoardHeight = boardHeight * this._boardTransform.scale;
+
+                    if (scaledBoardWidth <= viewportW) {
+                        // Board fits horizontally - limit translation so it remains visible centered
+                        allowedExtentX = (viewportW - scaledBoardWidth) / 2;
+                    } else {
+                        // Board larger horizontally - allow panning so edges can be reached
+                        allowedExtentX = (scaledBoardWidth - viewportW) / 2;
+                    }
+
+                    if (scaledBoardHeight <= viewportH) {
+                        allowedExtentY = (viewportH - scaledBoardHeight) / 2;
+                    } else {
+                        allowedExtentY = (scaledBoardHeight - viewportH) / 2;
+                    }
+                }
+                minXAllowed = Math.max(this.bounds.minX, -allowedExtentX);
+                maxXAllowed = Math.min(this.bounds.maxX, allowedExtentX);
+                minYAllowed = Math.max(this.bounds.minY, -allowedExtentY);
+                maxYAllowed = Math.min(this.bounds.maxY, allowedExtentY);
+            } catch (e) {
+                // If measurement fails, fall back to using bounds only
+                minXAllowed = this.bounds.minX;
+                maxXAllowed = this.bounds.maxX;
+                minYAllowed = this.bounds.minY;
+                maxYAllowed = this.bounds.maxY;
+            }
+
+            this._boardTransform.x = Math.max(
+                minXAllowed,
+                Math.min(maxXAllowed, this._boardTransform.x)
+            );
+            this._boardTransform.y = Math.max(
+                minYAllowed,
+                Math.min(maxYAllowed, this._boardTransform.y)
+            );
+        }
+
         const translateRule = `translate(${this._boardTransform.x}px, ${this._boardTransform.y}px)`;
         const scaleRule = `scale(${this._boardTransform.scale})`;
         if (useTransition) this.boardElem.style.transition = 'transform 0.25s';

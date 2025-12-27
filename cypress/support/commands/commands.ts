@@ -115,6 +115,23 @@ Cypress.Commands.add('waitUntilDialogAppears', () => {
     );
 });
 
+Cypress.Commands.add('selectDifficulty', (value: string) => {
+    cy.get('#difficulty-selector').should('exist');
+    cy.get('#difficulty-selector').select(value).should('have.value', value);
+});
+
+Cypress.Commands.add('selectTheme', (value: string) => {
+    cy.get('#theme-selector').should('exist');
+    cy.get('#theme-selector').select(value).should('have.value', value);
+});
+
+// Helper to open settings, select a difficulty, and close settings.
+Cypress.Commands.add('changeDifficulty', (value: string) => {
+    cy.get('.settings-link').click();
+    cy.selectDifficulty(value);
+    cy.get('.overlay-back').click('left');
+});
+
 // Extended cy.intercept to add a log when the request gets intercepted.
 // See https://glebbahmutov.com/blog/cypress-intercept-problems/
 Cypress.Commands.overwrite('intercept', (intercept, ...args) =>

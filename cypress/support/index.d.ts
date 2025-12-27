@@ -18,6 +18,9 @@ declare global {
                 expectedBoard: (MineBlock | undefined)[][],
                 options?: VerifyBoardOptions
             ): Chainable<Subject>;
+            selectDifficulty(value: string): Chainable<Subject>;
+            selectTheme(value: string): Chainable<Subject>;
+            changeDifficulty(value: string): Chainable<Subject>;
         }
     }
 }

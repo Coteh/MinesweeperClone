@@ -99,10 +99,8 @@ describe('difficulty', () => {
         // Verify dropdown default value
         cy.get('#difficulty-selector').should('have.value', 'easy');
 
-        // Change to medium difficulty using dropdown
-        // TODO: Fix test failure due to requiring user gesture
-        cy.get('#difficulty-selector').select('medium');
-        cy.get('#difficulty-selector').should('have.value', 'medium');
+        // Change to medium difficulty
+        cy.selectDifficulty('medium');
 
         cy.get('.overlay-back').click('left');
 
@@ -112,9 +110,8 @@ describe('difficulty', () => {
 
         cy.get('.settings-link').click();
 
-        // Change to hard difficulty using dropdown
-        cy.get('#difficulty-selector').select('hard');
-        cy.get('#difficulty-selector').should('have.value', 'hard');
+        // Change to hard difficulty
+        cy.selectDifficulty('hard');
 
         cy.get('.overlay-back').click('left');
 
@@ -124,9 +121,8 @@ describe('difficulty', () => {
 
         cy.get('.settings-link').click();
 
-        // Change back to easy difficulty using dropdown
-        cy.get('#difficulty-selector').select('easy');
-        cy.get('#difficulty-selector').should('have.value', 'easy');
+        // Change back to easy difficulty
+        cy.selectDifficulty('easy');
 
         cy.get('.overlay-back').click('left');
 
@@ -138,11 +134,9 @@ describe('difficulty', () => {
     it('should retain selected difficulty upon refresh', () => {
         cy.get('.settings-link').click();
 
-        // Change to medium difficulty using dropdown
-        // TODO: Fix test failure due to requiring user gesture
+        // Change to medium difficulty
         cy.get('#difficulty-selector').should('have.value', 'easy');
-        cy.get('#difficulty-selector').select('medium');
-        cy.get('#difficulty-selector').should('have.value', 'medium');
+        cy.selectDifficulty('medium');
 
         cy.get('.overlay-back').click('left');
 
@@ -152,6 +146,7 @@ describe('difficulty', () => {
 
         // Reload and verify persistence
         cy.reload();
+        cy.waitForGameReady();
 
         cy.get('.settings-link').click();
         cy.get('#difficulty-selector').should('have.value', 'medium');

@@ -8,8 +8,6 @@ import { IGameStorage } from '../storage';
 import {
     DIFFICULTY_PREFERENCE_NAME,
     DIFFICULTY_EASY,
-    DIFFICULTY_MEDIUM,
-    DIFFICULTY_HARD,
     FULLSCREEN_SETTING_NAME,
     DIFFICULTY_SETTING_NAME,
     HIGHLIGHT_SETTING_NAME,
@@ -18,8 +16,6 @@ import {
     SETTING_DISABLED,
     FULLSCREEN_PREFERENCE_NAME,
     THEME_PREFERENCE_NAME,
-    CLASSIC_THEME,
-    OCEAN_THEME,
     BASIC_THEME,
     SOUND_SETTING_NAME,
     SOUND_PREFERENCE_NAME,
@@ -39,13 +35,17 @@ export type SettingsSubsystem = {
     setGameState: (gameState: GameState) => void;
 };
 
+import { Config } from '../config';
+
 export function setupSettingsSubsystem(
+    gameConfig: Config,
     gameStorage: IGameStorage,
     fullscreenManager: FullscreenManager,
     themeManager: ThemeManager,
     backgroundManager: BackgroundManager,
     audioManager: AudioManager,
     actionIconManager: ActionIconManager,
+    transformManager: import('../manager/transform').TransformManager,
     frontendState: FrontendState,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void
 ): SettingsSubsystem {
@@ -55,7 +55,7 @@ export function setupSettingsSubsystem(
         gameState = _gameState;
     };
 
-    const selectableDifficulties = [DIFFICULTY_EASY, DIFFICULTY_MEDIUM, DIFFICULTY_HARD];
+    const selectableDifficulties = Object.keys(gameConfig.difficulty);
 
     // Get elements for settings
     const settingsButton = document.querySelector('.settings-link') as HTMLElement;
@@ -70,23 +70,19 @@ export function setupSettingsSubsystem(
 
     // Helper to update game options based on difficulty
     function switchDifficulty(difficulty: string, options: SwitchDifficultyOptions) {
-        switch (difficulty) {
-            case DIFFICULTY_MEDIUM:
-                frontendState.gameOptions.boardWidth = 16;
-                frontendState.gameOptions.boardHeight = 16;
-                frontendState.gameOptions.numberOfMines = 40;
-                break;
-            case DIFFICULTY_HARD:
-                frontendState.gameOptions.boardWidth = 30;
-                frontendState.gameOptions.boardHeight = 16;
-                frontendState.gameOptions.numberOfMines = 99;
-                break;
-            case DIFFICULTY_EASY:
-            default:
-                frontendState.gameOptions.boardWidth = 9;
-                frontendState.gameOptions.boardHeight = 9;
-                frontendState.gameOptions.numberOfMines = 10;
-                break;
+        const setting = gameConfig.difficulty[difficulty];
+        if (setting) {
+            frontendState.gameOptions.boardWidth = setting.boardWidth;
+            frontendState.gameOptions.boardHeight = setting.boardHeight;
+            frontendState.gameOptions.numberOfMines = setting.numberOfMines;
+            // set bounds on transform manager so panning gets clamped
+            transformManager.setBounds(setting.bounds);
+        } else {
+            // fallback to previous hardcoded defaults for safety
+            frontendState.gameOptions.boardWidth = 9;
+            frontendState.gameOptions.boardHeight = 9;
+            frontendState.gameOptions.numberOfMines = 10;
+            transformManager.setBounds(null);
         }
         if (options.startNewGame) {
             newGame(frontendState.gameOptions);
@@ -171,6 +167,14 @@ export function setupSettingsSubsystem(
         const difficultySelector = document.getElementById(
             'difficulty-selector'
         ) as HTMLSelectElement;
+        // Populate options dynamically from gameConfig
+        difficultySelector.innerHTML = '';
+        selectableDifficulties.forEach((key) => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.innerText = gameConfig.difficulty[key].displayName || key;
+            difficultySelector.appendChild(opt);
+        });
         difficultySelector.addEventListener('change', (e) => {
             const difficultyValue = (e.target as HTMLSelectElement).value;
             switchDifficulty(difficultyValue, {
@@ -178,7 +182,14 @@ export function setupSettingsSubsystem(
             });
             savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, difficultyValue);
         });
-        difficultySelector.selectedIndex = selectableDifficulties.indexOf(currDifficulty);
+        // Ensure selectedIndex matches current difficulty (currDifficulty may come from preferences)
+        const idx = selectableDifficulties.indexOf(currDifficulty);
+        if (idx >= 0) {
+            difficultySelector.selectedIndex = idx;
+        } else {
+            difficultySelector.selectedIndex = 0;
+            currDifficulty = selectableDifficulties[0];
+        }
 
         // Set up event listeners for each settings element
         const settings = document.querySelectorAll('.setting');
@@ -322,6 +333,10 @@ export function setupSettingsSubsystem(
     });
 
     // Set up game difficulty based on current setting
+    if (!selectableDifficulties.includes(currDifficulty)) {
+        currDifficulty =
+            selectableDifficulties.length > 0 ? selectableDifficulties[0] : DIFFICULTY_EASY;
+    }
     switchDifficulty(currDifficulty, {
         startNewGame: false,
     });

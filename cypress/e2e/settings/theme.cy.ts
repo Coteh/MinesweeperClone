@@ -8,14 +8,14 @@ describe('Theme Selector', () => {
 
     it('should change the theme when a new theme is selected', () => {
         cy.get('.settings-link').click();
-        // TODO: Fix test failure due to requiring user gesture
-        cy.get('#theme-selector').select('ocean');
+
+        cy.selectTheme('ocean');
         cy.get('body').should('have.class', 'ocean');
 
-        cy.get('#theme-selector').select('classic');
+        cy.selectTheme('classic');
         cy.get('body').should('have.attr', 'class', '');
 
-        cy.get('#theme-selector').select('basic');
+        cy.selectTheme('basic');
         cy.get('body').should('have.class', 'basic');
     });
 

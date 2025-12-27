@@ -21,25 +21,18 @@ import { DebugSubsystem, setupDebugSubsystem } from './subsystem/debug';
 import { AudioManager, SoundEffect } from './manager/audio';
 import { ThemeManager } from './manager/theme';
 
+import { loadConfig, Config } from './config';
+
 export type FrontendState = {
     gameOptions: GameOptions;
     isPrompted: boolean;
 };
 
-const frontendState: FrontendState = {
-    gameOptions: {
-        boardHeight: 10,
-        boardWidth: 10,
-        numberOfMines: 15,
-        revealBoardOnLoss: true,
-    },
-    isPrompted: false,
-};
+let frontendState: FrontendState; // initialized at runtime from game config
 
 console.info(`minesweeper-clone v${GAME_VERSION}`);
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const domContainer = document.body.querySelector('div.game-wrapper') as HTMLDivElement;
     const middleElem = document.querySelector('#middle') as HTMLElement;
     const gameBoard = middleElem.querySelector('#board') as HTMLElement;
     const newGameButton = document.querySelector('#new-game') as HTMLElement;
@@ -53,9 +46,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
     let actionIconManager = new ActionIconManager();
     let backgroundManager = new BackgroundManager(assetManager);
+
+    // Create transformManager early so we can set bounds immediately after loading config
     let transformManager = new TransformManager(middleElem);
     let themeManager = new ThemeManager(backgroundManager);
     let audioManager = new AudioManager(assetManager, themeManager);
+
+    // Load config (public/config.json)
+    const gameConfig: Config = await loadConfig();
+
+    // Initialize frontend state from the first difficulty in the config, fallback to the previous hardcoded values
+    const difficultyKeys = Object.keys(gameConfig.difficulty);
+    if (difficultyKeys.length > 0) {
+        const firstKey = difficultyKeys[0];
+        const firstSetting = gameConfig.difficulty[firstKey];
+        frontendState = {
+            gameOptions: {
+                boardHeight: firstSetting.boardHeight,
+                boardWidth: firstSetting.boardWidth,
+                numberOfMines: firstSetting.numberOfMines,
+                revealBoardOnLoss: true,
+            },
+            isPrompted: false,
+        };
+        transformManager.setBounds(firstSetting.bounds);
+    } else {
+        // fallback hard-coded
+        frontendState = {
+            gameOptions: {
+                boardHeight: 10,
+                boardWidth: 10,
+                numberOfMines: 15,
+                revealBoardOnLoss: true,
+            },
+            isPrompted: false,
+        };
+    }
 
     let timeBoardInterval: NodeJS.Timeout;
 
@@ -208,7 +234,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
-    overlayBackElem.addEventListener('click', (e) => {
+    overlayBackElem.addEventListener('click', (_e) => {
         // Do not allow player to close the dialog if they're presented with a prompt dialog asking for Yes/No
         if (frontendState.isPrompted) {
             return;
@@ -287,12 +313,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 
         settingsSubsystem = setupSettingsSubsystem(
+            gameConfig,
             gameStorage,
             fullscreenManager,
             themeManager,
             backgroundManager,
             audioManager,
             actionIconManager,
+            transformManager,
             frontendState,
             closeDialog
         );
