@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import * as config from '../../../src/config.json';
 
 describe('Theme Selector', () => {
     beforeEach(() => {
@@ -30,5 +31,11 @@ describe('Theme Selector', () => {
         });
         cy.waitForGameReady();
         cy.get('body').should('have.class', 'ocean');
+        // meta theme color should be set from config
+        cy.get("meta[name='theme-color']").should(
+            'have.attr',
+            'content',
+            (config as any).theme['ocean'].metaThemeColor
+        );
     });
 });

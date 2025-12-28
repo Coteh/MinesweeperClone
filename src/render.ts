@@ -1,16 +1,15 @@
 import feather from 'feather-icons';
-import {
-    GameState,
-    GameOptions,
-    selectSpot,
-    flagSpot,
-    selectAdjacentSpots,
-    questionMarkSpot,
-} from './game';
+import { GameState, selectSpot, flagSpot, selectAdjacentSpots, questionMarkSpot } from './game';
 import { getQuestionMode } from './inputMode';
 import type * as CSS from 'csstype';
 
-export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
+import { AssetManager } from './manager/asset';
+
+export const renderBoard = (
+    parentElem: HTMLElement,
+    gameState: GameState,
+    assetManager: AssetManager
+) => {
     parentElem.innerHTML = '';
     // console.log('rendering', gameState.board.length);
     const zoomable = document.getElementById('zoomable') as HTMLElement;
@@ -25,19 +24,22 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                 if (gameState.board[i][j].isFlagged) {
                     if (!gameState.ended || gameState.board[i][j].isMine) {
                         const flagImg = document.createElement('img');
-                        flagImg.src = 'img/Flag.png';
+                        const pre = assetManager.getImage('img/Flag.png');
+                        flagImg.src = pre ? pre.src : 'img/Flag.png';
                         elem.appendChild(flagImg);
                     } else {
                         elem.classList.add('incorrect');
                         const mineImg = document.createElement('img');
-                        mineImg.src = 'img/Mine.png';
+                        const pre = assetManager.getImage('img/Mine.png');
+                        mineImg.src = pre ? pre.src : 'img/Mine.png';
                         elem.appendChild(mineImg);
                     }
                 } else {
                     elem.classList.add('revealed');
                     if (gameState.board[i][j].isMine) {
                         const mineImg = document.createElement('img');
-                        mineImg.src = 'img/Mine.png';
+                        const pre = assetManager.getImage('img/Mine.png');
+                        mineImg.src = pre ? pre.src : 'img/Mine.png';
                         elem.appendChild(mineImg);
                         if (gameState.board[i][j].isLosingSpot) {
                             elem.classList.add('losing');
@@ -54,7 +56,8 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
                 }
             } else if (gameState.board[i][j].isFlagged) {
                 const flagImg = document.createElement('img');
-                flagImg.src = 'img/Flag.png';
+                const pre = assetManager.getImage('img/Flag.png');
+                flagImg.src = pre ? pre.src : 'img/Flag.png';
                 elem.appendChild(flagImg);
             } else if (gameState.board[i][j].isQuestionMark) {
                 const qm = document.createElement('span');
@@ -115,7 +118,11 @@ export const renderBoard = (parentElem: HTMLElement, gameState: GameState) => {
     }
 };
 
-export const renderDigits = (parentElem: HTMLElement, digits: number) => {
+export const renderDigits = (
+    parentElem: HTMLElement,
+    digits: number,
+    assetManager: AssetManager
+) => {
     let digitStr;
     if (digits < 0) {
         digitStr = Math.abs(digits).toString().padStart(3, '0');
@@ -131,14 +138,16 @@ export const renderDigits = (parentElem: HTMLElement, digits: number) => {
     }
 
     for (let i = 0; i < children.length; i++) {
-        (children.item(i) as HTMLImageElement).src = 'img/digits/0.png';
+        const pre = assetManager.getImage('img/digits/0.png');
+        (children.item(i) as HTMLImageElement).src = pre ? pre.src : 'img/digits/0.png';
     }
 
     let j = 0;
     for (let i = digitStr.length - 1; i >= 0; i--) {
         const digit = digitStr[i];
         const item = children.item(children.length - 1 - j) as HTMLImageElement;
-        item.src = `img/digits/${digit}.png`;
+        const pre = assetManager.getImage(`img/digits/${digit}.png`);
+        item.src = pre ? pre.src : `img/digits/${digit}.png`;
         j++;
     }
 

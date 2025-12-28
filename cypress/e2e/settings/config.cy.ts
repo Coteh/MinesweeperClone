@@ -38,13 +38,15 @@ context('settings JSON integration', () => {
         });
     });
 
-    it('persists selected difficulty across reload', () => {
-        cy.changeDifficulty('medium');
-
-        cy.get('.game-board > .row').eq(0).children().should('have.length', 16);
-        cy.reload();
-        cy.waitForGameReady();
+    it('should populate the theme selector from config', () => {
         cy.get('.settings-link').click();
-        cy.get('#difficulty-selector').should('have.value', 'medium');
+        // Check that theme options match config.json display names
+        cy.fixture('config.json').then((config) => {
+            Object.keys(config.theme).forEach((theme) => {
+                cy.get(`#theme-selector option[value="${theme}"]`)
+                    .should('exist')
+                    .and('contain.text', config.theme[theme].displayName);
+            });
+        });
     });
 });

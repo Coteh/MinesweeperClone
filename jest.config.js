@@ -15,7 +15,7 @@ export default {
             },
         ],
     ],
-    testMatch: ["**/test/**/*_test.[jt]s?(x)"],
+    testMatch: ["**/test/**/*.test.[jt]s?(x)"],
     testEnvironment: "node",
     transform: {
         "^.+.tsx?$": ["ts-jest", {}],

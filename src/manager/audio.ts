@@ -1,16 +1,14 @@
-import { BASIC_THEME, CLASSIC_THEME, OCEAN_THEME } from '../consts';
 import { AssetManager } from './asset';
-import { ThemeManager, Theme } from './theme';
 
 export enum SoundEffect {
-    Click,
-    Explode,
-    Reveal,
-    Flag,
-    Win,
-    ZoomIn,
-    ZoomOut,
-    ZoomReset,
+    Click = "click",
+    Explode = "explode",
+    Reveal = "reveal",
+    Flag = "flag",
+    Win = "win",
+    ZoomIn = "zoom-in",
+    ZoomOut = "zoom-out",
+    ZoomReset = "zoom-reset",
 }
 
 export type SoundSettings = {
@@ -18,51 +16,25 @@ export type SoundSettings = {
     seconds?: number;
 };
 
-const soundEffectsMap: { [theme in Theme]: { [soundEffect in SoundEffect]: string } } = {
-    [BASIC_THEME]: {
-        [SoundEffect.Click]: 'sound/Button click.wav',
-        [SoundEffect.Explode]: 'sound/Explode.mp3',
-        [SoundEffect.Reveal]: 'sound/Tile click.wav',
-        [SoundEffect.Flag]: 'sound/Flag.wav',
-        [SoundEffect.Win]: 'sound/Win.wav',
-        // TODO: Add new sound effects for these
-        [SoundEffect.ZoomIn]: 'sound/Button click.wav',
-        [SoundEffect.ZoomOut]: 'sound/Button click.wav',
-        [SoundEffect.ZoomReset]: 'sound/Button click.wav',
-    },
-    // TODO: Add new sound effects for this theme
-    [OCEAN_THEME]: {
-        [SoundEffect.Click]: 'sound/Button click.wav',
-        [SoundEffect.Explode]: 'sound/Explode.mp3',
-        [SoundEffect.Reveal]: 'sound/Tile click.wav',
-        [SoundEffect.Flag]: 'sound/Flag.wav',
-        [SoundEffect.Win]: 'sound/Win.wav',
-        [SoundEffect.ZoomIn]: 'sound/Button click.wav',
-        [SoundEffect.ZoomOut]: 'sound/Button click.wav',
-        [SoundEffect.ZoomReset]: 'sound/Button click.wav',
-    },
-    // TODO: Add new sound effects for this theme
-    [CLASSIC_THEME]: {
-        [SoundEffect.Click]: 'sound/Button click.wav',
-        [SoundEffect.Explode]: 'sound/Explode.mp3',
-        [SoundEffect.Reveal]: 'sound/Tile click.wav',
-        [SoundEffect.Flag]: 'sound/Flag.wav',
-        [SoundEffect.Win]: 'sound/Win.wav',
-        [SoundEffect.ZoomIn]: 'sound/Button click.wav',
-        [SoundEffect.ZoomOut]: 'sound/Button click.wav',
-        [SoundEffect.ZoomReset]: 'sound/Button click.wav',
-    },
+const soundEffectsMap: Record<SoundEffect, string> = {
+    [SoundEffect.Click]: 'click',
+    [SoundEffect.Explode]: 'explode',
+    [SoundEffect.Reveal]: 'reveal',
+    [SoundEffect.Flag]: 'flag',
+    [SoundEffect.Win]: 'win',
+    // TODO: Add new sound effects for these
+    [SoundEffect.ZoomIn]: 'click',
+    [SoundEffect.ZoomOut]: 'click',
+    [SoundEffect.ZoomReset]: 'click',
 };
 
 export class AudioManager {
     private assetManager: AssetManager;
-    private themeManager: ThemeManager;
 
     private soundEffectsEnabled: boolean;
 
-    constructor(assetManager: AssetManager, themeManager: ThemeManager) {
+    constructor(assetManager: AssetManager) {
         this.assetManager = assetManager;
-        this.themeManager = themeManager;
         this.soundEffectsEnabled = true;
     }
 
@@ -80,13 +52,21 @@ export class AudioManager {
 
     playSoundEffect(soundEffect: SoundEffect, settings?: SoundSettings) {
         if (!this.soundEffectsEnabled) return;
-        const currentTheme = this.themeManager.getCurrentTheme();
-        const soundEffectName = soundEffectsMap[currentTheme][soundEffect];
-        const sound = this.assetManager.getSoundEffect(soundEffectName);
+        
+        const soundEffectName = soundEffectsMap[soundEffect];
+        const extensions = ['.wav', '.mp3', '.ogg'];
+        
+        let sound;
+        for (const ext of extensions) {
+            sound = this.assetManager.getSoundEffect(`sound/${soundEffectName}${ext}`);
+            if (sound) break;
+        }
+        
         if (!sound) {
-            console.error('Sound not loaded');
+            console.error('Sound not loaded:', soundEffectName);
             return;
         }
+        
         if (typeof settings !== 'undefined') {
             if (typeof settings.seconds !== 'undefined') {
                 sound.seek(settings.seconds);

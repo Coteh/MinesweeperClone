@@ -3,6 +3,7 @@ import path from "path";
 import { version } from './package.json';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import * as childProcess from "child_process";
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 const commitHash = childProcess.execSync("git rev-parse --short HEAD").toString();
 
@@ -27,5 +28,13 @@ export default defineConfig({
     },
     plugins: [
         nodePolyfills(),
+        viteStaticCopy({
+            targets: [
+                {
+                    src: 'src/config.json',
+                    dest: '.',
+                },
+            ],
+        }),
     ]
 })

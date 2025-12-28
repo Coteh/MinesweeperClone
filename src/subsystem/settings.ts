@@ -23,7 +23,7 @@ import {
 } from '../consts';
 import { BackgroundManager } from '../manager/background';
 import { AudioManager, SoundEffect } from '../manager/audio';
-import { SELECTABLE_THEMES, Theme, ThemeManager } from '../manager/theme';
+import { Theme, ThemeManager } from '../manager/theme';
 import { ActionIconManager } from '../manager/action-icon';
 
 export type SwitchDifficultyOptions = {
@@ -35,7 +35,7 @@ export type SettingsSubsystem = {
     setGameState: (gameState: GameState) => void;
 };
 
-import { Config } from '../config';
+import type { Config } from '../config';
 
 export function setupSettingsSubsystem(
     gameConfig: Config,
@@ -272,9 +272,17 @@ export function setupSettingsSubsystem(
         }
 
         const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement;
+        // Populate theme options from config
+        themeSelector.innerHTML = '';
+        themeManager.getSelectableThemes().forEach((t) => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.innerText = gameConfig.theme[t].displayName || t;
+            themeSelector.appendChild(opt);
+        });
         themeSelector.addEventListener('change', (e) => {
-            const themeValue = (e.target as HTMLSelectElement).value;
-            themeManager.switchTheme(themeValue as Theme);
+            const themeValue = (e.target as HTMLSelectElement).value as Theme;
+            themeManager.switchTheme(themeValue);
             if (gameState.ended) {
                 if (gameState.won) {
                     backgroundManager.renderWin();
@@ -285,7 +293,8 @@ export function setupSettingsSubsystem(
             savePreferenceValue(THEME_PREFERENCE_NAME, themeValue);
         });
         const currTheme = themeManager.getCurrentTheme();
-        themeSelector.selectedIndex = SELECTABLE_THEMES.indexOf(currTheme);
+        const themeIdx = themeManager.getSelectableThemes().indexOf(currTheme);
+        themeSelector.selectedIndex = themeIdx >= 0 ? themeIdx : 0;
 
         document
             .querySelector(`.settings-item.${DIFFICULTY_SETTING_NAME}`)
@@ -342,7 +351,7 @@ export function setupSettingsSubsystem(
     });
 
     // Get stored theme
-    const storedTheme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
+    const storedTheme: Theme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
 
     // Set up game theme based on current setting
     themeManager.switchTheme(storedTheme);

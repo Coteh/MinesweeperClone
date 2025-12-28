@@ -54,9 +54,6 @@
     --lightorange: #ffc296;
 
     --standard-color: var(--gray-5);
-    --standard-block-color: #808080;
-
-    --losing-block-color: #cc0000;
 
     --hovered-color: var(--yellow);
     --enabled-color: var(--green);
@@ -81,6 +78,11 @@
     --notification-background-color: var(--gray-7);
     --notification-text-color: var(--black);
 
+    --classic-checkerboard-color: rgb(128, 128, 128);
+
+    /* To be customizable by themes */
+    --standard-block-color: #808080;
+    --losing-block-color: #cc0000;
     --block-revealed-color: #b3b3b3;
 
     --mine-text-1: #0099ff;
@@ -91,8 +93,6 @@
     --mine-text-6: #00ffff;
     --mine-text-7: #000000;
     --mine-text-8: #858585;
-
-    --classic-checkerboard-color: rgb(128, 128, 128);
 }
 
 /* Main Content */
@@ -186,7 +186,7 @@ button.button.clipboard-button > * {
 }
 
 button.button.new-game {
-    background-color: #808080;
+    background-color: var(--standard-block-color);
     border: 1px solid black;
     border-bottom: 0;
     border-radius: 0;

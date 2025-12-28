@@ -22,7 +22,7 @@
                     <span>Clone</span>
                 </div>
 
-                <img class="classic-logo" alt="Minesweeper Clone" src="/img/Logo.png"/>
+                <img class="classic-logo" alt="Minesweeper Clone" data-asset="img/Logo.png"/>
                 <span class="space"></span>
                 <div class="menu-options">
                     <div class="icon-bar">
@@ -100,17 +100,17 @@
                     <div id="middle" class="game-space">
                         <div class="game-top">
                             <div id="mine-count-board" class="digit-board">
-                                <img src="img/digits/0.png"/>
-                                <img src="img/digits/0.png"/>
-                                <img src="img/digits/0.png"/>
+                                <img data-asset="img/digits/0.png"/>
+                                <img data-asset="img/digits/0.png"/>
+                                <img data-asset="img/digits/0.png"/>
                             </div>
                             <button class="button new-game" id="new-game">
-                                <img src="img/Smiley.png"/>
+                                <img data-asset="img/Smiley.png"/>
                             </button>
                             <div id="time-board" class="digit-board">
-                                <img src="img/digits/0.png"/>
-                                <img src="img/digits/0.png"/>
-                                <img src="img/digits/0.png"/>
+                                <img data-asset="img/digits/0.png"/>
+                                <img data-asset="img/digits/0.png"/>
+                                <img data-asset="img/digits/0.png"/>
                             </div>
                         </div>
                         <div id="board" class="game-board">
@@ -144,7 +144,7 @@
         </div>
         <div class="loader-wrapper" style="background-color: white">
             <div class="loader">
-                <img src="img/Mine.png">
+                <img src="/img/Mine.png">
             </div>
         </div>
         <div class="notification-area"></div>
@@ -348,7 +348,8 @@
                         </div>
                     
                         <div class="section">
-                            <p>Left-click (or tap) to reveal a block. If it's a mine, the game is over.</p>
+                            <p>Left-click (or tap) to reveal a block.</p>
+                            <div style="flex:1"></div>
                             <div class="sample game-space">
                                 <div class="game-board">
                                     <div class="row">
@@ -357,13 +358,26 @@
                                 </div>
                             </div>
                         </div>
-                    
+                        
                         <div class="section">
-                            <p>Right-click (or hold tap) to flag or unflag a block as a suspected mine.</p>
+                            <p>If it's a mine, the game is over.</p>
+                            <div style="flex:1"></div>
                             <div class="sample game-space">
                                 <div class="game-board">
                                     <div class="row">
-                                        <div class="box"><img src="img/Flag.png"></div>
+                                        <div class="box revealed losing"><img data-asset="img/Mine.png"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="section">
+                            <p>Right-click (or hold tap) to flag or unflag a block as a suspected mine.</p>
+                            <div style="flex:1"></div>
+                            <div class="sample game-space">
+                                <div class="game-board">
+                                    <div class="row">
+                                        <div class="box"><img data-asset="img/Flag.png"></div>
                                     </div>
                                 </div>
                             </div>
@@ -371,6 +385,7 @@
                     
                         <div class="section">
                             <p>Numbers on revealed blocks indicate how many mines are in the surrounding eight blocks.</p>
+                            <div style="flex:1"></div>
                             <div class="sample game-space">
                                 <div class="game-board">
                                     <div class="row">
@@ -382,7 +397,6 @@
                     
                         <div class="section">
                             <p>Reveal all safe blocks to win the game!</p>
-                            <!-- Image can go here -->
                         </div>
                     
                         <div class="section">
@@ -391,6 +405,7 @@
                     
                         <div class="section">
                             <p>Use numbers to determine where mines are and flag them accordingly.</p>
+                            <div style="flex:1"></div>
                             <div class="sample game-space">
                                 <div class="game-board">
                                     <div class="row">
@@ -400,7 +415,7 @@
                                     </div>
                                     <div class="row">
                                         <div class="box"></div>
-                                        <div class="box"><img src="img/Flag.png"></div>
+                                        <div class="box"><img data-asset="img/Flag.png"></div>
                                         <div class="box revealed"><span style="color: var(--mine-text-3);">3</span></div>
                                     </div>
                                     <div class="row">

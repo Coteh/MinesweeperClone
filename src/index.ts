@@ -21,14 +21,23 @@ import { DebugSubsystem, setupDebugSubsystem } from './subsystem/debug';
 import { AudioManager, SoundEffect } from './manager/audio';
 import { ThemeManager } from './manager/theme';
 
-import { loadConfig, Config } from './config';
+import { loadConfig } from './config/index';
+import type { Config } from './config';
 
 export type FrontendState = {
     gameOptions: GameOptions;
     isPrompted: boolean;
 };
 
-let frontendState: FrontendState; // initialized at runtime from game config
+let frontendState: FrontendState = {
+    gameOptions: {
+        boardHeight: 10,
+        boardWidth: 10,
+        numberOfMines: 15,
+        revealBoardOnLoss: true,
+    },
+    isPrompted: false,
+}; // initialized with defaults, will be updated from game config
 
 console.info(`minesweeper-clone v${GAME_VERSION}`);
 
@@ -47,15 +56,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     let actionIconManager = new ActionIconManager();
     let backgroundManager = new BackgroundManager(assetManager);
 
-    // Create transformManager early so we can set bounds immediately after loading config
-    let transformManager = new TransformManager(middleElem);
-    let themeManager = new ThemeManager(backgroundManager);
-    let audioManager = new AudioManager(assetManager, themeManager);
-
     // Load config (public/config.json)
     const gameConfig: Config = await loadConfig();
 
-    // Initialize frontend state from the first difficulty in the config, fallback to the previous hardcoded values
+    // Create transformManager early so we can set bounds immediately after loading config
+    let transformManager = new TransformManager(middleElem);
+    let themeManager = new ThemeManager(backgroundManager, assetManager, gameConfig);
+    let audioManager = new AudioManager(assetManager);
+
+    // Initialize frontend state from the first difficulty in the config, fallback to hardcoded values
     const difficultyKeys = Object.keys(gameConfig.difficulty);
     if (difficultyKeys.length > 0) {
         const firstKey = difficultyKeys[0];
@@ -93,12 +102,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         switch (event) {
             case 'init':
                 gameState = data.gameState;
-                newGameImage.src = 'img/Smiley.png';
+                {
+                    const pre = assetManager.getImage('img/Smiley.png');
+                    newGameImage.src = pre ? pre.src : 'img/Smiley.png';
+                }
                 clearInterval(timeBoardInterval);
                 timeBoardInterval = setInterval(() => {
-                    renderDigits(timeBoard, gameState.elapsedTimeMS / 1000);
+                    renderDigits(timeBoard, gameState.elapsedTimeMS / 1000, assetManager);
                 }, 500);
-                renderDigits(timeBoard, gameState.elapsedTimeMS / 1000);
+                renderDigits(timeBoard, gameState.elapsedTimeMS / 1000, assetManager);
                 backgroundManager.renderInitial();
                 if (!interactionSubsystem) {
                     interactionSubsystem = setupInteractionSubsystem(
@@ -116,7 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 settingsSubsystem.setGameState(gameState);
                 break;
             case 'draw':
-                renderBoard(gameBoard, gameState);
+                renderBoard(gameBoard, gameState, assetManager);
                 let unflaggedCount =
                     gameState.gameOptions.numberOfMines -
                     gameState.board.reduce(
@@ -128,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             ),
                         0
                     );
-                renderDigits(mineCountBoard, unflaggedCount);
+                renderDigits(mineCountBoard, unflaggedCount, assetManager);
                 break;
             case 'reveal':
                 if (!gameState.ended) {
@@ -144,7 +156,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             case 'lose': {
                 console.log('Player loses!');
-                newGameImage.src = 'img/Smiley_sad.png';
+                {
+                    const pre = assetManager.getImage('img/Smiley_sad.png');
+                    newGameImage.src = pre ? pre.src : 'img/Smiley_sad.png';
+                }
                 clearInterval(timeBoardInterval);
                 transformManager.resetZoom(true);
                 backgroundManager.renderLose();
@@ -155,7 +170,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             case 'win': {
                 console.log('Player wins!');
-                newGameImage.src = 'img/Smiley_proud.png';
+                {
+                    const pre = assetManager.getImage('img/Smiley_proud.png');
+                    newGameImage.src = pre ? pre.src : 'img/Smiley_proud.png';
+                }
                 transformManager.resetZoom(true);
                 backgroundManager.renderWin();
                 if (!data.onInitialization) {
@@ -251,6 +269,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     helpLink.addEventListener('click', (e) => {
         e.preventDefault();
         const howToPlayElem = createDialogContentFromTemplate('#how-to-play');
+
+        // Apply asset manager URLs to template images
+        assetManager.applyDataAssets(howToPlayElem);
+
         renderDialog(howToPlayElem, {
             fadeIn: true,
             effect: 'pop',
@@ -280,33 +302,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
 
     try {
-        await assetManager.loadAssets([
-            'img/digits/0.png',
-            'img/digits/1.png',
-            'img/digits/2.png',
-            'img/digits/3.png',
-            'img/digits/4.png',
-            'img/digits/5.png',
-            'img/digits/6.png',
-            'img/digits/7.png',
-            'img/digits/8.png',
-            'img/digits/9.png',
-            'img/digits/-.png',
-            'img/Flag.png',
-            'img/Mine.png',
-            'img/Logo.png',
-            'img/Smiley.png',
-            'img/Smiley_proud.png',
-            'img/Smiley_sad.png',
-            'img/Checkbox_unchecked.png',
-            'img/Checkbox_checked.png',
-            'img/Tiles.png',
-            'sound/Explode.mp3',
-            'sound/Button click.wav',
-            'sound/Tile click.wav',
-            'sound/Flag.wav',
-            'sound/Win.wav',
-        ]);
+        // Load assets via import.meta.glob via theme-assets helper
+        const mod = await import('./manager/theme-assets');
+        const { getThemeAssets } = mod;
+        const assetsMap = getThemeAssets(themeManager.getCurrentTheme());
+
+        // loadAssets will show loader UI and preload/register logical keys
+        await assetManager.loadAssets(assetsMap);
+
+        // Apply assets to any DOM elements that have data-asset attributes
+        assetManager.applyDataAssets();
 
         await backgroundManager.initialize();
 

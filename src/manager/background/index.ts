@@ -1,5 +1,6 @@
 import { autoDetectRenderer, Container, Renderer, Ticker } from 'pixi.js';
 import { AssetManager } from '../asset';
+import { ThemeConfig } from '../../config';
 import { OceanTheme } from './ocean';
 import { ClassicTheme } from './classic';
 import { BasicTheme } from './basic';
@@ -67,7 +68,7 @@ export class BackgroundManager {
         resizeGame();
     }
 
-    switchTheme(theme: string) {
+    switchTheme(theme: string, themeConfig: ThemeConfig) {
         if (!this.renderer || !this.background) {
             throw new Error('Background not initialized');
         }
@@ -77,19 +78,20 @@ export class BackgroundManager {
 
         switch (theme) {
             case 'basic':
-                this.currentTheme = new BasicTheme(this.renderer, this.background);
+                this.currentTheme = new BasicTheme(this.renderer, this.background, themeConfig);
                 break;
             case 'ocean':
                 this.currentTheme = new OceanTheme(this.renderer, this.background);
                 break;
             case 'classic':
-            default:
                 this.currentTheme = new ClassicTheme(
                     this.renderer,
                     this.background,
                     this.assetManager
                 );
                 break;
+            default:
+                this.currentTheme = new BasicTheme(this.renderer, this.background, themeConfig);
         }
 
         this.currentTheme.renderInitial();

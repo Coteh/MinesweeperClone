@@ -13,12 +13,12 @@
     height: 32px;
     border-radius: 0;
 
-    background-image: url('/img/Checkbox_unchecked.png');
+    background-image: var(--checkbox-unchecked-url);
 }
 
 /* body.classic .knob.enabled { */
 .knob.enabled {
-    background-image: url('/img/Checkbox_checked.png');
+    background-image: var(--checkbox-checked-url);
 }
 
 /* body.classic .knob > .knob-inside { */

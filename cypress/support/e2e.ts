@@ -26,8 +26,6 @@ import 'cypress-wait-until';
 // Ensure showPicker doesn't throw in the test environment
 Cypress.on('window:before:load', (win) => {
     try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         win.HTMLSelectElement.prototype.showPicker = function () {
             // no-op in tests
         };
