@@ -1,4 +1,11 @@
-import { GameState, initGame, newGame, GameOptions, setDebugEnabled } from './game';
+import {
+    GameState,
+    initGame,
+    newGame,
+    GameOptions,
+    setDebugEnabled,
+    GamePersistentState,
+} from './game';
 import { BrowserGameStorage } from './storage/browser';
 import {
     createDialogContentFromTemplate,
@@ -59,6 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const timeBoard = document.getElementById('time-board') as HTMLElement;
 
     let gameState: GameState;
+    let persistentState: GamePersistentState;
     let gameStorage = new BrowserGameStorage();
     let fullscreenManager = new FullscreenManager();
     let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
@@ -113,6 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         switch (event) {
             case 'init':
                 gameState = data.gameState;
+                persistentState = data.persistentState;
                 {
                     const pre = assetManager.getImage('img/Smiley.png');
                     newGameImage.src = pre ? pre.src : 'img/Smiley.png';
@@ -335,9 +344,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const leaderboardElem = createDialogContentFromTemplate('#leaderboard-dialog-content');
         const tbody = leaderboardElem.querySelector('.leaderboard-body') as HTMLElement;
 
-        // Get current persistent state to access high scores
-        const currentPersistentState = gameStorage.loadPersistentState();
-
         // Populate table with scores for each difficulty
         const difficultyKeys = Object.keys(gameConfig.difficulty);
         difficultyKeys.forEach((key) => {
@@ -348,7 +354,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             row.appendChild(difficultyCell);
 
             const timeCell = document.createElement('td');
-            const highScore = currentPersistentState.highscore[key];
+            const highScore = persistentState.highscore[key];
             timeCell.innerText = highScore !== undefined ? formatTime(highScore) : '—';
             row.appendChild(timeCell);
 

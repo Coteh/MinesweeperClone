@@ -93,15 +93,6 @@ const newState: (options: GameOptions) => GameState = (options) => {
     };
 };
 
-const initState = (options: GameOptions) => {
-    if (gameStorage.gameExists()) {
-        gameState = gameStorage.loadGame();
-    } else {
-        // TODO: initGame already checks if game exists before calling initState, so this branch should never be reached
-        gameState = newState(options);
-    }
-};
-
 const initPersistentState = () => {
     if (gameStorage.persistentStateExists()) {
         persistentState = gameStorage.loadPersistentState();
@@ -125,7 +116,7 @@ export const initGame = async (
     if (!gameStorage.gameExists()) {
         newGame(gameOptions);
     } else {
-        initState(gameOptions);
+        gameState = gameStorage.loadGame();
         initPersistentState();
 
         eventHandler('init', { gameState, persistentState });
@@ -164,6 +155,7 @@ export const newGame = (gameOptions: GameOptions, debugState?: GameState) => {
     } else {
         gameState = newState(gameOptions);
     }
+    initPersistentState();
 
     eventHandler('init', { gameState, persistentState });
 

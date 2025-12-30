@@ -369,23 +369,9 @@ describe('high score system', () => {
     describe('leaderboard dialog', () => {
         it('should open leaderboard dialog when clicking leaderboard button', () => {
             cy.clearBrowserCache();
-            cy.visit('/', {
-                onBeforeLoad: () => {
-                    const persistentState: GamePersistentState = {
-                        highscore: {
-                            easy: 45000, // 45s
-                            medium: 125000, // 125s = 2:05
-                            hard: 999000, // 999s = 16:39
-                        },
-                        unlockables: {},
-                        hasPlayedBefore: true,
-                    };
-                    window.localStorage.setItem(
-                        'persistent-state',
-                        JSON.stringify(persistentState)
-                    );
-                },
-            });
+            // Load the page without any persistent state preset,
+            // to verify that leaderboard will still open with fresh data.
+            cy.visit('/');
             cy.waitForGameReady();
 
             // Click leaderboard button
