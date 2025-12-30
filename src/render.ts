@@ -26,12 +26,14 @@ export const renderBoard = (
                         const flagImg = document.createElement('img');
                         const pre = assetManager.getImage('img/Flag.png');
                         flagImg.src = pre ? pre.src : 'img/Flag.png';
+                        flagImg.dataset.asset = 'img/Flag.png';
                         elem.appendChild(flagImg);
                     } else {
                         elem.classList.add('incorrect');
                         const mineImg = document.createElement('img');
                         const pre = assetManager.getImage('img/Mine.png');
                         mineImg.src = pre ? pre.src : 'img/Mine.png';
+                        mineImg.dataset.asset = 'img/Mine.png';
                         elem.appendChild(mineImg);
                     }
                 } else {
@@ -40,6 +42,7 @@ export const renderBoard = (
                         const mineImg = document.createElement('img');
                         const pre = assetManager.getImage('img/Mine.png');
                         mineImg.src = pre ? pre.src : 'img/Mine.png';
+                        mineImg.dataset.asset = 'img/Mine.png';
                         elem.appendChild(mineImg);
                         if (gameState.board[i][j].isLosingSpot) {
                             elem.classList.add('losing');
@@ -58,6 +61,7 @@ export const renderBoard = (
                 const flagImg = document.createElement('img');
                 const pre = assetManager.getImage('img/Flag.png');
                 flagImg.src = pre ? pre.src : 'img/Flag.png';
+                flagImg.dataset.asset = 'img/Flag.png';
                 elem.appendChild(flagImg);
             } else if (gameState.board[i][j].isQuestionMark) {
                 const qm = document.createElement('span');
@@ -139,7 +143,9 @@ export const renderDigits = (
 
     for (let i = 0; i < children.length; i++) {
         const pre = assetManager.getImage('img/digits/0.png');
-        (children.item(i) as HTMLImageElement).src = pre ? pre.src : 'img/digits/0.png';
+        const item = children.item(i) as HTMLImageElement;
+        item.src = pre ? pre.src : 'img/digits/0.png';
+        item.dataset.asset = 'img/digits/0.png';
     }
 
     let j = 0;
@@ -148,6 +154,7 @@ export const renderDigits = (
         const item = children.item(children.length - 1 - j) as HTMLImageElement;
         const pre = assetManager.getImage(`img/digits/${digit}.png`);
         item.src = pre ? pre.src : `img/digits/${digit}.png`;
+        item.dataset.asset = `img/digits/${digit}.png`;
         j++;
     }
 

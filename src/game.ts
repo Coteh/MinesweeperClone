@@ -8,6 +8,7 @@ export type GameOptions = {
     boardHeight: number;
     numberOfMines: number;
     revealBoardOnLoss: boolean;
+    difficultyKey: string;
 };
 
 export type MineBlock = {
@@ -43,7 +44,9 @@ export type GameState = {
 
 // Game state to last between games
 export type GamePersistentState = {
-    highscore: number;
+    highscore: {
+        [key: string]: number;
+    };
     unlockables: {
         [key: string]: boolean;
     };
@@ -94,6 +97,7 @@ const initState = (options: GameOptions) => {
     if (gameStorage.gameExists()) {
         gameState = gameStorage.loadGame();
     } else {
+        // TODO: initGame already checks if game exists before calling initState, so this branch should never be reached
         gameState = newState(options);
     }
 };
@@ -103,7 +107,7 @@ const initPersistentState = () => {
         persistentState = gameStorage.loadPersistentState();
     } else {
         persistentState = {
-            highscore: 0,
+            highscore: {},
             unlockables: {},
             hasPlayedBefore: false,
         };
@@ -292,6 +296,7 @@ export const selectSpot = function (x: number, y: number) {
         gameState.won = true;
         gameState.ended = true;
         clearInterval(gameTimer);
+        checkForHighscore();
         eventHandler('win', { gameState, persistentState });
     }
     eventHandler('reveal', { x, y });
@@ -348,6 +353,7 @@ export const selectAdjacentSpots = function (x: number, y: number) {
         gameState.won = true;
         gameState.ended = true;
         clearInterval(gameTimer);
+        checkForHighscore();
         eventHandler('win', { gameState, persistentState });
     }
     // TODO: Should game state be passed into the draw?
@@ -592,6 +598,19 @@ const checkForWin = function () {
 
     // Not a winner yet
     return false;
+};
+
+const checkForHighscore = function () {
+    // Check if current score is a high score for the difficulty
+    const difficultyKey = gameState.gameOptions.difficultyKey;
+    const currentTime = gameState.elapsedTimeMS;
+    const existingHighScore = persistentState.highscore[difficultyKey];
+
+    if (existingHighScore === undefined || currentTime < existingHighScore) {
+        gameState.achievedHighscore = true;
+        persistentState.highscore[difficultyKey] = currentTime;
+        gameStorage.savePersistentState(persistentState);
+    }
 };
 
 /* Used for toggling debug console logs */

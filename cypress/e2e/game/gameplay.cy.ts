@@ -33,11 +33,11 @@ const standardMineBlock: (
     };
 };
 
-// Expected standard block background colour for classic theme
-const STANDARD_BLOCK_BACKGROUND_COLOR = 'rgb(128, 128, 128)';
+// Expected standard block background colour for basic theme
+const STANDARD_BLOCK_BACKGROUND_COLOR = 'rgb(108, 122, 137)';
 
-// Expected losing block background colour for classic theme
-const LOSING_BLOCK_BACKGROUND_COLOR = 'rgb(204, 0, 0)';
+// Expected losing block background colour for basic theme
+const LOSING_BLOCK_BACKGROUND_COLOR = 'rgb(231, 76, 60)';
 
 describe('gameplay', () => {
     beforeEach(() => {
@@ -83,12 +83,13 @@ describe('gameplay', () => {
                         boardHeight: 4,
                         numberOfMines: 2,
                         revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
                     },
                     elapsedTimeMS: 0,
                     spareMineSpot: { x: 0, y: 0 },
                 };
                 const persistentState: GamePersistentState = {
-                    highscore: 0,
+                    highscore: {},
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
@@ -1340,7 +1341,7 @@ describe('gameplay', () => {
                 cy.get('.box')
                     .eq(0)
                     .within(() => {
-                        cy.get('img').should('have.attr', 'src', 'img/Flag.png');
+                        cy.get('img').should('have.attr', 'data-asset', 'img/Flag.png');
                     });
                 // The incorrect flag
                 cy.get('.box')
@@ -1365,7 +1366,7 @@ describe('gameplay', () => {
                 cy.get('.box')
                     .eq(0)
                     .within(() => {
-                        cy.get('img').should('have.attr', 'src', 'img/Flag.png');
+                        cy.get('img').should('have.attr', 'data-asset', 'img/Flag.png');
                     });
                 // The incorrect flag
                 cy.get('.box')
@@ -1386,13 +1387,13 @@ describe('gameplay', () => {
             it('should display it with a minus sign', () => {
                 cy.get('#mine-count-board > img')
                     .eq(0)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board > img')
                     .eq(1)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board > img')
                     .eq(2)
-                    .should('have.attr', 'src', 'img/digits/2.png');
+                    .should('have.attr', 'data-asset', 'img/digits/2.png');
                 cy.get('#mine-count-board[data-count="2"]').should('exist');
                 cy.get('.game-board > .row')
                     .eq(0)
@@ -1401,13 +1402,13 @@ describe('gameplay', () => {
                     });
                 cy.get('#mine-count-board > img')
                     .eq(0)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board > img')
                     .eq(1)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board > img')
                     .eq(2)
-                    .should('have.attr', 'src', 'img/digits/1.png');
+                    .should('have.attr', 'data-asset', 'img/digits/1.png');
                 cy.get('#mine-count-board[data-count="1"]').should('exist');
                 cy.get('.game-board > .row')
                     .eq(0)
@@ -1416,13 +1417,13 @@ describe('gameplay', () => {
                     });
                 cy.get('#mine-count-board > img')
                     .eq(0)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board > img')
                     .eq(1)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board > img')
                     .eq(2)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board[data-count="0"]').should('exist');
                 cy.get('.game-board > .row')
                     .eq(0)
@@ -1431,13 +1432,13 @@ describe('gameplay', () => {
                     });
                 cy.get('#mine-count-board > img')
                     .eq(0)
-                    .should('have.attr', 'src', 'img/digits/-.png');
+                    .should('have.attr', 'data-asset', 'img/digits/-.png');
                 cy.get('#mine-count-board > img')
                     .eq(1)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board > img')
                     .eq(2)
-                    .should('have.attr', 'src', 'img/digits/1.png');
+                    .should('have.attr', 'data-asset', 'img/digits/1.png');
                 cy.get('#mine-count-board[data-count="-1"]').should('exist');
                 cy.get('.game-board > .row')
                     .eq(0)
@@ -1446,13 +1447,13 @@ describe('gameplay', () => {
                     });
                 cy.get('#mine-count-board > img')
                     .eq(0)
-                    .should('have.attr', 'src', 'img/digits/-.png');
+                    .should('have.attr', 'data-asset', 'img/digits/-.png');
                 cy.get('#mine-count-board > img')
                     .eq(1)
-                    .should('have.attr', 'src', 'img/digits/0.png');
+                    .should('have.attr', 'data-asset', 'img/digits/0.png');
                 cy.get('#mine-count-board > img')
                     .eq(2)
-                    .should('have.attr', 'src', 'img/digits/2.png');
+                    .should('have.attr', 'data-asset', 'img/digits/2.png');
                 cy.get('#mine-count-board[data-count="-2"]').should('exist');
             });
         });
@@ -1463,7 +1464,7 @@ describe('gameplay', () => {
                     cy.visit('/', {
                         onBeforeLoad: () => {
                             const persistentState: GamePersistentState = {
-                                highscore: 0,
+                                highscore: {},
                                 unlockables: {},
                                 hasPlayedBefore: true,
                             };
@@ -1482,13 +1483,13 @@ describe('gameplay', () => {
                 it('should handle three digit negative number by trimming the first digit, and the full digit value should be in data attribute', () => {
                     cy.get('#mine-count-board > img')
                         .eq(0)
-                        .should('have.attr', 'src', 'img/digits/-.png');
+                        .should('have.attr', 'data-asset', 'img/digits/-.png');
                     cy.get('#mine-count-board > img')
                         .eq(1)
-                        .should('have.attr', 'src', 'img/digits/9.png');
+                        .should('have.attr', 'data-asset', 'img/digits/9.png');
                     cy.get('#mine-count-board > img')
                         .eq(2)
-                        .should('have.attr', 'src', 'img/digits/8.png');
+                        .should('have.attr', 'data-asset', 'img/digits/8.png');
                     cy.get('#mine-count-board[data-count="-98"]').should('exist');
                     cy.get('.game-board > .row')
                         .eq(5)
@@ -1497,13 +1498,13 @@ describe('gameplay', () => {
                         });
                     cy.get('#mine-count-board > img')
                         .eq(0)
-                        .should('have.attr', 'src', 'img/digits/-.png');
+                        .should('have.attr', 'data-asset', 'img/digits/-.png');
                     cy.get('#mine-count-board > img')
                         .eq(1)
-                        .should('have.attr', 'src', 'img/digits/9.png');
+                        .should('have.attr', 'data-asset', 'img/digits/9.png');
                     cy.get('#mine-count-board > img')
                         .eq(2)
-                        .should('have.attr', 'src', 'img/digits/9.png');
+                        .should('have.attr', 'data-asset', 'img/digits/9.png');
                     cy.get('#mine-count-board[data-count="-99"]').should('exist');
                     cy.get('.game-board > .row')
                         .eq(6)
@@ -1512,13 +1513,13 @@ describe('gameplay', () => {
                         });
                     cy.get('#mine-count-board > img')
                         .eq(0)
-                        .should('have.attr', 'src', 'img/digits/-.png');
+                        .should('have.attr', 'data-asset', 'img/digits/-.png');
                     cy.get('#mine-count-board > img')
                         .eq(1)
-                        .should('have.attr', 'src', 'img/digits/0.png');
+                        .should('have.attr', 'data-asset', 'img/digits/0.png');
                     cy.get('#mine-count-board > img')
                         .eq(2)
-                        .should('have.attr', 'src', 'img/digits/0.png');
+                        .should('have.attr', 'data-asset', 'img/digits/0.png');
                     cy.get('#mine-count-board[data-count="-100"]').should('exist');
                     cy.get('.game-board > .row')
                         .eq(7)
@@ -1527,13 +1528,13 @@ describe('gameplay', () => {
                         });
                     cy.get('#mine-count-board > img')
                         .eq(0)
-                        .should('have.attr', 'src', 'img/digits/-.png');
+                        .should('have.attr', 'data-asset', 'img/digits/-.png');
                     cy.get('#mine-count-board > img')
                         .eq(1)
-                        .should('have.attr', 'src', 'img/digits/0.png');
+                        .should('have.attr', 'data-asset', 'img/digits/0.png');
                     cy.get('#mine-count-board > img')
                         .eq(2)
-                        .should('have.attr', 'src', 'img/digits/1.png');
+                        .should('have.attr', 'data-asset', 'img/digits/1.png');
                     cy.get('#mine-count-board[data-count="-101"]').should('exist');
                 });
             });

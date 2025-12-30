@@ -29,6 +29,9 @@
                         <a id="debug" class="debug-link link-icon" href="#" style="display:none">
                             <i data-feather="tool"></i>
                         </a>
+                        <a class="leaderboard-link link-icon" href="#">
+                            <i data-feather="bar-chart-2"></i>
+                        </a>
                         <a class="help-link link-icon" href="#">
                             <i data-feather="help-circle"></i>
                         </a>
@@ -442,6 +445,25 @@
             <span class="prompt-text"></span><br/>
             <button class="button confirm"><span>Yes</span></button>
             <button class="button cancel"><span>Cancel</span></button>
+        </template>
+        <template id="high-score-dialog-content">
+            <h3>🎉 New High Score! 🎉</h3>
+            <p>Congratulations! You've achieved a new record time!</p>
+            <p>Your time: <strong class="high-score-time"></strong></p>
+        </template>
+        <template id="leaderboard-dialog-content">
+            <h3>High Scores</h3>
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Difficulty</th>
+                        <th>Best Time</th>
+                    </tr>
+                </thead>
+                <tbody class="leaderboard-body">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
         </template>
         <template id="error-dialog-content">
             <span>

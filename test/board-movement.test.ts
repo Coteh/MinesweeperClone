@@ -25,6 +25,7 @@ describe('selecting tiles', function () {
             boardHeight: 10,
             numberOfMines: 10,
             revealBoardOnLoss: true,
+            difficultyKey: 'easy',
         });
 
         expect(gameState.board[2][2].isRevealed).toBe(false);
@@ -38,6 +39,7 @@ describe('selecting tiles', function () {
             boardHeight: 10,
             numberOfMines: 10,
             revealBoardOnLoss: true,
+            difficultyKey: 'easy',
         });
 
         expect(gameState.board[2][2].isRevealed).toBe(false);
@@ -71,6 +73,7 @@ describe('flagging tiles', function () {
             boardHeight: 10,
             numberOfMines: 10,
             revealBoardOnLoss: true,
+            difficultyKey: 'easy',
         });
 
         expect(gameState.board[2][2].isFlagged).toBe(false);
@@ -104,6 +107,7 @@ describe('unflagging tiles', function () {
             boardHeight: 10,
             numberOfMines: 10,
             revealBoardOnLoss: true,
+            difficultyKey: 'easy',
         });
 
         let result = flagSpot(2, 2);

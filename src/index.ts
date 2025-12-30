@@ -35,11 +35,20 @@ let frontendState: FrontendState = {
         boardWidth: 10,
         numberOfMines: 15,
         revealBoardOnLoss: true,
+        difficultyKey: 'easy',
     },
     isPrompted: false,
 }; // initialized with defaults, will be updated from game config
 
 console.info(`minesweeper-clone v${GAME_VERSION}`);
+
+// Helper to format time in "45s (0:45)" format
+const formatTime = (timeMS: number): string => {
+    const timeSeconds = Math.floor(timeMS / 1000);
+    const minutes = Math.floor(timeSeconds / 60);
+    const seconds = timeSeconds % 60;
+    return `${timeSeconds}s (${minutes}:${seconds.toString().padStart(2, '0')})`;
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
     const middleElem = document.querySelector('#middle') as HTMLElement;
@@ -75,6 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 boardWidth: firstSetting.boardWidth,
                 numberOfMines: firstSetting.numberOfMines,
                 revealBoardOnLoss: true,
+                difficultyKey: firstKey,
             },
             isPrompted: false,
         };
@@ -87,6 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 boardWidth: 10,
                 numberOfMines: 15,
                 revealBoardOnLoss: true,
+                difficultyKey: 'easy',
             },
             isPrompted: false,
         };
@@ -180,6 +191,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                     audioManager.playSoundEffect(SoundEffect.Win, {
                         seconds: 0.3,
                     });
+
+                    // Show high score dialog after a short delay if achieved
+                    if (gameState.achievedHighscore) {
+                        setTimeout(() => {
+                            const dialogElem = createDialogContentFromTemplate(
+                                '#high-score-dialog-content'
+                            );
+                            const timeFormatted = formatTime(gameState.elapsedTimeMS);
+
+                            (dialogElem.querySelector(
+                                '.high-score-time'
+                            ) as HTMLElement).innerText = timeFormatted;
+
+                            renderDialog(dialogElem, {
+                                fadeIn: true,
+                                effect: 'pop',
+                            });
+
+                            const buttons = document.querySelectorAll('dialog button');
+                            buttons.forEach((button) => {
+                                button.addEventListener('click', () => {
+                                    audioManager.playSoundEffect(SoundEffect.Click);
+                                });
+                            });
+                        }, 300);
+                    }
                 }
                 break;
             }
@@ -283,6 +320,49 @@ document.addEventListener('DOMContentLoaded', async () => {
             },
         });
         helpLink.blur();
+        audioManager.playSoundEffect(SoundEffect.Click);
+        const buttons = document.querySelectorAll('dialog button');
+        buttons.forEach((button) => {
+            button.addEventListener('click', () => {
+                audioManager.playSoundEffect(SoundEffect.Click);
+            });
+        });
+    });
+
+    const leaderboardLink = document.querySelector('.leaderboard-link') as HTMLElement;
+    leaderboardLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const leaderboardElem = createDialogContentFromTemplate('#leaderboard-dialog-content');
+        const tbody = leaderboardElem.querySelector('.leaderboard-body') as HTMLElement;
+
+        // Get current persistent state to access high scores
+        const currentPersistentState = gameStorage.loadPersistentState();
+
+        // Populate table with scores for each difficulty
+        const difficultyKeys = Object.keys(gameConfig.difficulty);
+        difficultyKeys.forEach((key) => {
+            const row = document.createElement('tr');
+
+            const difficultyCell = document.createElement('td');
+            difficultyCell.innerText = gameConfig.difficulty[key].displayName;
+            row.appendChild(difficultyCell);
+
+            const timeCell = document.createElement('td');
+            const highScore = currentPersistentState.highscore[key];
+            timeCell.innerText = highScore !== undefined ? formatTime(highScore) : '—';
+            row.appendChild(timeCell);
+
+            tbody.appendChild(row);
+        });
+
+        renderDialog(leaderboardElem, {
+            fadeIn: true,
+            effect: 'pop',
+            style: {
+                maxWidth: '500px',
+            },
+        });
+        leaderboardLink.blur();
         audioManager.playSoundEffect(SoundEffect.Click);
         const buttons = document.querySelectorAll('dialog button');
         buttons.forEach((button) => {

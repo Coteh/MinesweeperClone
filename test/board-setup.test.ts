@@ -33,6 +33,7 @@ describe('board setup', function () {
             boardHeight: 10,
             numberOfMines: 10,
             revealBoardOnLoss: true,
+            difficultyKey: 'easy',
         });
         expect(gameState.board[0].length).toBe(10);
         expect(gameState.board.length).toBe(10);
@@ -70,6 +71,7 @@ describe('board overfill', function () {
                 boardHeight: 10,
                 numberOfMines: 101,
                 revealBoardOnLoss: true,
+                difficultyKey: 'easy',
             })
         ).rejects.toThrow(
             new BoardOverfillException(
@@ -85,6 +87,7 @@ describe('board overfill', function () {
                 boardHeight: 10,
                 numberOfMines: 100,
                 revealBoardOnLoss: true,
+                difficultyKey: 'easy',
             })
         ).rejects.toThrow(
             new BoardOverfillException(
@@ -117,6 +120,7 @@ describe('first click', () => {
                 boardHeight: 10,
                 numberOfMines: 10,
                 revealBoardOnLoss: true,
+                difficultyKey: 'easy',
             });
             const result = selectSpot(1, 1);
             expect(result.hitInfo).not.toEqual('mine');
@@ -130,6 +134,7 @@ describe('first click', () => {
             boardHeight: 10,
             numberOfMines: 10,
             revealBoardOnLoss: true,
+            difficultyKey: 'easy',
         });
         let x = -1,
             y = -1;
@@ -144,7 +149,7 @@ describe('first click', () => {
         }
         let result = selectSpot(x, y);
         expect(result.hitInfo).not.toEqual('mine');
-        expect(gameState.board[1][1].isMine).toBeFalsy();
+        expect(gameState.board[y][x].isMine).toBeFalsy();
         expect(gameState.won).toBeFalsy();
     });
 });

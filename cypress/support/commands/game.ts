@@ -41,7 +41,7 @@ Cypress.Commands.add(
                                 // Assert that child element has flag image
                                 const child = boxes.eq(j).children();
                                 expect(child).to.have.length(1);
-                                expect(child).to.have.attr('src', 'img/Flag.png');
+                                expect(child).to.have.attr('data-asset', 'img/Flag.png');
                             } else if (
                                 expectedVal &&
                                 expectedVal.isMine &&
@@ -52,7 +52,7 @@ Cypress.Commands.add(
                                 // Assert that child element has mine image
                                 const child = boxes.eq(j).children();
                                 expect(child).to.have.length(1);
-                                expect(child).to.have.attr('src', 'img/Mine.png');
+                                expect(child).to.have.attr('data-asset', 'img/Mine.png');
                                 // If the mine is the losing mine, assert that the mine has the 'losing' class
                                 if (expectedVal.isLosingSpot) {
                                     expect(boxes.eq(j)).to.have.class('losing');
@@ -65,10 +65,10 @@ Cypress.Commands.add(
                                 expect(child).to.have.length(1);
                                 if (expectedVal.isRevealed && options && options.isGameOver) {
                                     // Assert that this flag will appear as an incorrect one
-                                    expect(child).to.have.attr('src', 'img/Mine.png');
+                                    expect(child).to.have.attr('data-asset', 'img/Mine.png');
                                     expect(boxes.eq(j)).to.have.class('incorrect');
                                 } else {
-                                    expect(child).to.have.attr('src', 'img/Flag.png');
+                                    expect(child).to.have.attr('data-asset', 'img/Flag.png');
                                 }
                             } else if (expectedVal && !expectedVal.isRevealed) {
                                 expect(boxes.eq(j)).to.not.have.class('revealed');

@@ -17,7 +17,7 @@ export class MockGameStorage implements IGameStorage {
         return JSON.parse(JSON.stringify(this.gameState));
     };
     loadPersistentState: () => GamePersistentState = () => ({
-        highscore: 0,
+        highscore: {},
         unlockables: {},
         hasPlayedBefore: false,
     });
@@ -41,7 +41,7 @@ export class NonexistentMockGameStorage implements IGameStorage {
         );
     };
     loadPersistentState: () => GamePersistentState = () => ({
-        highscore: 0,
+        highscore: {},
         unlockables: {},
         hasPlayedBefore: false,
     });

@@ -75,6 +75,7 @@ export function setupSettingsSubsystem(
             frontendState.gameOptions.boardWidth = setting.boardWidth;
             frontendState.gameOptions.boardHeight = setting.boardHeight;
             frontendState.gameOptions.numberOfMines = setting.numberOfMines;
+            frontendState.gameOptions.difficultyKey = difficulty;
             // set bounds on transform manager so panning gets clamped
             transformManager.setBounds(setting.bounds);
         } else {
@@ -82,6 +83,7 @@ export function setupSettingsSubsystem(
             frontendState.gameOptions.boardWidth = 9;
             frontendState.gameOptions.boardHeight = 9;
             frontendState.gameOptions.numberOfMines = 10;
+            frontendState.gameOptions.difficultyKey = 'easy';
             transformManager.setBounds(null);
         }
         if (options.startNewGame) {
