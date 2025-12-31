@@ -5,6 +5,65 @@ import type * as CSS from 'csstype';
 
 import { AssetManager } from './manager/asset';
 
+// Helper function to get adjacent non-revealed, non-flagged tile elements
+const getAdjacentTileElements = (
+    x: number,
+    y: number,
+    gameState: GameState,
+    parentElem: HTMLElement
+): HTMLElement[] => {
+    const adjacentElements: HTMLElement[] = [];
+    const board = gameState.board;
+    const width = gameState.gameOptions.boardWidth;
+    const height = gameState.gameOptions.boardHeight;
+
+    const positions = [
+        [x - 1, y - 1],
+        [x, y - 1],
+        [x + 1, y - 1],
+        [x - 1, y],
+        [x + 1, y],
+        [x - 1, y + 1],
+        [x, y + 1],
+        [x + 1, y + 1],
+    ];
+
+    positions.forEach(([adjX, adjY]) => {
+        if (adjX >= 0 && adjX < width && adjY >= 0 && adjY < height) {
+            const block = board[adjY][adjX];
+            if (!block.isRevealed && !block.isFlagged) {
+                // Find the corresponding DOM element
+                const rows = parentElem.querySelectorAll('.row');
+                const row = rows[adjY];
+                if (row) {
+                    const boxes = row.querySelectorAll('.box');
+                    const elem = boxes[adjX] as HTMLElement;
+                    if (elem) {
+                        adjacentElements.push(elem);
+                    }
+                }
+            }
+        }
+    });
+
+    return adjacentElements;
+};
+
+// Helper to get the appropriate smiley face based on game state
+const getSmileyFace = (gameState: GameState): string => {
+    if (gameState.ended) {
+        return gameState.won ? 'img/Smiley_proud.png' : 'img/Smiley_sad.png';
+    }
+    return 'img/Smiley.png';
+};
+
+// Helper to clear preview classes from all tiles
+const clearAllPreviews = () => {
+    document.querySelectorAll('.box.preview').forEach((elem) => {
+        elem.classList.remove('preview');
+    });
+};
+
 export const renderBoard = (
     parentElem: HTMLElement,
     gameState: GameState,
@@ -12,7 +71,6 @@ export const renderBoard = (
 ) => {
     parentElem.innerHTML = '';
     // console.log('rendering', gameState.board.length);
-    const zoomable = document.getElementById('zoomable') as HTMLElement;
     for (let i = 0; i < gameState.board.length; i++) {
         const row = document.createElement('div');
         row.classList.add('row');
@@ -71,12 +129,88 @@ export const renderBoard = (
             }
             let pressStartTime: number;
             let blockPressed: boolean;
+            let touchStartX: number;
+            let touchStartY: number;
+            let previewTimeout: NodeJS.Timeout | null = null;
+
+            const applyPreviewState = () => {
+                if (!gameState.board[i][j].isRevealed) return;
+
+                // Get adjacent non-revealed, non-flagged tiles
+                const previewTiles = getAdjacentTileElements(j, i, gameState, parentElem);
+
+                // Apply preview class to adjacent tiles
+                previewTiles.forEach((tile) => tile.classList.add('preview'));
+
+                // Change smiley to surprised
+                const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
+                if (newGameImage) {
+                    const smileySurprisedImg = 'img/Smiley_surprised.png';
+                    const pre = assetManager.getImage(smileySurprisedImg);
+                    newGameImage.src = pre ? pre.src : smileySurprisedImg;
+                    newGameImage.dataset.asset = smileySurprisedImg;
+                }
+            };
+
+            const clearPreviewState = () => {
+                // Cancel any pending preview timeout
+                if (previewTimeout) {
+                    clearTimeout(previewTimeout);
+                    previewTimeout = null;
+                }
+
+                // Use clearAllPreviews to handle any DOM elements with preview class
+                clearAllPreviews();
+
+                // Restore smiley face
+                const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
+                if (newGameImage) {
+                    const smileyFaceImgName = getSmileyFace(gameState);
+                    const pre = assetManager.getImage(smileyFaceImgName);
+                    newGameImage.src = pre ? pre.src : smileyFaceImgName;
+                    newGameImage.dataset.asset = smileyFaceImgName;
+                }
+            };
+
             elem.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 pressStartTime = Date.now();
                 blockPressed = true;
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
                 console.log('touch start on mine block');
+
+                // Apply preview state after a short delay (100ms) if tile is revealed
+                // This prevents drag gestures from triggering the preview
+                if (gameState.board[i][j].isRevealed) {
+                    previewTimeout = setTimeout(() => {
+                        applyPreviewState();
+                    }, 100);
+                }
             });
+
+            elem.addEventListener('touchmove', (e) => {
+                if (!blockPressed) return;
+
+                // Check if touch moved beyond threshold (15px)
+                const currentX = e.touches[0].clientX;
+                const currentY = e.touches[0].clientY;
+                const deltaX = currentX - touchStartX;
+                const deltaY = currentY - touchStartY;
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+                if (distance > 15) {
+                    // Cancel the interaction
+                    clearPreviewState();
+                    blockPressed = false;
+                }
+            });
+
+            elem.addEventListener('touchcancel', () => {
+                clearPreviewState();
+                blockPressed = false;
+            });
+
             elem.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 if (!blockPressed) {
@@ -84,12 +218,19 @@ export const renderBoard = (
                     return;
                 }
                 console.log('touchend on mine block');
-                if (Date.now() - pressStartTime > 250) {
+
+                clearPreviewState();
+
+                const holdDuration = Date.now() - pressStartTime;
+
+                if (holdDuration > 250 && !gameState.board[i][j].isRevealed) {
                     flagSpot(j, i);
+                    blockPressed = false;
                     return;
                 }
                 if (gameState.board[i][j].isRevealed) {
                     selectAdjacentSpots(j, i);
+                    blockPressed = false;
                     return;
                 }
                 if (getQuestionMode()) {
@@ -99,18 +240,50 @@ export const renderBoard = (
                 }
                 blockPressed = false;
             });
-            elem.addEventListener('click', (e) => {
+
+            elem.addEventListener('mousedown', (e) => {
+                // Only handle left mouse button
+                if (e.button !== 0) return;
+
+                blockPressed = true;
+                console.log(`mouse down on spot (${j}, ${i})`);
+
+                // Apply preview state after a short delay if tile is revealed
+                // This gives a more deliberate feel
+                if (gameState.board[i][j].isRevealed) {
+                    previewTimeout = setTimeout(() => {
+                        applyPreviewState();
+                    }, 100);
+                }
+            });
+
+            elem.addEventListener('mouseup', (e) => {
+                // Only handle left mouse button
+                if (e.button !== 0) return;
+
+                if (!blockPressed) return;
+
+                clearPreviewState();
+
                 console.log(`selecting spot (${j}, ${i})`);
+
                 if (gameState.board[i][j].isRevealed) {
                     selectAdjacentSpots(j, i);
-                    return;
-                }
-                if (getQuestionMode()) {
+                } else if (getQuestionMode()) {
                     questionMarkSpot(j, i);
                 } else {
                     selectSpot(j, i);
                 }
+
+                blockPressed = false;
             });
+
+            elem.addEventListener('mouseleave', () => {
+                if (!blockPressed) return;
+                clearPreviewState();
+                blockPressed = false;
+            });
+
             elem.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
                 console.log('right click');

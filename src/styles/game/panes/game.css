@@ -107,6 +107,10 @@
     background-color: var(--block-revealed-color);
 }
 
+.box.preview {
+    background-color: var(--block-revealed-color);
+}
+
 .box > * {
     user-select: none;
 }
