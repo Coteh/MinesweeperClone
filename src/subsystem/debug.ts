@@ -49,6 +49,7 @@ export function setupDebugSubsystem(
                     boardHeight: 10,
                     numberOfMines: 3,
                     revealBoardOnLoss: true,
+                    difficultyKey: 'debug',
                 });
                 closeDialogAndOverlay();
             }
