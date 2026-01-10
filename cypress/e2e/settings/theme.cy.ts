@@ -14,7 +14,7 @@ describe('Theme Selector', () => {
         cy.get('body').should('have.class', 'ocean');
 
         cy.selectTheme('classic');
-        cy.get('body').should('have.attr', 'class', '');
+        cy.get('body').should('have.attr', 'class', 'classic');
 
         cy.selectTheme('basic');
         cy.get('body').should('have.class', 'basic');
