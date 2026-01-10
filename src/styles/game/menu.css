@@ -35,8 +35,19 @@
     color: #d4af37;
 }
 
+.top-menu .icon-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 0.25em;
+    padding: 0.5em 0.5em 0 0.5em;
+}
+
 .top-menu .icon-bar > a.link-icon {
     text-decoration: none;
+}
+
+.top-menu .icon-bar > a.link-icon > * {
+    color: var(--icon-bar-icon-color);
 }
 
 .top-menu > .menu-options {

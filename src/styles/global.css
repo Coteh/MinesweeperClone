@@ -13,6 +13,8 @@
 @import url('./game/how-to-play.css');
 
 @import url('./themes/classic.css');
+@import url('./themes/ocean.css');
+@import url('./themes/desert.css');
 @import url('./themes/snow.css');
 
 @import url('./debug.css');
@@ -75,6 +77,8 @@
     --letter-selected-inverted-text-color: var(--white);
 
     --text-font-family: sans-serif;
+
+    --icon-bar-icon-color: var(--black);
 
     --notification-background-color: var(--gray-7);
     --notification-text-color: var(--black);

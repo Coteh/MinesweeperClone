@@ -2,11 +2,18 @@
     object-fit: contain;
 }
 
-/* Settings Knob Modifications for Classic theme */
-/* TODO Uncomment the body.classic selectors once classic theme is setup */
+body.classic {
+    --icon-bar-icon-color: var(--white);
+}
 
-/* body.classic .knob { */
-.knob {
+body.classic .classic-logo {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 0.25em;
+}
+
+/* Settings Knob Modifications for Classic theme */
+
+body.classic .knob {
     position: relative;
 
     width: 32px;
@@ -16,12 +23,10 @@
     background-image: var(--checkbox-unchecked-url);
 }
 
-/* body.classic .knob.enabled { */
-.knob.enabled {
+body.classic .knob.enabled {
     background-image: var(--checkbox-checked-url);
 }
 
-/* body.classic .knob > .knob-inside { */
-.knob > .knob-inside {
+body.classic .knob > .knob-inside {
     display: none;
 }

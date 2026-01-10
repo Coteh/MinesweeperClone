@@ -132,10 +132,7 @@ export class ThemeManager {
         }
 
         document.body.classList.remove(this.currentTheme);
-        // Special case: don't add a class for classic theme
-        if (theme !== CLASSIC_THEME) {
-            document.body.classList.add(theme);
-        }
+        document.body.classList.add(theme);
 
         const cfg = this.getThemeConfig(theme);
         const themeColor = (cfg && cfg.metaThemeColor) || '#000';
