@@ -8,6 +8,9 @@ let currentTheme = {
     name: 'default',
     backgroundColor: 'rgb(136, 136, 136)', // 0x888888
     overlayColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent overlay for dialogs
+    // overlayAlpha is the blend factor used in color calculations
+    // Note: While overlayColor contains an alpha value, overlayAlpha is explicitly
+    // stored for use in the blendColors function to ensure consistent behavior
     overlayAlpha: 0.3
 };
 

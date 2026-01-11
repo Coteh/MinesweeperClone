@@ -24,9 +24,6 @@ describe('Theme Color Meta Tag', () => {
 
   it('should update theme color to normal when applying normal theme', () => {
     cy.window().then(async (win) => {
-      // Import the theme manager module
-      const module = await win.eval(`import('/client/theme-manager.js')`);
-      
       // Apply normal theme color
       cy.wrap(null).then(() => {
         return win.eval(`
