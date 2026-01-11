@@ -772,4 +772,156 @@ describe('high score system', () => {
             });
         });
     });
+
+    describe('confetti animation', () => {
+        it('should trigger confetti when achieving a new high score', () => {
+            cy.clearBrowserCache();
+            cy.visit('/', {
+                onBeforeLoad: (win) => {
+                    const gameState: GameState = {
+                        board: [
+                            [
+                                standardMineBlock(0, 0, false, 0, true, false, false, false),
+                                standardMineBlock(1, 0, false, 0, true, false, false, false),
+                                standardMineBlock(2, 0, false, 0, true, false, false, false),
+                                standardMineBlock(3, 0, false, 0, false, false, false, false),
+                            ],
+                            [
+                                standardMineBlock(0, 1, false, 0, true, false, false, false),
+                                standardMineBlock(1, 1, true, 0, false, false, false, false),
+                                standardMineBlock(2, 1, false, 0, true, false, false, false),
+                                standardMineBlock(3, 1, false, 0, false, false, false, false),
+                            ],
+                            [
+                                standardMineBlock(0, 2, false, 0, true, false, false, false),
+                                standardMineBlock(1, 2, false, 0, true, false, false, false),
+                                standardMineBlock(2, 2, false, 0, true, false, false, false),
+                                standardMineBlock(3, 2, false, 0, false, false, false, false),
+                            ],
+                            [
+                                standardMineBlock(0, 3, true, 0, false, false, false, false),
+                                standardMineBlock(1, 3, false, 0, true, false, false, false),
+                                standardMineBlock(2, 3, false, 0, true, false, false, false),
+                                standardMineBlock(3, 3, false, 0, false, false, false, false),
+                            ],
+                        ],
+                        ended: false,
+                        won: false,
+                        firstBlockClicked: true,
+                        score: 0,
+                        didUndo: false,
+                        achievedHighscore: false,
+                        gameOptions: {
+                            boardWidth: 4,
+                            boardHeight: 4,
+                            numberOfMines: 2,
+                            revealBoardOnLoss: true,
+                            difficultyKey: 'easy',
+                        },
+                        elapsedTimeMS: 45000,
+                        spareMineSpot: { x: 0, y: 0 },
+                    };
+                    const persistentState: GamePersistentState = {
+                        highscore: {},
+                        unlockables: {},
+                        hasPlayedBefore: true,
+                    };
+                    win.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    win.localStorage.setItem(
+                        'persistent-state',
+                        JSON.stringify(persistentState)
+                    );
+
+                    // Spy on the confetti function
+                    cy.spy(win, 'confetti').as('confettiSpy');
+                },
+            });
+            cy.waitForGameReady();
+
+            // Click remaining spot to win
+            cy.get('#board .row:nth-child(1) .box:nth-child(4)').click();
+
+            // Wait for high score dialog to appear (300ms delay)
+            cy.wait(400);
+
+            // Verify confetti was called
+            cy.get('@confettiSpy').should('have.been.called');
+        });
+
+        it('should NOT trigger confetti when not achieving a high score', () => {
+            cy.clearBrowserCache();
+            cy.visit('/', {
+                onBeforeLoad: (win) => {
+                    const gameState: GameState = {
+                        board: [
+                            [
+                                standardMineBlock(0, 0, false, 0, true, false, false, false),
+                                standardMineBlock(1, 0, false, 0, true, false, false, false),
+                                standardMineBlock(2, 0, false, 0, true, false, false, false),
+                                standardMineBlock(3, 0, false, 0, false, false, false, false),
+                            ],
+                            [
+                                standardMineBlock(0, 1, false, 0, true, false, false, false),
+                                standardMineBlock(1, 1, true, 0, false, false, false, false),
+                                standardMineBlock(2, 1, false, 0, true, false, false, false),
+                                standardMineBlock(3, 1, false, 0, false, false, false, false),
+                            ],
+                            [
+                                standardMineBlock(0, 2, false, 0, true, false, false, false),
+                                standardMineBlock(1, 2, false, 0, true, false, false, false),
+                                standardMineBlock(2, 2, false, 0, true, false, false, false),
+                                standardMineBlock(3, 2, false, 0, false, false, false, false),
+                            ],
+                            [
+                                standardMineBlock(0, 3, true, 0, false, false, false, false),
+                                standardMineBlock(1, 3, false, 0, true, false, false, false),
+                                standardMineBlock(2, 3, false, 0, true, false, false, false),
+                                standardMineBlock(3, 3, false, 0, false, false, false, false),
+                            ],
+                        ],
+                        ended: false,
+                        won: false,
+                        firstBlockClicked: true,
+                        score: 0,
+                        didUndo: false,
+                        achievedHighscore: false,
+                        gameOptions: {
+                            boardWidth: 4,
+                            boardHeight: 4,
+                            numberOfMines: 2,
+                            revealBoardOnLoss: true,
+                            difficultyKey: 'easy',
+                        },
+                        elapsedTimeMS: 60000, // Worse than existing 45s
+                        spareMineSpot: { x: 0, y: 0 },
+                    };
+                    const persistentState: GamePersistentState = {
+                        highscore: {
+                            easy: 45000, // Existing high score
+                        },
+                        unlockables: {},
+                        hasPlayedBefore: true,
+                    };
+                    win.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    win.localStorage.setItem(
+                        'persistent-state',
+                        JSON.stringify(persistentState)
+                    );
+
+                    // Spy on the confetti function
+                    cy.spy(win, 'confetti').as('confettiSpy');
+                },
+            });
+            cy.waitForGameReady();
+
+            // Click remaining spot to win
+            cy.get('#board .row:nth-child(1) .box:nth-child(4)').click();
+
+            // Wait to ensure high score dialog would have appeared if it was going to
+            cy.wait(400);
+
+            // Verify confetti was NOT called
+            cy.get('@confettiSpy').should('not.have.been.called');
+        });
+    });
 });
