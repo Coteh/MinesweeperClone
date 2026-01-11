@@ -33,6 +33,15 @@ const standardMineBlock: (
     };
 };
 
+// Helper function to setup confetti spy
+const setupConfettiSpy = (win: Window) => {
+    const originalConfetti = (win as any).confetti;
+    (win as any).confetti = (...args: any[]) => {
+        (win as any).confettiWasCalled = true;
+        return originalConfetti?.(...args);
+    };
+};
+
 describe('high score system', () => {
     describe('tracking high scores per difficulty', () => {
         it('should save initial high score when winning for the first time on easy', () => {
@@ -832,12 +841,8 @@ describe('high score system', () => {
                         JSON.stringify(persistentState)
                     );
 
-                    // Create a spy for the confetti function
-                    const originalConfetti = (win as any).confetti;
-                    (win as any).confetti = (...args: any[]) => {
-                        (win as any).confettiWasCalled = true;
-                        return originalConfetti?.(...args);
-                    };
+                    // Setup confetti spy
+                    setupConfettiSpy(win);
                 },
             });
             cy.waitForGameReady();
@@ -912,12 +917,8 @@ describe('high score system', () => {
                         JSON.stringify(persistentState)
                     );
 
-                    // Create a spy for the confetti function
-                    const originalConfetti = (win as any).confetti;
-                    (win as any).confetti = (...args: any[]) => {
-                        (win as any).confettiWasCalled = true;
-                        return originalConfetti?.(...args);
-                    };
+                    // Setup confetti spy
+                    setupConfettiSpy(win);
                 },
             });
             cy.waitForGameReady();
