@@ -834,9 +834,7 @@ describe('high score system', () => {
 
                     // Create a spy for the confetti function
                     const originalConfetti = (win as any).confetti;
-                    let confettiCalled = false;
                     (win as any).confetti = (...args: any[]) => {
-                        confettiCalled = true;
                         (win as any).confettiWasCalled = true;
                         return originalConfetti?.(...args);
                     };
