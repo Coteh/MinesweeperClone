@@ -74,6 +74,47 @@ export class TransformManager {
         this.adjustBoardTransform(true);
     }
 
+    panToTile(tileX: number, tileY: number, clampZoomOut: boolean) {
+        console.log('pan to tile', tileX, tileY);
+
+        // Clamp zoom if requested (used when losing to prevent zooming in)
+        this._boardTransform.scale = clampZoomOut ? Math.min(1, this._boardTransform.scale) : this._boardTransform.scale;
+
+        // Calculate the pixel position of the tile's center
+        try {
+            const cellElem = document.querySelector('.box') as HTMLElement | null;
+            if (!cellElem) {
+                // Fallback to resetZoom if we can't find a cell element
+                this.resetZoom(clampZoomOut);
+                return;
+            }
+
+            const cellRect = cellElem.getBoundingClientRect();
+            const cellW = cellRect.width || 30;
+            const cellH = cellRect.height || 30;
+
+            // Calculate the center position of the target tile in board-local coordinates
+            const tileCenterX = (tileX + 0.5) * cellW;
+            const tileCenterY = (tileY + 0.5) * cellH;
+
+            // Calculate viewport center
+            const viewportCenterX = window.innerWidth / 2;
+            const viewportCenterY = window.innerHeight / 2;
+
+            // Calculate the translation needed to center the tile
+            // We want: (tileCenterX * scale) + translateX = viewportCenterX
+            // So: translateX = viewportCenterX - (tileCenterX * scale)
+            this._boardTransform.x = viewportCenterX - tileCenterX * this._boardTransform.scale;
+            this._boardTransform.y = viewportCenterY - tileCenterY * this._boardTransform.scale;
+
+            this.adjustBoardTransform(true);
+        } catch (e) {
+            console.error('Error calculating tile position', e);
+            // Fallback to resetZoom if something goes wrong
+            this.resetZoom(clampZoomOut);
+        }
+    }
+
     addEventListener(event: TransformEvent, listener: TransformEventFunction) {
         if (!this.eventListeners.get(event)) {
             this.eventListeners.set(event, []);
