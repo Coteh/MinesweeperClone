@@ -832,8 +832,14 @@ describe('high score system', () => {
                         JSON.stringify(persistentState)
                     );
 
-                    // Spy on the confetti function
-                    cy.spy(win, 'confetti').as('confettiSpy');
+                    // Create a spy for the confetti function
+                    const originalConfetti = (win as any).confetti;
+                    let confettiCalled = false;
+                    (win as any).confetti = (...args: any[]) => {
+                        confettiCalled = true;
+                        (win as any).confettiWasCalled = true;
+                        return originalConfetti?.(...args);
+                    };
                 },
             });
             cy.waitForGameReady();
@@ -844,8 +850,8 @@ describe('high score system', () => {
             // Wait for high score dialog to appear (300ms delay)
             cy.wait(400);
 
-            // Verify confetti was called
-            cy.get('@confettiSpy').should('have.been.called');
+            // Verify confetti was called by checking the flag we set
+            cy.window().its('confettiWasCalled').should('equal', true);
         });
 
         it('should NOT trigger confetti when not achieving a high score', () => {
@@ -908,8 +914,12 @@ describe('high score system', () => {
                         JSON.stringify(persistentState)
                     );
 
-                    // Spy on the confetti function
-                    cy.spy(win, 'confetti').as('confettiSpy');
+                    // Create a spy for the confetti function
+                    const originalConfetti = (win as any).confetti;
+                    (win as any).confetti = (...args: any[]) => {
+                        (win as any).confettiWasCalled = true;
+                        return originalConfetti?.(...args);
+                    };
                 },
             });
             cy.waitForGameReady();
@@ -921,7 +931,9 @@ describe('high score system', () => {
             cy.wait(400);
 
             // Verify confetti was NOT called
-            cy.get('@confettiSpy').should('not.have.been.called');
+            cy.window().then((win) => {
+                expect((win as any).confettiWasCalled).to.be.undefined;
+            });
         });
     });
 });
