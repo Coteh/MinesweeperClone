@@ -15,6 +15,15 @@ describe('mine count with flags on loss', function () {
         return getGameState();
     }
 
+    function calculateFlaggedCount(gameState: GameState): number {
+        return gameState.board.reduce(
+            (acc, row) =>
+                acc +
+                row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
+            0
+        );
+    }
+
     beforeEach(() => {
         eventHandlerStub = jest.fn();
     });
@@ -81,12 +90,7 @@ describe('mine count with flags on loss', function () {
 
         // The mine count calculation should still account for the flagged mine
         // numberOfMines (2) - flagged count (1) = 1
-        const flaggedCount = gameState.board.reduce(
-            (acc, row) =>
-                acc +
-                row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
-            0
-        );
+        const flaggedCount = calculateFlaggedCount(gameState);
         expect(flaggedCount).toBe(1);
 
         const unflaggedMineCount = gameState.gameOptions.numberOfMines - flaggedCount;
@@ -146,12 +150,7 @@ describe('mine count with flags on loss', function () {
         expect(gameState.board[minePositions[1].y][minePositions[1].x].isFlagged).toBe(true);
 
         // The mine count should be: 2 total mines - 1 flagged mine = 1
-        const flaggedCount = gameState.board.reduce(
-            (acc, row) =>
-                acc +
-                row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
-            0
-        );
+        const flaggedCount = calculateFlaggedCount(gameState);
         expect(flaggedCount).toBe(1);
 
         const unflaggedMineCount = gameState.gameOptions.numberOfMines - flaggedCount;
@@ -206,12 +205,7 @@ describe('mine count with flags on loss', function () {
         expect(gameState.ended).toBe(true);
 
         // Check that 3 mines are still flagged
-        const flaggedCount = gameState.board.reduce(
-            (acc, row) =>
-                acc +
-                row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
-            0
-        );
+        const flaggedCount = calculateFlaggedCount(gameState);
         expect(flaggedCount).toBe(3);
 
         // The unflagged mine count should be 5 - 3 = 2
