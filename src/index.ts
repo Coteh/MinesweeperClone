@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         (acc, row) =>
                             acc +
                             row.reduce(
-                                (acc, val) => acc + (val.isFlagged && !val.isRevealed ? 1 : 0),
+                                (acc, val) => acc + (val.isFlagged ? 1 : 0),
                                 0
                             ),
                         0
