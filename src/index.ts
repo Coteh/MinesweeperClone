@@ -50,6 +50,11 @@ let frontendState: FrontendState = {
 
 console.info(`minesweeper-clone v${GAME_VERSION}`);
 
+// Expose confetti on window for testing purposes
+if (typeof window !== 'undefined') {
+    (window as any).confetti = confetti;
+}
+
 // Helper to format time in "45s (0:45)" format
 const formatTime = (timeMS: number): string => {
     const timeSeconds = Math.floor(timeMS / 1000);
