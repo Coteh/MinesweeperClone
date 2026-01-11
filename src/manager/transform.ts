@@ -9,6 +9,7 @@ export type TransformEventFunction = () => void;
 
 export const MIN_ZOOM = 0.5;
 export const MAX_ZOOM = 2;
+const DEFAULT_CELL_SIZE = 30; // Default cell size in pixels if measurement fails
 
 import type { Bounds } from '../config';
 
@@ -75,13 +76,13 @@ export class TransformManager {
     }
 
     panToTile(tileX: number, tileY: number, clampZoomOut: boolean) {
-        console.log('pan to tile', tileX, tileY);
-
         // Clamp zoom if requested (used when losing to prevent zooming in)
         this._boardTransform.scale = clampZoomOut ? Math.min(1, this._boardTransform.scale) : this._boardTransform.scale;
 
         // Calculate the pixel position of the tile's center
         try {
+            // Use the first box element to determine cell dimensions
+            // Note: All boxes should have the same dimensions
             const cellElem = document.querySelector('.box') as HTMLElement | null;
             if (!cellElem) {
                 // Fallback to resetZoom if we can't find a cell element
@@ -90,8 +91,8 @@ export class TransformManager {
             }
 
             const cellRect = cellElem.getBoundingClientRect();
-            const cellW = cellRect.width || 30;
-            const cellH = cellRect.height || 30;
+            const cellW = cellRect.width || DEFAULT_CELL_SIZE;
+            const cellH = cellRect.height || DEFAULT_CELL_SIZE;
 
             // Calculate the center position of the target tile in board-local coordinates
             const tileCenterX = (tileX + 0.5) * cellW;
