@@ -232,11 +232,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 zIndex: 200
                             });
 
-                            // Set flag for testing purposes
-                            if (typeof window !== 'undefined') {
-                                (window as any).__confettiTriggered = true;
-                            }
-
                             const buttons = document.querySelectorAll('dialog button');
                             buttons.forEach((button) => {
                                 button.addEventListener('click', () => {
