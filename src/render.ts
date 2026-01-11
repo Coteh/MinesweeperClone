@@ -290,8 +290,10 @@ export const renderBoard = (
                     }
                     
                     // Register cancellation callback
+                    let actionExecuted = false;
                     const cancelAction = () => {
-                        if (actionTimeout) {
+                        // Only cancel if action hasn't executed yet
+                        if (!actionExecuted && actionTimeout) {
                             clearTimeout(actionTimeout);
                             actionTimeout = null;
                         }
@@ -300,6 +302,7 @@ export const renderBoard = (
                     
                     // Schedule action with cleanup
                     actionTimeout = setTimeout(() => {
+                        actionExecuted = true;
                         performAction();
                         unregisterTileAction(cancelAction);
                     }, actionDelay);
@@ -357,8 +360,10 @@ export const renderBoard = (
                 }
                 
                 // Register cancellation callback for double-click
+                let mouseActionExecuted = false;
                 const cancelMouseAction = () => {
-                    if (actionTimeout) {
+                    // Only cancel if action hasn't executed yet
+                    if (!mouseActionExecuted && actionTimeout) {
                         clearTimeout(actionTimeout);
                         actionTimeout = null;
                     }
@@ -367,6 +372,7 @@ export const renderBoard = (
                 
                 // Schedule action with cleanup
                 actionTimeout = setTimeout(() => {
+                    mouseActionExecuted = true;
                     performMouseAction();
                     unregisterTileAction(cancelMouseAction);
                 }, actionDelay);
