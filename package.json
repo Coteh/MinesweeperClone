@@ -10,7 +10,9 @@
     "build": "vite build",
     "serve": "vite preview",
     "format": "prettier --config ./.prettierrc --write .",
-    "test": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js"
+    "test": "node --experimental-vm-modules node_modules/jest-cli/bin/jest.js",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "repository": {
     "type": "git",
@@ -24,9 +26,11 @@
     "vite-plugin-node-polyfills": "^0.24.0"
   },
   "devDependencies": {
+    "@types/node": "^25.0.6",
     "jest-cli": "^29.7.0",
     "jest-junit": "^16.0.0",
     "pixi-filters": "1.0.6",
-    "prettier": "2.0.5"
+    "prettier": "2.0.5",
+    "typescript": "^5.9.3"
   }
 }
