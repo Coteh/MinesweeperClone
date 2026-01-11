@@ -224,6 +224,7 @@ export function setupInteractionSubsystem(
     let lastTapY = 0;
     const doubleTapDelay = 300; // milliseconds
     const doubleTapDistance = 50; // pixels
+    const tapMovementThreshold = 10; // pixels
 
     zoomable.addEventListener(
         'touchstart',
@@ -341,7 +342,7 @@ export function setupInteractionSubsystem(
             const touchMovement = Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY);
 
             // Check if this is a tap (not a drag)
-            if (touchMovement < 10) {
+            if (touchMovement < tapMovementThreshold) {
                 const timeSinceLastTap = now - lastTapTime;
                 const distanceFromLastTap = Math.sqrt(
                     Math.pow(tapX - lastTapX, 2) + Math.pow(tapY - lastTapY, 2)
@@ -397,11 +398,9 @@ export function setupInteractionSubsystem(
                 const changedTouch = event.changedTouches[0];
                 const touchDiffX = changedTouch.clientX - startTouchX;
                 const touchDiffY = changedTouch.clientY - startTouchY;
-                console.log(
-                    'movement?',
-                    Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY)
-                );
-                if (Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY) > 1) {
+                const movementDistance = Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY);
+                console.log('movement?', movementDistance);
+                if (movementDistance > 1) {
                     event.stopPropagation();
                 }
             }
