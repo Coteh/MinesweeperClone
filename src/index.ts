@@ -50,11 +50,6 @@ let frontendState: FrontendState = {
 
 console.info(`minesweeper-clone v${GAME_VERSION}`);
 
-// Expose confetti on window for testing purposes (only in development/test environments)
-if (typeof window !== 'undefined' && (import.meta.env.DEV || import.meta.env.MODE === 'test')) {
-    (window as any).confetti = confetti;
-}
-
 // Helper to format time in "45s (0:45)" format
 const formatTime = (timeMS: number): string => {
     const timeSeconds = Math.floor(timeMS / 1000);
@@ -229,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 particleCount: 100,
                                 spread: 70,
                                 origin: { y: 0.6 },
-                                zIndex: 200
+                                zIndex: 200,
                             });
 
                             const buttons = document.querySelectorAll('dialog button');
