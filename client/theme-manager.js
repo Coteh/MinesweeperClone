@@ -22,11 +22,22 @@ let isDialogOpen = false;
  * @param {string} bottomColor - The bottom color (e.g., 'rgb(0, 0, 255)')
  * @param {number} alphaTop - The alpha value of the top color (0-1)
  * @returns {string} The blended color in RGB format
+ * @throws {Error} If color strings are not in expected format
  */
 export function blendColors(topColor, bottomColor, alphaTop) {
     // Extract RGB components from the top and bottom colors
-    const top = topColor.match(/\d+/g).map(Number);
-    const bottom = bottomColor.match(/\d+/g).map(Number);
+    const topMatch = topColor.match(/\d+/g);
+    const bottomMatch = bottomColor.match(/\d+/g);
+    
+    if (!topMatch || topMatch.length < 3) {
+        throw new Error(`Invalid top color format: ${topColor}`);
+    }
+    if (!bottomMatch || bottomMatch.length < 3) {
+        throw new Error(`Invalid bottom color format: ${bottomColor}`);
+    }
+    
+    const top = topMatch.map(Number);
+    const bottom = bottomMatch.map(Number);
     
     // Calculate the resulting RGB values
     const r = Math.round(alphaTop * top[0] + (1 - alphaTop) * bottom[0]);
