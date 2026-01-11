@@ -74,6 +74,35 @@ export class TransformManager {
         this.adjustBoardTransform(true);
     }
 
+    zoomToPoint(clientX: number, clientY: number) {
+        console.log('zoom to point', clientX, clientY, this._boardTransform.scale);
+
+        // Get the viewport center
+        const viewportCenterX = window.innerWidth / 2;
+        const viewportCenterY = window.innerHeight / 2;
+
+        // Calculate the offset from center to tap point
+        const offsetX = clientX - viewportCenterX;
+        const offsetY = clientY - viewportCenterY;
+
+        // Store old scale
+        const oldScale = this._boardTransform.scale;
+
+        // Increment zoom
+        const zoomFactor = 0.5;
+        this._boardTransform.scale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, oldScale + zoomFactor));
+
+        // Calculate scale ratio
+        const scaleRatio = this._boardTransform.scale / oldScale;
+
+        // Adjust position to keep the tapped point under the cursor
+        // When zooming in, we want to move the board so that the point stays in place
+        this._boardTransform.x = this._boardTransform.x * scaleRatio - offsetX * (scaleRatio - 1);
+        this._boardTransform.y = this._boardTransform.y * scaleRatio - offsetY * (scaleRatio - 1);
+
+        this.adjustBoardTransform(true);
+    }
+
     addEventListener(event: TransformEvent, listener: TransformEventFunction) {
         if (!this.eventListeners.get(event)) {
             this.eventListeners.set(event, []);

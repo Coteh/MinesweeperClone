@@ -181,6 +181,14 @@ export function setupInteractionSubsystem(
     }
 
     const zoomable = document.getElementById('zoomable') as HTMLElement;
+    
+    // Double-click handler for desktop
+    zoomable.addEventListener('dblclick', (event) => {
+        console.log('Double-click detected at', event.clientX, event.clientY);
+        event.preventDefault();
+        transformManager.zoomToPoint(event.clientX, event.clientY);
+        audioManager.playSoundEffect(SoundEffect.ZoomIn);
+    });
     let startDistance = 0;
     let startMidpoint = { x: 0, y: 0 };
 
@@ -209,6 +217,13 @@ export function setupInteractionSubsystem(
     let touchVelocityX = 0;
     let touchVelocityY = 0;
     let touchFriction = 0.75;
+
+    // Double-tap detection variables
+    let lastTapTime = 0;
+    let lastTapX = 0;
+    let lastTapY = 0;
+    const doubleTapDelay = 300; // milliseconds
+    const doubleTapDistance = 50; // pixels
 
     zoomable.addEventListener(
         'touchstart',
@@ -315,6 +330,45 @@ export function setupInteractionSubsystem(
                 }
                 return;
             }
+
+            // Double-tap detection
+            const now = Date.now();
+            const changedTouch = event.changedTouches[0];
+            const tapX = changedTouch.clientX;
+            const tapY = changedTouch.clientY;
+            const touchDiffX = tapX - startTouchX;
+            const touchDiffY = tapY - startTouchY;
+            const touchMovement = Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY);
+
+            // Check if this is a tap (not a drag)
+            if (touchMovement < 10) {
+                const timeSinceLastTap = now - lastTapTime;
+                const distanceFromLastTap = Math.sqrt(
+                    Math.pow(tapX - lastTapX, 2) + Math.pow(tapY - lastTapY, 2)
+                );
+
+                if (timeSinceLastTap < doubleTapDelay && distanceFromLastTap < doubleTapDistance) {
+                    // Double-tap detected!
+                    console.log('Double-tap detected at', tapX, tapY);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    transformManager.zoomToPoint(tapX, tapY);
+                    audioManager.playSoundEffect(SoundEffect.ZoomIn);
+                    
+                    // Reset double-tap tracking
+                    lastTapTime = 0;
+                    lastTapX = 0;
+                    lastTapY = 0;
+                    isMoving = false;
+                    return;
+                } else {
+                    // Store this tap for potential double-tap
+                    lastTapTime = now;
+                    lastTapX = tapX;
+                    lastTapY = tapY;
+                }
+            }
+
             console.log('isMoving', isMoving);
             if (isMoving) {
                 const momentum = () => {
