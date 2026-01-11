@@ -3,6 +3,7 @@ import { GameState, selectSpot, flagSpot, selectAdjacentSpots, questionMarkSpot 
 import { getQuestionMode } from './inputMode';
 import type * as CSS from 'csstype';
 import { isAwaitingDoubleTapGesture, registerTileAction, unregisterTileAction } from './doubleTapState';
+import { TILE_ACTION_DELAY_MS } from './doubleTapConsts';
 
 import { AssetManager } from './manager/asset';
 
@@ -270,8 +271,6 @@ export const renderBoard = (
                 if (holdDuration > 250) {
                     performAction();
                 } else {
-                    actionTimeout = setTimeout(performAction, 310); // Slightly more than double-tap delay
-                    
                     // Register cancellation callback
                     const cancelAction = () => {
                         if (actionTimeout) {
@@ -281,12 +280,11 @@ export const renderBoard = (
                     };
                     registerTileAction(cancelAction);
                     
-                    // Clean up registration after action completes or is cancelled
-                    const originalTimeout = actionTimeout;
+                    // Schedule action with cleanup
                     actionTimeout = setTimeout(() => {
                         performAction();
                         unregisterTileAction(cancelAction);
-                    }, 310);
+                    }, TILE_ACTION_DELAY_MS);
                 }
                 
                 blockPressed = false;

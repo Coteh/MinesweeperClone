@@ -8,6 +8,7 @@ import { toggleQuestionMode } from '../inputMode';
 import { DEBUG_HUD_ENABLED_PREFERENCE_NAME, SETTING_ENABLED } from '../consts';
 import { AudioManager, SoundEffect } from '../manager/audio';
 import { setAwaitingDoubleTap, resetDoubleTapState } from '../doubleTapState';
+import { DOUBLE_TAP_DELAY_MS, DOUBLE_TAP_DISTANCE_PX, TAP_MOVEMENT_THRESHOLD_PX } from '../doubleTapConsts';
 
 const DIRECTION_LEFT = 'left';
 const DIRECTION_RIGHT = 'right';
@@ -223,10 +224,6 @@ export function setupInteractionSubsystem(
     let lastTapTime = 0;
     let lastTapX = 0;
     let lastTapY = 0;
-    const doubleTapDelay = 300; // milliseconds
-    const doubleTapDistance = 50; // pixels
-    const tapMovementThreshold = 10; // pixels
-    let potentialDoubleTap = false; // Flag to prevent tile interactions during double-tap detection
 
     zoomable.addEventListener(
         'touchstart',
@@ -243,8 +240,7 @@ export function setupInteractionSubsystem(
                 );
                 
                 // If this could be a double-tap, prevent tile interaction
-                if (lastTapTime > 0 && timeSinceLastTap < doubleTapDelay && distanceFromLastTap < doubleTapDistance) {
-                    potentialDoubleTap = true;
+                if (lastTapTime > 0 && timeSinceLastTap < DOUBLE_TAP_DELAY_MS && distanceFromLastTap < DOUBLE_TAP_DISTANCE_PX) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
@@ -362,13 +358,13 @@ export function setupInteractionSubsystem(
             const touchMovement = Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY);
 
             // Check if this is a tap (not a drag)
-            if (touchMovement < tapMovementThreshold) {
+            if (touchMovement < TAP_MOVEMENT_THRESHOLD_PX) {
                 const timeSinceLastTap = now - lastTapTime;
                 const distanceFromLastTap = Math.sqrt(
                     Math.pow(tapX - lastTapX, 2) + Math.pow(tapY - lastTapY, 2)
                 );
 
-                if (timeSinceLastTap < doubleTapDelay && distanceFromLastTap < doubleTapDistance) {
+                if (timeSinceLastTap < DOUBLE_TAP_DELAY_MS && distanceFromLastTap < DOUBLE_TAP_DISTANCE_PX) {
                     // Double-tap detected!
                     console.log('Double-tap detected at', tapX, tapY);
                     event.preventDefault();
@@ -378,7 +374,6 @@ export function setupInteractionSubsystem(
                     
                     // Reset double-tap tracking and state
                     resetDoubleTapState();
-                    potentialDoubleTap = false;
                     lastTapTime = 0;
                     lastTapX = 0;
                     lastTapY = 0;
@@ -387,8 +382,7 @@ export function setupInteractionSubsystem(
                 } else {
                     // Store this tap for potential double-tap
                     // Set flag to indicate we're waiting for a potential second tap
-                    setAwaitingDoubleTap(true, doubleTapDelay);
-                    potentialDoubleTap = false; // Reset flag for single tap
+                    setAwaitingDoubleTap(true, DOUBLE_TAP_DELAY_MS);
                     lastTapTime = now;
                     lastTapX = tapX;
                     lastTapY = tapY;
@@ -396,7 +390,6 @@ export function setupInteractionSubsystem(
             } else {
                 // Movement detected, not a tap
                 resetDoubleTapState();
-                potentialDoubleTap = false;
             }
 
             console.log('isMoving', isMoving);
