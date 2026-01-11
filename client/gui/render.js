@@ -11,6 +11,7 @@ import { MenuOption } from './menuoption';
 import { CheckBox } from './checkbox';
 import { buttonFont, bigButtonFont, copyrightFont } from './fontprefs';
 import { loadGameOptions, saveGameOptions } from '../storage';
+import { initThemeManager, applyNormalThemeColor, applyDimmedThemeColor } from '../theme-manager';
 
 import "../style.css";
 
@@ -126,6 +127,10 @@ var initRenderElements = function () {
 
     //Setting background color of game
     renderer.backgroundColor = regularBackgroundColor;
+    
+    //Initialize theme manager
+    initThemeManager(regularBackgroundColor);
+    applyDimmedThemeColor(); // Start dimmed since we show menu first
 
     //Initialize stage container
     stage = new PIXI.Container();
@@ -247,6 +252,7 @@ var initRenderElements = function () {
         mainMenuScreen.visible = false;
         gameScreen.visible = true;
         background.filters = normalBGFilters;
+        applyNormalThemeColor(); // Apply normal theme color when game starts
         resizeGame();
     });
     playBtn.setGraphic(uncheckedTex);
@@ -255,6 +261,7 @@ var initRenderElements = function () {
     settingsBtn.setPressAction(function () {
         mainMenuScreen.visible = false;
         settingsScreen.visible = true;
+        // Theme color remains dimmed when switching between menus
     });
     settingsBtn.setGraphic(uncheckedTex);
 
