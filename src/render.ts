@@ -3,7 +3,7 @@ import { GameState, selectSpot, flagSpot, selectAdjacentSpots, questionMarkSpot 
 import { getQuestionMode } from './inputMode';
 import type * as CSS from 'csstype';
 import { isAwaitingDoubleTapGesture, registerTileAction, unregisterTileAction } from './doubleTapState';
-import { TILE_ACTION_DELAY_MS } from './doubleTapConsts';
+import { UNREVEALED_TILE_ACTION_DELAY_MS, REVEALED_TILE_ACTION_DELAY_MS } from './doubleTapConsts';
 
 import { AssetManager } from './manager/asset';
 
@@ -255,10 +255,16 @@ export const renderBoard = (
                 };
                 
                 // If it's a long press (flag action), do it immediately
-                // Otherwise delay to allow double-tap detection (match double-tap delay)
+                // Otherwise delay to allow double-tap detection
+                // Use shorter delay for unrevealed tiles for better responsiveness
                 if (holdDuration > 250) {
                     performAction();
                 } else {
+                    // Choose delay based on tile state - unrevealed tiles get faster response
+                    const actionDelay = gameState.board[i][j].isRevealed 
+                        ? REVEALED_TILE_ACTION_DELAY_MS 
+                        : UNREVEALED_TILE_ACTION_DELAY_MS;
+                    
                     // Register cancellation callback
                     const cancelAction = () => {
                         if (actionTimeout) {
@@ -272,7 +278,7 @@ export const renderBoard = (
                     actionTimeout = setTimeout(() => {
                         performAction();
                         unregisterTileAction(cancelAction);
-                    }, TILE_ACTION_DELAY_MS);
+                    }, actionDelay);
                 }
                 
                 blockPressed = false;
@@ -304,13 +310,37 @@ export const renderBoard = (
 
                 console.log(`selecting spot (${j}, ${i})`);
 
-                if (gameState.board[i][j].isRevealed) {
-                    selectAdjacentSpots(j, i);
-                } else if (getQuestionMode()) {
-                    questionMarkSpot(j, i);
-                } else {
-                    selectSpot(j, i);
-                }
+                // Delay action slightly to allow double-click detection
+                // Use same logic as touch: shorter delay for unrevealed tiles
+                const performMouseAction = () => {
+                    if (gameState.board[i][j].isRevealed) {
+                        selectAdjacentSpots(j, i);
+                    } else if (getQuestionMode()) {
+                        questionMarkSpot(j, i);
+                    } else {
+                        selectSpot(j, i);
+                    }
+                };
+                
+                // Choose delay based on tile state
+                const actionDelay = gameState.board[i][j].isRevealed 
+                    ? REVEALED_TILE_ACTION_DELAY_MS 
+                    : UNREVEALED_TILE_ACTION_DELAY_MS;
+                
+                // Register cancellation callback for double-click
+                const cancelMouseAction = () => {
+                    if (actionTimeout) {
+                        clearTimeout(actionTimeout);
+                        actionTimeout = null;
+                    }
+                };
+                registerTileAction(cancelMouseAction);
+                
+                // Schedule action with cleanup
+                actionTimeout = setTimeout(() => {
+                    performMouseAction();
+                    unregisterTileAction(cancelMouseAction);
+                }, actionDelay);
 
                 blockPressed = false;
             });

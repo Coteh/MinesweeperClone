@@ -188,8 +188,11 @@ export function setupInteractionSubsystem(
     zoomable.addEventListener('dblclick', (event) => {
         console.log('Double-click detected at', event.clientX, event.clientY);
         event.preventDefault();
+        event.stopPropagation();
         transformManager.zoomToPoint(event.clientX, event.clientY);
         audioManager.playSoundEffect(SoundEffect.ZoomIn);
+        // Cancel any pending tile actions
+        resetDoubleTapState();
     });
     let startDistance = 0;
     let startMidpoint = { x: 0, y: 0 };
