@@ -226,13 +226,6 @@ export const renderBoard = (
             });
 
             elem.addEventListener('touchend', (e) => {
-                // Don't process if we're waiting for a potential double-tap
-                if (isAwaitingDoubleTapGesture()) {
-                    clearPreviewState();
-                    blockPressed = false;
-                    return;
-                }
-                
                 e.preventDefault();
                 if (!blockPressed) {
                     console.log('block not pressed');
@@ -246,11 +239,6 @@ export const renderBoard = (
 
                 // For quick taps, delay action slightly to allow double-tap detection
                 const performAction = () => {
-                    // Double-check we're not awaiting a double-tap
-                    if (isAwaitingDoubleTapGesture()) {
-                        return;
-                    }
-                    
                     if (holdDuration > 250 && !gameState.board[i][j].isRevealed) {
                         flagSpot(j, i);
                         return;
