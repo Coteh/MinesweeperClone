@@ -15,6 +15,7 @@ import {
     renderPromptDialog,
 } from './render';
 import * as feather from 'feather-icons';
+import confetti from 'canvas-confetti';
 import { ActionIconManager } from './manager/action-icon';
 import { AssetManager } from './manager/asset';
 import { FullscreenManager } from './manager/fullscreen';
@@ -216,6 +217,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                             renderDialog(dialogElem, {
                                 fadeIn: true,
                                 effect: 'pop',
+                            });
+
+                            // Trigger confetti effect
+                            confetti({
+                                particleCount: 100,
+                                spread: 70,
+                                origin: { y: 0.6 }
                             });
 
                             const buttons = document.querySelectorAll('dialog button');
