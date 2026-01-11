@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         transformManager,
                         fullscreenManager,
                         audioManager,
+                        assetManager,
                         gameState,
                         promptNewGame,
                         settingsSubsystem.toggleSettings,

@@ -3,7 +3,7 @@ import { GameState, selectSpot, flagSpot, selectAdjacentSpots, questionMarkSpot 
 import { getQuestionMode } from './inputMode';
 import type * as CSS from 'csstype';
 import { isAwaitingDoubleTapGesture, registerTileAction, unregisterTileAction } from './doubleTapState';
-import { UNREVEALED_TILE_ACTION_DELAY_MS, REVEALED_TILE_ACTION_DELAY_MS } from './doubleTapConsts';
+import { UNREVEALED_TILE_ACTION_DELAY_MS, REVEALED_NUMBERED_TILE_ACTION_DELAY_MS, REVEALED_EMPTY_TILE_ACTION_DELAY_MS } from './doubleTapConsts';
 
 import { AssetManager } from './manager/asset';
 
@@ -64,6 +64,22 @@ const clearAllPreviews = () => {
     document.querySelectorAll('.box.preview').forEach((elem) => {
         elem.classList.remove('preview');
     });
+};
+
+// Export a function to clear all preview state globally
+// This is used by the double-tap/double-click handler to ensure clean state
+export const clearGlobalPreviewState = (gameState: GameState, assetManager: AssetManager) => {
+    // Clear any preview tiles
+    clearAllPreviews();
+    
+    // Restore smiley face to normal state
+    const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
+    if (newGameImage) {
+        const smileyFaceImgName = getSmileyFace(gameState);
+        const pre = assetManager.getImage(smileyFaceImgName);
+        newGameImage.src = pre ? pre.src : smileyFaceImgName;
+        newGameImage.dataset.asset = smileyFaceImgName;
+    }
 };
 
 export const renderBoard = (
@@ -256,14 +272,22 @@ export const renderBoard = (
                 
                 // If it's a long press (flag action), do it immediately
                 // Otherwise delay to allow double-tap detection
-                // Use shorter delay for unrevealed tiles for better responsiveness
+                // Use context-aware delays based on tile state and type
                 if (holdDuration > 250) {
                     performAction();
                 } else {
-                    // Choose delay based on tile state - unrevealed tiles get faster response
-                    const actionDelay = gameState.board[i][j].isRevealed 
-                        ? REVEALED_TILE_ACTION_DELAY_MS 
-                        : UNREVEALED_TILE_ACTION_DELAY_MS;
+                    // Choose delay based on tile state and type
+                    // - Unrevealed tiles: 50ms (fast reveal)
+                    // - Revealed tiles with numbers: 50ms (fast chord/adjacent reveal)
+                    // - Revealed tiles without numbers: 150ms (allow double-tap zoom)
+                    let actionDelay;
+                    if (gameState.board[i][j].isRevealed) {
+                        actionDelay = gameState.board[i][j].adjMinesCount > 0
+                            ? REVEALED_NUMBERED_TILE_ACTION_DELAY_MS
+                            : REVEALED_EMPTY_TILE_ACTION_DELAY_MS;
+                    } else {
+                        actionDelay = UNREVEALED_TILE_ACTION_DELAY_MS;
+                    }
                     
                     // Register cancellation callback
                     const cancelAction = () => {
@@ -311,7 +335,7 @@ export const renderBoard = (
                 console.log(`selecting spot (${j}, ${i})`);
 
                 // Delay action slightly to allow double-click detection
-                // Use same logic as touch: shorter delay for unrevealed tiles
+                // Use context-aware delays same as touch
                 const performMouseAction = () => {
                     if (gameState.board[i][j].isRevealed) {
                         selectAdjacentSpots(j, i);
@@ -322,10 +346,15 @@ export const renderBoard = (
                     }
                 };
                 
-                // Choose delay based on tile state
-                const actionDelay = gameState.board[i][j].isRevealed 
-                    ? REVEALED_TILE_ACTION_DELAY_MS 
-                    : UNREVEALED_TILE_ACTION_DELAY_MS;
+                // Choose delay based on tile state and type
+                let actionDelay;
+                if (gameState.board[i][j].isRevealed) {
+                    actionDelay = gameState.board[i][j].adjMinesCount > 0
+                        ? REVEALED_NUMBERED_TILE_ACTION_DELAY_MS
+                        : REVEALED_EMPTY_TILE_ACTION_DELAY_MS;
+                } else {
+                    actionDelay = UNREVEALED_TILE_ACTION_DELAY_MS;
+                }
                 
                 // Register cancellation callback for double-click
                 const cancelMouseAction = () => {

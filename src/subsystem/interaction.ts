@@ -7,8 +7,10 @@ import { FrontendState } from '..';
 import { toggleQuestionMode } from '../inputMode';
 import { DEBUG_HUD_ENABLED_PREFERENCE_NAME, SETTING_ENABLED } from '../consts';
 import { AudioManager, SoundEffect } from '../manager/audio';
+import { AssetManager } from '../manager/asset';
 import { setAwaitingDoubleTap, resetDoubleTapState } from '../doubleTapState';
 import { DOUBLE_TAP_DELAY_MS, DOUBLE_TAP_DISTANCE_PX, TAP_MOVEMENT_THRESHOLD_PX } from '../doubleTapConsts';
+import { clearGlobalPreviewState } from '../render';
 
 const DIRECTION_LEFT = 'left';
 const DIRECTION_RIGHT = 'right';
@@ -21,6 +23,7 @@ export function setupInteractionSubsystem(
     transformManager: TransformManager,
     fullscreenManager: FullscreenManager,
     audioManager: AudioManager,
+    assetManager: AssetManager,
     gameState: GameState,
     promptNewGame: (onNewGameStarted?: () => void) => void,
     toggleSettings: (enabled: boolean) => void,
@@ -193,6 +196,8 @@ export function setupInteractionSubsystem(
         audioManager.playSoundEffect(SoundEffect.ZoomIn);
         // Cancel any pending tile actions
         resetDoubleTapState();
+        // Clear any preview state to prevent stuck smiley face
+        clearGlobalPreviewState(gameState, assetManager);
     });
     let startDistance = 0;
     let startMidpoint = { x: 0, y: 0 };
@@ -377,6 +382,8 @@ export function setupInteractionSubsystem(
                     
                     // Reset double-tap tracking and state
                     resetDoubleTapState();
+                    // Clear any preview state to prevent stuck smiley face
+                    clearGlobalPreviewState(gameState, assetManager);
                     lastTapTime = 0;
                     lastTapX = 0;
                     lastTapY = 0;
