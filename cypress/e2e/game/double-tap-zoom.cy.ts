@@ -277,6 +277,130 @@ describe('double-tap zoom', () => {
         });
     });
 
+    it('should not reveal tiles when double-tapping', () => {
+        // Get initial transform scale
+        cy.get('#zoomable').then(($zoomable) => {
+            const initialTransform = $zoomable.css('transform');
+            cy.log('Initial transform:', initialTransform);
+
+            // Perform double-tap on an unrevealed tile
+            cy.get('.game-board > .row')
+                .eq(0)
+                .within(() => {
+                    cy.get('.box').eq(1).then((elem) => {
+                        const x = elem.offset().left + elem.width() / 2;
+                        const y = elem.offset().top + elem.height() / 2;
+
+                        // First tap
+                        cy.get('.box').eq(1).trigger('touchstart', {
+                            touches: [{ clientX: x, clientY: y }],
+                        });
+                        cy.get('.box').eq(1).trigger('touchend', {
+                            changedTouches: [{ clientX: x, clientY: y }],
+                        });
+
+                        // Small delay
+                        cy.wait(100);
+
+                        // Second tap
+                        cy.get('.box').eq(1).trigger('touchstart', {
+                            touches: [{ clientX: x, clientY: y }],
+                        });
+                        cy.get('.box').eq(1).trigger('touchend', {
+                            changedTouches: [{ clientX: x, clientY: y }],
+                        });
+                    });
+                });
+
+            // Wait for animation to complete
+            cy.wait(300);
+
+            // Verify zoom increased
+            cy.get('#zoomable').then(($zoomable) => {
+                const finalTransform = $zoomable.css('transform');
+                const initialMatrix = initialTransform.match(/matrix\(([^)]+)\)/);
+                const finalMatrix = finalTransform.match(/matrix\(([^)]+)\)/);
+                
+                if (initialMatrix && finalMatrix) {
+                    const initialScale = parseFloat(initialMatrix[1].split(',')[0]);
+                    const finalScale = parseFloat(finalMatrix[1].split(',')[0]);
+                    expect(finalScale).to.be.greaterThan(initialScale);
+                }
+            });
+
+            // Verify tile was NOT revealed
+            cy.get('.game-board > .row')
+                .eq(0)
+                .within(() => {
+                    cy.get('.box').eq(1).should('not.have.class', 'revealed');
+                });
+        });
+    });
+
+    it('should not show preview mode when double-tapping on revealed tile', () => {
+        // First reveal a tile
+        cy.get('.game-board > .row')
+            .eq(0)
+            .within(() => {
+                cy.get('.box').eq(0).then((elem) => {
+                    const x = elem.offset().left + elem.width() / 2;
+                    const y = elem.offset().top + elem.height() / 2;
+
+                    cy.get('.box').eq(0).trigger('touchstart', {
+                        touches: [{ clientX: x, clientY: y }],
+                    });
+                    cy.get('.box').eq(0).trigger('touchend', {
+                        changedTouches: [{ clientX: x, clientY: y }],
+                    });
+                });
+            });
+
+        // Wait for reveal
+        cy.wait(350);
+
+        // Verify tile is revealed
+        cy.get('.game-board > .row')
+            .eq(0)
+            .within(() => {
+                cy.get('.box').eq(0).should('have.class', 'revealed');
+            });
+
+        // Now double-tap on the revealed tile
+        cy.get('.game-board > .row')
+            .eq(0)
+            .within(() => {
+                cy.get('.box').eq(0).then((elem) => {
+                    const x = elem.offset().left + elem.width() / 2;
+                    const y = elem.offset().top + elem.height() / 2;
+
+                    // First tap
+                    cy.get('.box').eq(0).trigger('touchstart', {
+                        touches: [{ clientX: x, clientY: y }],
+                    });
+                    cy.get('.box').eq(0).trigger('touchend', {
+                        changedTouches: [{ clientX: x, clientY: y }],
+                    });
+
+                    // Small delay
+                    cy.wait(100);
+
+                    // Second tap
+                    cy.get('.box').eq(0).trigger('touchstart', {
+                        touches: [{ clientX: x, clientY: y }],
+                    });
+                    cy.get('.box').eq(0).trigger('touchend', {
+                        changedTouches: [{ clientX: x, clientY: y }],
+                    });
+                });
+            });
+
+        // Wait for animation
+        cy.wait(300);
+
+        // Verify no tiles have preview class
+        cy.get('.game-board .box.preview').should('have.length', 0);
+    });
+
     it('should still allow single tap to reveal tiles', () => {
         // Verify initial board state
         cy.verifyBoardMatches([

@@ -7,6 +7,7 @@ import { FrontendState } from '..';
 import { toggleQuestionMode } from '../inputMode';
 import { DEBUG_HUD_ENABLED_PREFERENCE_NAME, SETTING_ENABLED } from '../consts';
 import { AudioManager, SoundEffect } from '../manager/audio';
+import { setAwaitingDoubleTap, resetDoubleTapState } from '../doubleTapState';
 
 const DIRECTION_LEFT = 'left';
 const DIRECTION_RIGHT = 'right';
@@ -225,11 +226,30 @@ export function setupInteractionSubsystem(
     const doubleTapDelay = 300; // milliseconds
     const doubleTapDistance = 50; // pixels
     const tapMovementThreshold = 10; // pixels
+    let potentialDoubleTap = false; // Flag to prevent tile interactions during double-tap detection
 
     zoomable.addEventListener(
         'touchstart',
         (event) => {
             console.log('touch start on zoomable', event.touches);
+            
+            // Check if this could be a second tap in a double-tap sequence
+            if (event.touches.length === 1) {
+                const now = Date.now();
+                const touch = event.touches[0];
+                const timeSinceLastTap = now - lastTapTime;
+                const distanceFromLastTap = Math.sqrt(
+                    Math.pow(touch.clientX - lastTapX, 2) + Math.pow(touch.clientY - lastTapY, 2)
+                );
+                
+                // If this could be a double-tap, prevent tile interaction
+                if (lastTapTime > 0 && timeSinceLastTap < doubleTapDelay && distanceFromLastTap < doubleTapDistance) {
+                    potentialDoubleTap = true;
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            }
+            
             if (event.touches.length === 2) {
                 startDistance = getDistance(event.touches);
                 startMidpoint = getMidpoint(event.touches);
@@ -356,7 +376,9 @@ export function setupInteractionSubsystem(
                     transformManager.zoomToPoint(tapX, tapY);
                     audioManager.playSoundEffect(SoundEffect.ZoomIn);
                     
-                    // Reset double-tap tracking
+                    // Reset double-tap tracking and state
+                    resetDoubleTapState();
+                    potentialDoubleTap = false;
                     lastTapTime = 0;
                     lastTapX = 0;
                     lastTapY = 0;
@@ -364,10 +386,17 @@ export function setupInteractionSubsystem(
                     return;
                 } else {
                     // Store this tap for potential double-tap
+                    // Set flag to indicate we're waiting for a potential second tap
+                    setAwaitingDoubleTap(true, doubleTapDelay);
+                    potentialDoubleTap = false; // Reset flag for single tap
                     lastTapTime = now;
                     lastTapX = tapX;
                     lastTapY = tapY;
                 }
+            } else {
+                // Movement detected, not a tap
+                resetDoubleTapState();
+                potentialDoubleTap = false;
             }
 
             console.log('isMoving', isMoving);

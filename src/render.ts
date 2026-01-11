@@ -2,6 +2,7 @@ import feather from 'feather-icons';
 import { GameState, selectSpot, flagSpot, selectAdjacentSpots, questionMarkSpot } from './game';
 import { getQuestionMode } from './inputMode';
 import type * as CSS from 'csstype';
+import { isAwaitingDoubleTapGesture, registerTileAction, unregisterTileAction } from './doubleTapState';
 
 import { AssetManager } from './manager/asset';
 
@@ -132,6 +133,7 @@ export const renderBoard = (
             let touchStartX: number;
             let touchStartY: number;
             let previewTimeout: NodeJS.Timeout | null = null;
+            let actionTimeout: NodeJS.Timeout | null = null;
 
             const applyPreviewState = () => {
                 if (!gameState.board[i][j].isRevealed) return;
@@ -158,6 +160,12 @@ export const renderBoard = (
                     clearTimeout(previewTimeout);
                     previewTimeout = null;
                 }
+                
+                // Cancel any pending action timeout
+                if (actionTimeout) {
+                    clearTimeout(actionTimeout);
+                    actionTimeout = null;
+                }
 
                 // Use clearAllPreviews to handle any DOM elements with preview class
                 clearAllPreviews();
@@ -173,6 +181,11 @@ export const renderBoard = (
             };
 
             elem.addEventListener('touchstart', (e) => {
+                // Don't process if we're waiting for a potential double-tap
+                if (isAwaitingDoubleTapGesture()) {
+                    return;
+                }
+                
                 e.preventDefault();
                 pressStartTime = Date.now();
                 blockPressed = true;
@@ -212,6 +225,13 @@ export const renderBoard = (
             });
 
             elem.addEventListener('touchend', (e) => {
+                // Don't process if we're waiting for a potential double-tap
+                if (isAwaitingDoubleTapGesture()) {
+                    clearPreviewState();
+                    blockPressed = false;
+                    return;
+                }
+                
                 e.preventDefault();
                 if (!blockPressed) {
                     console.log('block not pressed');
@@ -223,21 +243,52 @@ export const renderBoard = (
 
                 const holdDuration = Date.now() - pressStartTime;
 
-                if (holdDuration > 250 && !gameState.board[i][j].isRevealed) {
-                    flagSpot(j, i);
-                    blockPressed = false;
-                    return;
-                }
-                if (gameState.board[i][j].isRevealed) {
-                    selectAdjacentSpots(j, i);
-                    blockPressed = false;
-                    return;
-                }
-                if (getQuestionMode()) {
-                    questionMarkSpot(j, i);
+                // For quick taps, delay action slightly to allow double-tap detection
+                const performAction = () => {
+                    // Double-check we're not awaiting a double-tap
+                    if (isAwaitingDoubleTapGesture()) {
+                        return;
+                    }
+                    
+                    if (holdDuration > 250 && !gameState.board[i][j].isRevealed) {
+                        flagSpot(j, i);
+                        return;
+                    }
+                    if (gameState.board[i][j].isRevealed) {
+                        selectAdjacentSpots(j, i);
+                        return;
+                    }
+                    if (getQuestionMode()) {
+                        questionMarkSpot(j, i);
+                    } else {
+                        selectSpot(j, i);
+                    }
+                };
+                
+                // If it's a long press (flag action), do it immediately
+                // Otherwise delay to allow double-tap detection (match double-tap delay)
+                if (holdDuration > 250) {
+                    performAction();
                 } else {
-                    selectSpot(j, i);
+                    actionTimeout = setTimeout(performAction, 310); // Slightly more than double-tap delay
+                    
+                    // Register cancellation callback
+                    const cancelAction = () => {
+                        if (actionTimeout) {
+                            clearTimeout(actionTimeout);
+                            actionTimeout = null;
+                        }
+                    };
+                    registerTileAction(cancelAction);
+                    
+                    // Clean up registration after action completes or is cancelled
+                    const originalTimeout = actionTimeout;
+                    actionTimeout = setTimeout(() => {
+                        performAction();
+                        unregisterTileAction(cancelAction);
+                    }, 310);
                 }
+                
                 blockPressed = false;
             });
 
