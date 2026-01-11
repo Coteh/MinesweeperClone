@@ -841,8 +841,8 @@ describe('high score system', () => {
             // Wait for high score dialog to appear (300ms delay)
             cy.wait(400);
 
-            // Verify confetti canvas was created (canvas-confetti creates a canvas element)
-            cy.get('canvas').should('exist');
+            // Verify confetti was triggered by checking the flag set in the code
+            cy.window().its('__confettiTriggered').should('equal', true);
         });
 
         it('should NOT trigger confetti when not achieving a high score', () => {
@@ -916,6 +916,11 @@ describe('high score system', () => {
 
             // Verify high score dialog is NOT shown (which means confetti won't trigger either)
             cy.get('.dialog').should('not.exist');
+            
+            // Verify confetti was NOT triggered
+            cy.window().then((win) => {
+                expect((win as any).__confettiTriggered).to.be.undefined;
+            });
         });
     });
 });
