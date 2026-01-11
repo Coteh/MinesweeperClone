@@ -50,8 +50,8 @@ let frontendState: FrontendState = {
 
 console.info(`minesweeper-clone v${GAME_VERSION}`);
 
-// Expose confetti on window for testing purposes
-if (typeof window !== 'undefined') {
+// Expose confetti on window for testing purposes (only in development/test environments)
+if (typeof window !== 'undefined' && (import.meta.env.DEV || import.meta.env.MODE === 'test')) {
     (window as any).confetti = confetti;
 }
 
