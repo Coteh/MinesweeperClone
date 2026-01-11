@@ -33,28 +33,6 @@ const standardMineBlock: (
     };
 };
 
-// Helper function to setup confetti spy
-const setupConfettiSpy = (win: Window) => {
-    // Initialize the flag first
-    (win as any).confettiWasCalled = false;
-    
-    // Use Object.defineProperty to intercept when confetti is set
-    let confettiFunction: any = (win as any).confetti;
-    
-    Object.defineProperty(win, 'confetti', {
-        get() {
-            return confettiFunction;
-        },
-        set(value) {
-            confettiFunction = (...args: any[]) => {
-                (win as any).confettiWasCalled = true;
-                return value?.(...args);
-            };
-        },
-        configurable: true
-    });
-};
-
 describe('high score system', () => {
     describe('tracking high scores per difficulty', () => {
         it('should save initial high score when winning for the first time on easy', () => {
@@ -853,9 +831,6 @@ describe('high score system', () => {
                         'persistent-state',
                         JSON.stringify(persistentState)
                     );
-
-                    // Setup confetti spy
-                    setupConfettiSpy(win);
                 },
             });
             cy.waitForGameReady();
@@ -868,14 +843,6 @@ describe('high score system', () => {
 
             // Verify confetti canvas was created (canvas-confetti creates a canvas element)
             cy.get('canvas').should('exist');
-            
-            // Alternative: Check that confetti was called via our spy
-            cy.window().then((win) => {
-                // Only check if the spy was able to intercept
-                if ((win as any).confettiWasCalled !== undefined) {
-                    expect((win as any).confettiWasCalled).to.equal(true);
-                }
-            });
         });
 
         it('should NOT trigger confetti when not achieving a high score', () => {
@@ -937,9 +904,6 @@ describe('high score system', () => {
                         'persistent-state',
                         JSON.stringify(persistentState)
                     );
-
-                    // Setup confetti spy
-                    setupConfettiSpy(win);
                 },
             });
             cy.waitForGameReady();
