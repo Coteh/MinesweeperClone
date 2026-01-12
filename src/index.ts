@@ -13,6 +13,7 @@ import {
     renderDialog,
     renderDigits,
     renderPromptDialog,
+    setThemeManager,
 } from './render';
 import * as feather from 'feather-icons';
 import confetti from 'canvas-confetti';
@@ -81,6 +82,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let transformManager = new TransformManager(middleElem);
     let themeManager = new ThemeManager(backgroundManager, assetManager, gameConfig);
     let audioManager = new AudioManager(assetManager);
+    
+    // Set the theme manager reference for dialog dimming
+    setThemeManager(themeManager);
 
     // Initialize frontend state from the first difficulty in the config, fallback to hardcoded values
     const difficultyKeys = Object.keys(gameConfig.difficulty);

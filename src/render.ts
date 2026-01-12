@@ -4,6 +4,18 @@ import { getQuestionMode } from './inputMode';
 import type * as CSS from 'csstype';
 
 import { AssetManager } from './manager/asset';
+import { ThemeManager } from './manager/theme';
+
+// Module-level reference to the ThemeManager
+let themeManagerRef: ThemeManager | null = null;
+
+/**
+ * Set the ThemeManager reference for dialog color dimming
+ * Must be called during initialization
+ */
+export const setThemeManager = (themeManager: ThemeManager) => {
+    themeManagerRef = themeManager;
+};
 
 // Helper function to get adjacent non-revealed, non-flagged tile elements
 const getAdjacentTileElements = (
@@ -387,6 +399,10 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
                 dialog.close();
                 dialog.remove();
                 overlayBackElem.style.display = 'none';
+                // Restore normal theme color when dialog closes
+                if (themeManagerRef) {
+                    themeManagerRef.applyNormalThemeColor();
+                }
             });
         } else {
             closeBtn.style.display = 'none';
@@ -406,6 +422,11 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
     feather.replace();
 
     dialog.show();
+    
+    // Apply dimmed theme color when dialog opens
+    if (themeManagerRef) {
+        themeManagerRef.applyDimmedThemeColor();
+    }
 };
 
 export type PromptDialogOptions = {
@@ -466,6 +487,10 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
         dialog.close();
         dialog.remove();
         overlayBackElem.style.display = 'none';
+        // Restore normal theme color when dialog closes
+        if (themeManagerRef) {
+            themeManagerRef.applyNormalThemeColor();
+        }
         if (options && options.onCancel) {
             options.onCancel();
         }
@@ -477,6 +502,10 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
         dialog.close();
         dialog.remove();
         overlayBackElem.style.display = 'none';
+        // Restore normal theme color when dialog closes
+        if (themeManagerRef) {
+            themeManagerRef.applyNormalThemeColor();
+        }
         if (options && options.onConfirm) {
             options.onConfirm();
         }
@@ -487,6 +516,11 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
     overlayBackElem.style.display = 'block';
 
     dialog.show();
+    
+    // Apply dimmed theme color when dialog opens
+    if (themeManagerRef) {
+        themeManagerRef.applyDimmedThemeColor();
+    }
 };
 
 export const renderNotification = (msg: string, timeoutMS: number = 1000) => {
