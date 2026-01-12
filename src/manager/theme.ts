@@ -6,9 +6,6 @@ import { Config, ThemeConfig } from '../config';
 
 export type Theme = Extract<keyof typeof config.theme, string>;
 
-// Overlay alpha for dialog dimming (matches .overlay-back opacity of 0.5)
-const OVERLAY_ALPHA = 0.5;
-
 export class ThemeManager {
     private currentTheme: Theme;
     private selectableThemes: Theme[];
@@ -130,6 +127,33 @@ export class ThemeManager {
     }
 
     /**
+     * Extract overlay alpha from the .overlay-back element's computed background color
+     * Falls back to 0.5 if unable to extract
+     * @returns The alpha value of the overlay
+     */
+    private getOverlayAlpha(): number {
+        const overlayElem = document.querySelector('.overlay-back') as HTMLElement;
+        if (!overlayElem) {
+            console.warn('ThemeManager: .overlay-back element not found, using default alpha 0.5');
+            return 0.5;
+        }
+
+        const computedStyle = window.getComputedStyle(overlayElem);
+        const bgColor = computedStyle.backgroundColor;
+        
+        // Parse rgba or rgb format
+        const match = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+        if (match) {
+            // If alpha is present, use it; otherwise default to 1 (fully opaque in rgb format)
+            const alpha = match[4] ? parseFloat(match[4]) : 1.0;
+            return alpha;
+        }
+
+        console.warn(`ThemeManager: Unable to parse overlay background color "${bgColor}", using default alpha 0.5`);
+        return 0.5;
+    }
+
+    /**
      * Convert hex color to RGB format
      * @param hex - Hex color string (e.g., '#BBBBBB')
      * @returns RGB color string (e.g., 'rgb(187, 187, 187)')
@@ -210,10 +234,17 @@ export class ThemeManager {
     }
 
     /**
+     * Set the dialog open state
+     * @param isOpen - Whether a dialog is currently open
+     */
+    setDialogOpen(isOpen: boolean) {
+        this.isDialogOpen = isOpen;
+    }
+
+    /**
      * Apply the normal (non-dimmed) theme color to the meta tag
      */
     applyNormalThemeColor() {
-        this.isDialogOpen = false;
         const cfg = this.getThemeConfig(this.currentTheme);
         const themeColor = (cfg && cfg.metaThemeColor) || '#000';
         this.updateMetaThemeColor(themeColor);
@@ -223,14 +254,16 @@ export class ThemeManager {
      * Apply the dimmed theme color (for when dialogs are open) to the meta tag
      */
     applyDimmedThemeColor() {
-        this.isDialogOpen = true;
         const cfg = this.getThemeConfig(this.currentTheme);
         const normalColor = (cfg && cfg.metaThemeColor) || '#000';
+        
+        // Get overlay alpha from the .overlay-back element
+        const overlayAlpha = this.getOverlayAlpha();
         
         // Convert to RGB, blend with black overlay, convert back to hex
         const normalRgb = this.hexToRgb(normalColor);
         const overlayRgb = 'rgb(0, 0, 0)'; // Black overlay
-        const blendedRgb = this.blendColors(overlayRgb, normalRgb, OVERLAY_ALPHA);
+        const blendedRgb = this.blendColors(overlayRgb, normalRgb, overlayAlpha);
         const dimmedHex = this.rgbToHex(blendedRgb);
         
         this.updateMetaThemeColor(dimmedHex);
