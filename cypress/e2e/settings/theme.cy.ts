@@ -11,7 +11,7 @@ const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
 };
 
 // Helper function to calculate dimmed color
-const calculateDimmedColor = (normalHex: string, overlayAlpha: number = 0.3): string => {
+const calculateDimmedColor = (normalHex: string, overlayAlpha: number = 0.5): string => {
     const normal = hexToRgb(normalHex);
     const overlay = { r: 0, g: 0, b: 0 }; // Black overlay
     
@@ -165,7 +165,7 @@ describe('Theme Selector', () => {
                 expect(dimmedRgb.g).to.be.lte(normalRgb.g);
                 expect(dimmedRgb.b).to.be.lte(normalRgb.b);
                 
-                // At least one component should be darker (since we're applying a 30% black overlay)
+                // At least one component should be darker (since we're applying a 50% black overlay)
                 const isDarker = dimmedRgb.r < normalRgb.r || 
                                 dimmedRgb.g < normalRgb.g || 
                                 dimmedRgb.b < normalRgb.b;
