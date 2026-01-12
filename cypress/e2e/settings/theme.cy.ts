@@ -1,5 +1,8 @@
 /// <reference types="cypress" />
-import * as config from '../../../src/config.json';
+import * as configData from '../../../src/config.json';
+import type { Config } from '../../../src/config';
+
+const config = configData as Config;
 
 // Helper function to convert hex to RGB
 const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
@@ -61,13 +64,13 @@ describe('Theme Selector', () => {
         cy.get("meta[name='theme-color']").should(
             'have.attr',
             'content',
-            (config as any).theme['ocean'].metaThemeColor
+            config.theme['ocean'].metaThemeColor
         );
     });
 
     it('should apply dimmed theme color when settings dialog is opened', () => {
         // Get the normal theme color for basic theme
-        const normalColor = (config as any).theme['basic'].metaThemeColor;
+        const normalColor = config.theme['basic'].metaThemeColor;
         const expectedDimmedColor = calculateDimmedColor(normalColor);
         
         // Initially should have normal color
@@ -81,7 +84,7 @@ describe('Theme Selector', () => {
     });
 
     it('should restore normal theme color when dialog is closed', () => {
-        const normalColor = (config as any).theme['basic'].metaThemeColor;
+        const normalColor = config.theme['basic'].metaThemeColor;
         const expectedDimmedColor = calculateDimmedColor(normalColor);
         
         // Open dialog
@@ -102,7 +105,7 @@ describe('Theme Selector', () => {
         // Switch to ocean theme
         cy.selectTheme('ocean');
         
-        const oceanNormalColor = (config as any).theme['ocean'].metaThemeColor;
+        const oceanNormalColor = config.theme['ocean'].metaThemeColor;
         const expectedOceanDimmedColor = calculateDimmedColor(oceanNormalColor);
         
         // Should have dimmed ocean color immediately
@@ -116,7 +119,7 @@ describe('Theme Selector', () => {
         // Switch to classic theme
         cy.selectTheme('classic');
         
-        const classicNormalColor = (config as any).theme['classic'].metaThemeColor;
+        const classicNormalColor = config.theme['classic'].metaThemeColor;
         const expectedClassicDimmedColor = calculateDimmedColor(classicNormalColor);
         
         // Should have dimmed color while dialog is open
@@ -130,7 +133,7 @@ describe('Theme Selector', () => {
     });
 
     it('should apply dimmed theme color when help dialog is opened', () => {
-        const normalColor = (config as any).theme['basic'].metaThemeColor;
+        const normalColor = config.theme['basic'].metaThemeColor;
         const expectedDimmedColor = calculateDimmedColor(normalColor);
         
         // Open help dialog
@@ -151,7 +154,7 @@ describe('Theme Selector', () => {
         const themes = ['basic', 'ocean', 'classic'];
         
         themes.forEach((themeName) => {
-            const themeConfig = (config as any).theme[themeName];
+            const themeConfig = config.theme[themeName];
             if (themeConfig && themeConfig.metaThemeColor) {
                 const normalColor = themeConfig.metaThemeColor;
                 const expectedDimmedColor = calculateDimmedColor(normalColor);
