@@ -1,6 +1,32 @@
 /// <reference types="cypress" />
 import * as config from '../../../src/config.json';
 
+// Helper function to convert hex to RGB
+const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+    hex = hex.replace(/^#/, '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return { r, g, b };
+};
+
+// Helper function to calculate dimmed color
+const calculateDimmedColor = (normalHex: string, overlayAlpha: number = 0.3): string => {
+    const normal = hexToRgb(normalHex);
+    const overlay = { r: 0, g: 0, b: 0 }; // Black overlay
+    
+    const r = Math.round(overlayAlpha * overlay.r + (1 - overlayAlpha) * normal.r);
+    const g = Math.round(overlayAlpha * overlay.g + (1 - overlayAlpha) * normal.g);
+    const b = Math.round(overlayAlpha * overlay.b + (1 - overlayAlpha) * normal.b);
+    
+    const toHex = (n: number) => {
+        const hex = n.toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+    };
+    
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+
 describe('Theme Selector', () => {
     beforeEach(() => {
         cy.visit('/');
@@ -37,5 +63,114 @@ describe('Theme Selector', () => {
             'content',
             (config as any).theme['ocean'].metaThemeColor
         );
+    });
+
+    it('should apply dimmed theme color when settings dialog is opened', () => {
+        // Get the normal theme color for basic theme
+        const normalColor = (config as any).theme['basic'].metaThemeColor;
+        const expectedDimmedColor = calculateDimmedColor(normalColor);
+        
+        // Initially should have normal color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', normalColor);
+        
+        // Open settings dialog
+        cy.get('.settings-link').click();
+        
+        // Should now have dimmed color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedDimmedColor);
+    });
+
+    it('should restore normal theme color when dialog is closed', () => {
+        const normalColor = (config as any).theme['basic'].metaThemeColor;
+        const expectedDimmedColor = calculateDimmedColor(normalColor);
+        
+        // Open dialog
+        cy.get('.settings-link').click();
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedDimmedColor);
+        
+        // Close dialog by clicking close button
+        cy.get('.dialog button.close').click();
+        
+        // Should restore normal color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', normalColor);
+    });
+
+    it('should apply dimmed color for the new theme when switching themes with dialog open', () => {
+        // Open settings dialog
+        cy.get('.settings-link').click();
+        
+        // Switch to ocean theme
+        cy.selectTheme('ocean');
+        
+        const oceanNormalColor = (config as any).theme['ocean'].metaThemeColor;
+        const expectedOceanDimmedColor = calculateDimmedColor(oceanNormalColor);
+        
+        // Should have dimmed ocean color immediately
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedOceanDimmedColor);
+    });
+
+    it('should show normal color for new theme after closing dialog following theme switch', () => {
+        // Open settings dialog
+        cy.get('.settings-link').click();
+        
+        // Switch to classic theme
+        cy.selectTheme('classic');
+        
+        const classicNormalColor = (config as any).theme['classic'].metaThemeColor;
+        const expectedClassicDimmedColor = calculateDimmedColor(classicNormalColor);
+        
+        // Should have dimmed color while dialog is open
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedClassicDimmedColor);
+        
+        // Close dialog
+        cy.get('.dialog button.close').click();
+        
+        // Should show normal classic color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', classicNormalColor);
+    });
+
+    it('should apply dimmed theme color when help dialog is opened', () => {
+        const normalColor = (config as any).theme['basic'].metaThemeColor;
+        const expectedDimmedColor = calculateDimmedColor(normalColor);
+        
+        // Open help dialog
+        cy.get('.help-link').click();
+        
+        // Should have dimmed color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedDimmedColor);
+        
+        // Close dialog
+        cy.get('.dialog button.close').click();
+        
+        // Should restore normal color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', normalColor);
+    });
+
+    it('should verify color blending calculation accuracy', () => {
+        // Test the dimming calculation for different theme colors
+        const themes = ['basic', 'ocean', 'classic'];
+        
+        themes.forEach((themeName) => {
+            const themeConfig = (config as any).theme[themeName];
+            if (themeConfig && themeConfig.metaThemeColor) {
+                const normalColor = themeConfig.metaThemeColor;
+                const expectedDimmedColor = calculateDimmedColor(normalColor);
+                
+                // Verify that the calculated dimmed color is darker than normal
+                const normalRgb = hexToRgb(normalColor);
+                const dimmedRgb = hexToRgb(expectedDimmedColor);
+                
+                // Each RGB component should be darker (smaller) or equal
+                expect(dimmedRgb.r).to.be.lte(normalRgb.r);
+                expect(dimmedRgb.g).to.be.lte(normalRgb.g);
+                expect(dimmedRgb.b).to.be.lte(normalRgb.b);
+                
+                // At least one component should be darker (since we're applying a 30% black overlay)
+                const isDarker = dimmedRgb.r < normalRgb.r || 
+                                dimmedRgb.g < normalRgb.g || 
+                                dimmedRgb.b < normalRgb.b;
+                expect(isDarker).to.be.true;
+            }
+        });
     });
 });
