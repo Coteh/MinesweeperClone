@@ -14,6 +14,10 @@ let themeManagerRef: ThemeManager | null = null;
  * Must be called during initialization
  */
 export const setThemeManager = (themeManager: ThemeManager) => {
+    if (!themeManager) {
+        console.warn('setThemeManager: Attempted to set null or undefined ThemeManager');
+        return;
+    }
     themeManagerRef = themeManager;
 };
 
