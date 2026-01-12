@@ -154,6 +154,7 @@ export class ThemeManager {
     private rgbToHex(rgb: string): string {
         const match = rgb.match(/\d+/g);
         if (!match || match.length < 3) {
+            console.warn(`ThemeManager: Failed to parse RGB color "${rgb}", falling back to #000000`);
             return '#000000';
         }
         
@@ -182,6 +183,7 @@ export class ThemeManager {
         const bgMatch = backgroundColor.match(/\d+/g);
         
         if (!overlayMatch || overlayMatch.length < 3 || !bgMatch || bgMatch.length < 3) {
+            console.warn(`ThemeManager: Failed to parse colors for blending (overlay: "${overlayColor}", background: "${backgroundColor}"), using background as fallback`);
             return backgroundColor;
         }
         
