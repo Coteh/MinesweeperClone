@@ -6,8 +6,8 @@ import { Config, ThemeConfig } from '../config';
 
 export type Theme = Extract<keyof typeof config.theme, string>;
 
-// Overlay alpha for dialog dimming (matches .overlay-back opacity)
-const OVERLAY_ALPHA = 0.3;
+// Overlay alpha for dialog dimming (matches .overlay-back opacity of 0.5)
+const OVERLAY_ALPHA = 0.5;
 
 export class ThemeManager {
     private currentTheme: Theme;
