@@ -405,7 +405,6 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
                 overlayBackElem.style.display = 'none';
                 // Restore normal theme color when dialog closes
                 if (themeManagerRef) {
-                    themeManagerRef.setDialogOpen(false);
                     themeManagerRef.applyNormalThemeColor();
                 }
             });
@@ -430,7 +429,6 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
     
     // Apply dimmed theme color when dialog opens
     if (themeManagerRef) {
-        themeManagerRef.setDialogOpen(true);
         themeManagerRef.applyDimmedThemeColor();
     }
 };
@@ -495,7 +493,6 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
         overlayBackElem.style.display = 'none';
         // Restore normal theme color when dialog closes
         if (themeManagerRef) {
-            themeManagerRef.setDialogOpen(false);
             themeManagerRef.applyNormalThemeColor();
         }
         if (options && options.onCancel) {
@@ -511,7 +508,6 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
         overlayBackElem.style.display = 'none';
         // Restore normal theme color when dialog closes
         if (themeManagerRef) {
-            themeManagerRef.setDialogOpen(false);
             themeManagerRef.applyNormalThemeColor();
         }
         if (options && options.onConfirm) {
@@ -527,7 +523,6 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
     
     // Apply dimmed theme color when dialog opens
     if (themeManagerRef) {
-        themeManagerRef.setDialogOpen(true);
         themeManagerRef.applyDimmedThemeColor();
     }
 };

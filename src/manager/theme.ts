@@ -9,7 +9,7 @@ export type Theme = Extract<keyof typeof config.theme, string>;
 export class ThemeManager {
     private currentTheme: Theme;
     private selectableThemes: Theme[];
-    private isDialogOpen: boolean = false;
+    private isDimmed: boolean = false;
 
     private backgroundManager: BackgroundManager;
     private assetManager: AssetManager;
@@ -234,17 +234,10 @@ export class ThemeManager {
     }
 
     /**
-     * Set the dialog open state
-     * @param isOpen - Whether a dialog is currently open
-     */
-    setDialogOpen(isOpen: boolean) {
-        this.isDialogOpen = isOpen;
-    }
-
-    /**
      * Apply the normal (non-dimmed) theme color to the meta tag
      */
     applyNormalThemeColor() {
+        this.isDimmed = false;
         const cfg = this.getThemeConfig(this.currentTheme);
         const themeColor = (cfg && cfg.metaThemeColor) || '#000';
         this.updateMetaThemeColor(themeColor);
@@ -254,6 +247,7 @@ export class ThemeManager {
      * Apply the dimmed theme color (for when dialogs are open) to the meta tag
      */
     applyDimmedThemeColor() {
+        this.isDimmed = true;
         const cfg = this.getThemeConfig(this.currentTheme);
         const normalColor = (cfg && cfg.metaThemeColor) || '#000';
         
@@ -280,8 +274,8 @@ export class ThemeManager {
 
         this.currentTheme = theme;
         
-        // Update theme color based on dialog state
-        if (this.isDialogOpen) {
+        // Update theme color based on dimmed state
+        if (this.isDimmed) {
             this.applyDimmedThemeColor();
         } else {
             this.applyNormalThemeColor();
