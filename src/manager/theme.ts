@@ -127,15 +127,14 @@ export class ThemeManager {
     }
 
     /**
-     * Extract overlay alpha from the .overlay-back element's computed background color
-     * Falls back to 0.5 if unable to extract
-     * @returns The alpha value of the overlay
+     * Extract overlay color and alpha from the .overlay-back element's computed background color
+     * @returns Object with color in RGB format and alpha value, or defaults if unable to extract
      */
-    private getOverlayAlpha(): number {
+    private getOverlayColorAndAlpha(): { color: string; alpha: number } {
         const overlayElem = document.querySelector('.overlay-back') as HTMLElement;
         if (!overlayElem) {
-            console.warn('ThemeManager: .overlay-back element not found, using default alpha 0.5');
-            return 0.5;
+            console.warn('ThemeManager: .overlay-back element not found, using defaults (black, 0.5)');
+            return { color: 'rgb(0, 0, 0)', alpha: 0.5 };
         }
 
         const computedStyle = window.getComputedStyle(overlayElem);
@@ -144,13 +143,16 @@ export class ThemeManager {
         // Parse rgba or rgb format
         const match = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
         if (match) {
+            const r = parseInt(match[1]);
+            const g = parseInt(match[2]);
+            const b = parseInt(match[3]);
             // If alpha is present, use it; otherwise default to 1 (fully opaque in rgb format)
             const alpha = match[4] ? parseFloat(match[4]) : 1.0;
-            return alpha;
+            return { color: `rgb(${r}, ${g}, ${b})`, alpha };
         }
 
-        console.warn(`ThemeManager: Unable to parse overlay background color "${bgColor}", using default alpha 0.5`);
-        return 0.5;
+        console.warn(`ThemeManager: Unable to parse overlay background color "${bgColor}", using defaults (black, 0.5)`);
+        return { color: 'rgb(0, 0, 0)', alpha: 0.5 };
     }
 
     /**
@@ -251,12 +253,11 @@ export class ThemeManager {
         const cfg = this.getThemeConfig(this.currentTheme);
         const normalColor = (cfg && cfg.metaThemeColor) || '#000';
         
-        // Get overlay alpha from the .overlay-back element
-        const overlayAlpha = this.getOverlayAlpha();
+        // Get overlay color and alpha from the .overlay-back element
+        const { color: overlayRgb, alpha: overlayAlpha } = this.getOverlayColorAndAlpha();
         
-        // Convert to RGB, blend with black overlay, convert back to hex
+        // Convert to RGB, blend with overlay, convert back to hex
         const normalRgb = this.hexToRgb(normalColor);
-        const overlayRgb = 'rgb(0, 0, 0)'; // Black overlay
         const blendedRgb = this.blendColors(overlayRgb, normalRgb, overlayAlpha);
         const dimmedHex = this.rgbToHex(blendedRgb);
         
