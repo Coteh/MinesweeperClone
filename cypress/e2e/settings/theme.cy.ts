@@ -191,4 +191,48 @@ describe('Theme Selector', () => {
         // Should restore normal color
         cy.get("meta[name='theme-color']").should('have.attr', 'content', normalColor);
     });
+
+    it('should set body background color for iOS 26+ compatibility', () => {
+        const normalColor = config.theme['basic'].metaThemeColor;
+        
+        // Body background should match meta theme color
+        cy.get('body').should('have.css', 'background-color', `rgb(${hexToRgb(normalColor).r}, ${hexToRgb(normalColor).g}, ${hexToRgb(normalColor).b})`);
+    });
+
+    it('should update body background color when dialog is opened and closed', () => {
+        const normalColor = config.theme['basic'].metaThemeColor;
+        const expectedDimmedColor = calculateDimmedColor(normalColor);
+        
+        // Initially body background should be normal color
+        const normalRgb = hexToRgb(normalColor);
+        cy.get('body').should('have.css', 'background-color', `rgb(${normalRgb.r}, ${normalRgb.g}, ${normalRgb.b})`);
+        
+        // Open dialog
+        cy.get('.settings-link').click();
+        
+        // Body background should be dimmed
+        const dimmedRgb = hexToRgb(expectedDimmedColor);
+        cy.get('body').should('have.css', 'background-color', `rgb(${dimmedRgb.r}, ${dimmedRgb.g}, ${dimmedRgb.b})`);
+        
+        // Close dialog
+        cy.get('.dialog button.close').click();
+        
+        // Body background should be restored to normal
+        cy.get('body').should('have.css', 'background-color', `rgb(${normalRgb.r}, ${normalRgb.g}, ${normalRgb.b})`);
+    });
+
+    it('should update body background color when switching themes', () => {
+        // Switch to ocean theme
+        cy.get('.settings-link').click();
+        cy.selectTheme('ocean');
+        
+        const oceanColor = config.theme['ocean'].metaThemeColor;
+        const oceanRgb = hexToRgb(oceanColor);
+        
+        // Close dialog to see the normal ocean color
+        cy.get('.dialog button.close').click();
+        
+        // Body background should match ocean theme color
+        cy.get('body').should('have.css', 'background-color', `rgb(${oceanRgb.r}, ${oceanRgb.g}, ${oceanRgb.b})`);
+    });
 });

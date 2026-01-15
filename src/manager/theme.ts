@@ -225,7 +225,7 @@ export class ThemeManager {
     }
 
     /**
-     * Update the meta theme-color tag in the document
+     * Update the meta theme-color tag and body background color in the document
      * @param color - The color to set (hex or rgb format)
      */
     private updateMetaThemeColor(color: string) {
@@ -233,6 +233,8 @@ export class ThemeManager {
         if (metaTag) {
             metaTag.setAttribute('content', color);
         }
+        // Also set body background color for iOS 26+ which dropped support for theme-color
+        document.body.style.backgroundColor = color;
     }
 
     /**
