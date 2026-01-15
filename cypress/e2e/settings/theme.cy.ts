@@ -176,4 +176,19 @@ describe('Theme Selector', () => {
             }
         });
     });
+
+    it('should restore normal theme color when overlay is clicked', () => {
+        const normalColor = config.theme['basic'].metaThemeColor;
+        const expectedDimmedColor = calculateDimmedColor(normalColor);
+        
+        // Open dialog
+        cy.get('.settings-link').click();
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedDimmedColor);
+        
+        // Close dialog by clicking overlay
+        cy.get('.overlay-back').click();
+        
+        // Should restore normal color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', normalColor);
+    });
 });
