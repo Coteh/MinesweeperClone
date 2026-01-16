@@ -1,8 +1,40 @@
 /// <reference types="cypress" />
 import * as configData from '../../../src/config.json';
 import type { Config } from '../../../src/config';
+import { GameState, GamePersistentState, MineBlock } from '../../../src/game';
 
 const config = configData as Config;
+
+const standardMineBlock: (
+    x: number,
+    y: number,
+    isMine: boolean,
+    adjMinesCount: number,
+    isRevealed: boolean,
+    isFlagged: boolean,
+    isLosingSpot: boolean,
+    isQuestionMark: boolean
+) => MineBlock = (
+    x,
+    y,
+    isMine,
+    adjMinesCount,
+    isRevealed,
+    isFlagged,
+    isLosingSpot,
+    isQuestionMark
+) => {
+    return {
+        x,
+        y,
+        isMine,
+        isRevealed,
+        isLosingSpot,
+        isFlagged,
+        isQuestionMark,
+        adjMinesCount,
+    };
+};
 
 // Helper function to convert hex to RGB
 const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
@@ -261,5 +293,583 @@ describe('Theme Selector', () => {
             'background-color',
             `rgb(${oceanRgb.r}, ${oceanRgb.g}, ${oceanRgb.b})`
         );
+    });
+});
+
+describe('Win/Lose Status Bar Colors', () => {
+    it('should apply win status bar color when game is won', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a won game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, false, true, false, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, false, true, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: true,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 5000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        // Should have win status bar color
+        const expectedWinColor =
+            config.theme['basic'].winStatusBarColor || config.theme['basic'].winColor;
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedWinColor);
+
+        // Verify smiley is proud
+        cy.get('#new-game img').should('have.attr', 'data-asset', 'img/Smiley_proud.png');
+    });
+
+    it('should apply lose status bar color when game is lost', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a lost game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, true, false, true, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, true, false, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: false,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 3000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        // Should have lose status bar color
+        const expectedLoseColor =
+            config.theme['basic'].loseStatusBarColor || config.theme['basic'].loseColor;
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedLoseColor);
+
+        // Verify smiley is sad
+        cy.get('#new-game img').should('have.attr', 'data-asset', 'img/Smiley_sad.png');
+    });
+
+    it('should apply dimmed win status bar color when opening dialog on win', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a won game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, false, true, false, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, false, true, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: true,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 5000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        const expectedWinColor =
+            config.theme['basic'].winStatusBarColor || config.theme['basic'].winColor;
+        const expectedDimmedWinColor = calculateDimmedColor(expectedWinColor);
+
+        // Initially should have win color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedWinColor);
+
+        // Open settings dialog
+        cy.get('.settings-link').click();
+
+        // Should now have dimmed win color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedDimmedWinColor);
+    });
+
+    it('should apply dimmed lose status bar color when opening dialog on lose', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a lost game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, true, false, true, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, true, false, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: false,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 3000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        const expectedLoseColor =
+            config.theme['basic'].loseStatusBarColor || config.theme['basic'].loseColor;
+        const expectedDimmedLoseColor = calculateDimmedColor(expectedLoseColor);
+
+        // Initially should have lose color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedLoseColor);
+
+        // Open settings dialog
+        cy.get('.settings-link').click();
+
+        // Should now have dimmed lose color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedDimmedLoseColor);
+    });
+
+    it('should restore win status bar color when closing dialog', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a won game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, false, true, false, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, false, true, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: true,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 5000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        const expectedWinColor =
+            config.theme['basic'].winStatusBarColor || config.theme['basic'].winColor;
+
+        // Open dialog
+        cy.get('.settings-link').click();
+
+        // Close dialog
+        cy.get('.dialog button.close').click();
+
+        // Should restore win color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedWinColor);
+    });
+
+    it('should restore lose status bar color when closing dialog', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a lost game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, true, false, true, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, true, false, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: false,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 3000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        const expectedLoseColor =
+            config.theme['basic'].loseStatusBarColor || config.theme['basic'].loseColor;
+
+        // Open dialog
+        cy.get('.settings-link').click();
+
+        // Close dialog
+        cy.get('.dialog button.close').click();
+
+        // Should restore lose color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedLoseColor);
+    });
+
+    it('should apply dimmed win color for new theme when switching themes on win', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a won game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, false, true, false, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, false, true, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: true,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 5000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        // Open settings dialog
+        cy.get('.settings-link').click();
+
+        // Switch to ocean theme
+        cy.selectTheme('ocean');
+
+        const oceanWinColor =
+            config.theme['ocean'].winStatusBarColor || config.theme['ocean'].winColor;
+        const expectedDimmedOceanWinColor = calculateDimmedColor(oceanWinColor);
+
+        // Should have dimmed ocean win color immediately
+        cy.get("meta[name='theme-color']").should(
+            'have.attr',
+            'content',
+            expectedDimmedOceanWinColor
+        );
+
+        // Smiley should still be proud
+        cy.get('#new-game img').should('have.attr', 'data-asset', 'img/Smiley_proud.png');
+    });
+
+    it('should apply dimmed lose color for new theme when switching themes on lose', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a lost game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, true, false, true, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, true, false, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: false,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 3000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        // Open settings dialog
+        cy.get('.settings-link').click();
+
+        // Switch to classic theme
+        cy.selectTheme('classic');
+
+        const classicLoseColor =
+            config.theme['classic'].loseStatusBarColor || config.theme['classic'].loseColor;
+        const expectedDimmedClassicLoseColor = calculateDimmedColor(classicLoseColor);
+
+        // Should have dimmed classic lose color immediately
+        cy.get("meta[name='theme-color']").should(
+            'have.attr',
+            'content',
+            expectedDimmedClassicLoseColor
+        );
+
+        // Smiley should still be sad
+        cy.get('#new-game img').should('have.attr', 'data-asset', 'img/Smiley_sad.png');
+    });
+
+    it('should restore normal win color for new theme after closing dialog', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a won game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, false, true, false, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, false, true, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: true,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 5000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        // Open settings dialog
+        cy.get('.settings-link').click();
+
+        // Switch to ocean theme
+        cy.selectTheme('ocean');
+
+        // Close dialog
+        cy.get('.dialog button.close').click();
+
+        const oceanWinColor =
+            config.theme['ocean'].winStatusBarColor || config.theme['ocean'].winColor;
+
+        // Should show normal ocean win color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', oceanWinColor);
+    });
+
+    it('should restore normal lose color for new theme after closing dialog', () => {
+        cy.clearBrowserCache();
+        cy.visit('/', {
+            onBeforeLoad: () => {
+                // Create a lost game state
+                const gameState: GameState = {
+                    board: [
+                        [
+                            standardMineBlock(0, 0, false, 1, true, false, false, false),
+                            standardMineBlock(1, 0, true, 0, true, false, true, false),
+                        ],
+                        [
+                            standardMineBlock(0, 1, true, 0, true, false, false, false),
+                            standardMineBlock(1, 1, false, 2, true, false, false, false),
+                        ],
+                    ],
+                    ended: true,
+                    won: false,
+                    firstBlockClicked: true,
+                    score: 0,
+                    didUndo: false,
+                    achievedHighscore: false,
+                    gameOptions: {
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 2,
+                        revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
+                    },
+                    elapsedTimeMS: 3000,
+                    spareMineSpot: { x: 0, y: 0 },
+                };
+                const persistentState: GamePersistentState = {
+                    highscore: {},
+                    unlockables: {},
+                    hasPlayedBefore: true,
+                };
+                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+            },
+        });
+        cy.waitForGameReady();
+
+        // Open settings dialog
+        cy.get('.settings-link').click();
+
+        // Switch to desert theme
+        cy.selectTheme('desert');
+
+        // Close dialog
+        cy.get('.dialog button.close').click();
+
+        const desertLoseColor =
+            config.theme['desert'].loseStatusBarColor || config.theme['desert'].loseColor;
+
+        // Should show normal desert lose color
+        cy.get("meta[name='theme-color']").should('have.attr', 'content', desertLoseColor);
     });
 });
