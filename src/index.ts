@@ -181,22 +181,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                     newGameImage.src = pre ? pre.src : 'img/Smiley_sad.png';
                 }
                 clearInterval(timeBoardInterval);
-                // Find the losing spot(s) and pan to the first one
-                let losingSpotFound = false;
+                transformManager.resetZoom(true);
+                
+                // After resetting zoom, check if losing mine is in view and pan minimally if needed
                 for (let y = 0; y < gameState.board.length; y++) {
                     for (let x = 0; x < gameState.board[y].length; x++) {
                         if (gameState.board[y][x].isLosingSpot) {
-                            transformManager.panToTile(x, y, true);
-                            losingSpotFound = true;
+                            transformManager.panToShowTile(x, y);
                             break;
                         }
                     }
-                    if (losingSpotFound) break;
                 }
-                // Fallback to resetZoom if no losing spot found (shouldn't happen)
-                if (!losingSpotFound) {
-                    transformManager.resetZoom(true);
-                }
+                
                 backgroundManager.renderLose();
                 if (!data.onInitialization) {
                     audioManager.playSoundEffect(SoundEffect.Explode);

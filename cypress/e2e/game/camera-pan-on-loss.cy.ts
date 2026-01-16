@@ -94,7 +94,7 @@ describe('camera pan on loss', () => {
             cy.waitForGameReady();
         });
 
-        it('should pan camera to center mine when losing', () => {
+        it('should keep center mine visible when losing (already in view after reset)', () => {
             // Click on the mine at (1, 1) - center of the board
             cy.get('.game-board > .row')
                 .eq(1)
@@ -114,7 +114,7 @@ describe('camera pan on loss', () => {
                 });
         });
 
-        it('should pan camera to corner mine when losing', () => {
+        it('should keep corner mine visible when losing (already in view after reset)', () => {
             // Click on the mine at (0, 3) - bottom left corner
             cy.get('.game-board > .row')
                 .eq(3)
@@ -134,7 +134,7 @@ describe('camera pan on loss', () => {
                 });
         });
 
-        it('should pan to first losing mine when multiple mines revealed via adjacent click', () => {
+        it('should pan minimally to show first losing mine when multiple mines revealed', () => {
             cy.get('.game-board > .row')
                 .eq(2)
                 .within(() => {
@@ -195,7 +195,7 @@ describe('camera pan on loss', () => {
             return board;
         };
 
-        it('should pan to mine on left edge and respect bounds', () => {
+        it('should pan minimally to show mine on left edge if not in view', () => {
             cy.clearBrowserCache();
             cy.visit('/', {
                 onBeforeLoad: () => {
@@ -270,7 +270,7 @@ describe('camera pan on loss', () => {
             });
         });
 
-        it('should pan to mine on right edge and respect bounds', () => {
+        it('should pan minimally to show mine on right edge if not in view', () => {
             cy.clearBrowserCache();
             cy.visit('/', {
                 onBeforeLoad: () => {
@@ -345,7 +345,7 @@ describe('camera pan on loss', () => {
             });
         });
 
-        it('should pan to mine in top-left corner and respect bounds', () => {
+        it('should pan minimally to show mine in top-left corner if not in view', () => {
             cy.clearBrowserCache();
             cy.visit('/', {
                 onBeforeLoad: () => {
@@ -420,7 +420,7 @@ describe('camera pan on loss', () => {
             });
         });
 
-        it('should pan to mine in bottom-right corner and respect bounds', () => {
+        it('should pan minimally to show mine in bottom-right corner if not in view', () => {
             cy.clearBrowserCache();
             cy.visit('/', {
                 onBeforeLoad: () => {

@@ -9,7 +9,6 @@ export type TransformEventFunction = () => void;
 
 export const MIN_ZOOM = 0.5;
 export const MAX_ZOOM = 2;
-const DEFAULT_CELL_SIZE = 30; // Default cell size in pixels if measurement fails
 
 import type { Bounds } from '../config';
 
@@ -75,44 +74,73 @@ export class TransformManager {
         this.adjustBoardTransform(true);
     }
 
-    panToTile(tileX: number, tileY: number, clampZoomOut: boolean) {
-        // Clamp zoom if requested (used when losing to prevent zooming in)
-        this._boardTransform.scale = clampZoomOut ? Math.min(1, this._boardTransform.scale) : this._boardTransform.scale;
-
-        // Calculate the pixel position of the tile's center
+    panToShowTile(tileX: number, tileY: number) {
+        // Pan the minimum amount needed to bring a tile into view if it's not already visible
         try {
-            // Use the first box element to determine cell dimensions
-            // Note: All boxes should have the same dimensions
             const cellElem = document.querySelector('.box') as HTMLElement | null;
             if (!cellElem) {
-                // Fallback to resetZoom if we can't find a cell element
-                this.resetZoom(clampZoomOut);
-                return;
+                return; // Can't determine tile position
             }
 
             const cellRect = cellElem.getBoundingClientRect();
-            const cellW = cellRect.width || DEFAULT_CELL_SIZE;
-            const cellH = cellRect.height || DEFAULT_CELL_SIZE;
+            const cellW = cellRect.width || 30;
+            const cellH = cellRect.height || 30;
 
-            // Calculate the center position of the target tile in board-local coordinates
-            const tileCenterX = (tileX + 0.5) * cellW;
-            const tileCenterY = (tileY + 0.5) * cellH;
+            // Calculate the tile's bounding box in screen coordinates
+            const boardElem = document.querySelector('#board') as HTMLElement | null;
+            if (!boardElem) {
+                return;
+            }
 
-            // Calculate viewport center
-            const viewportCenterX = window.innerWidth / 2;
-            const viewportCenterY = window.innerHeight / 2;
+            const boardRect = boardElem.getBoundingClientRect();
+            
+            // Calculate tile position relative to board
+            const tileLocalX = tileX * cellW;
+            const tileLocalY = tileY * cellH;
+            
+            // Calculate tile position in screen coordinates
+            const tileScreenLeft = boardRect.left + tileLocalX * this._boardTransform.scale;
+            const tileScreenTop = boardRect.top + tileLocalY * this._boardTransform.scale;
+            const tileScreenRight = tileScreenLeft + cellW * this._boardTransform.scale;
+            const tileScreenBottom = tileScreenTop + cellH * this._boardTransform.scale;
 
-            // Calculate the translation needed to center the tile
-            // We want: (tileCenterX * scale) + translateX = viewportCenterX
-            // So: translateX = viewportCenterX - (tileCenterX * scale)
-            this._boardTransform.x = viewportCenterX - tileCenterX * this._boardTransform.scale;
-            this._boardTransform.y = viewportCenterY - tileCenterY * this._boardTransform.scale;
+            // Check if tile is already in viewport
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            const isInViewport = 
+                tileScreenLeft >= 0 &&
+                tileScreenTop >= 0 &&
+                tileScreenRight <= viewportWidth &&
+                tileScreenBottom <= viewportHeight;
+
+            if (isInViewport) {
+                return; // Tile is already visible, no need to pan
+            }
+
+            // Calculate minimum pan needed to bring tile into view
+            let panX = 0;
+            let panY = 0;
+
+            if (tileScreenLeft < 0) {
+                panX = -tileScreenLeft;
+            } else if (tileScreenRight > viewportWidth) {
+                panX = viewportWidth - tileScreenRight;
+            }
+
+            if (tileScreenTop < 0) {
+                panY = -tileScreenTop;
+            } else if (tileScreenBottom > viewportHeight) {
+                panY = viewportHeight - tileScreenBottom;
+            }
+
+            // Apply the minimal pan
+            this._boardTransform.x += panX;
+            this._boardTransform.y += panY;
 
             this.adjustBoardTransform(true);
         } catch (e) {
-            console.error('Error calculating tile position', e);
-            // Fallback to resetZoom if something goes wrong
-            this.resetZoom(clampZoomOut);
+            console.error('Error calculating tile visibility', e);
         }
     }
 
