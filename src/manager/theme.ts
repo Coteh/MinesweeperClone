@@ -388,6 +388,42 @@ export class ThemeManager {
         }
     }
 
+    /**
+     * Apply dimmed theme color based on current game state
+     */
+    applyDimmedColorForCurrentState() {
+        this.isDimmed = true;
+        switch (this.gameStateType) {
+            case GameStateType.Win:
+                this.applyDimmedWinThemeColor();
+                break;
+            case GameStateType.Lose:
+                this.applyDimmedLoseThemeColor();
+                break;
+            default:
+                this.applyDimmedThemeColor();
+                break;
+        }
+    }
+
+    /**
+     * Apply normal (non-dimmed) theme color based on current game state
+     */
+    applyNormalColorForCurrentState() {
+        this.isDimmed = false;
+        switch (this.gameStateType) {
+            case GameStateType.Win:
+                this.applyWinThemeColor();
+                break;
+            case GameStateType.Lose:
+                this.applyLoseThemeColor();
+                break;
+            default:
+                this.applyNormalThemeColor();
+                break;
+        }
+    }
+
     switchTheme(theme: Theme) {
         // Validate incoming theme and fallback to default
         if (!theme || !this.getSelectableThemes().includes(theme)) {

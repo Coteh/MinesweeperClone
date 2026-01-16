@@ -405,7 +405,7 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
                 overlayBackElem.style.display = 'none';
                 // Restore appropriate theme color based on current game state when dialog closes
                 if (themeManagerRef) {
-                    themeManagerRef.applyCurrentThemeColor();
+                    themeManagerRef.applyNormalColorForCurrentState();
                 }
             });
         } else {
@@ -429,7 +429,7 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
 
     // Apply dimmed theme color based on current game state when dialog opens
     if (themeManagerRef) {
-        themeManagerRef.applyCurrentThemeColor();
+        themeManagerRef.applyDimmedColorForCurrentState();
     }
 };
 
@@ -493,7 +493,7 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
         overlayBackElem.style.display = 'none';
         // Restore appropriate theme color based on current game state when dialog closes
         if (themeManagerRef) {
-            themeManagerRef.applyCurrentThemeColor();
+            themeManagerRef.applyNormalColorForCurrentState();
         }
         if (options && options.onCancel) {
             options.onCancel();
@@ -508,7 +508,7 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
         overlayBackElem.style.display = 'none';
         // Restore appropriate theme color based on current game state when dialog closes
         if (themeManagerRef) {
-            themeManagerRef.applyCurrentThemeColor();
+            themeManagerRef.applyNormalColorForCurrentState();
         }
         if (options && options.onConfirm) {
             options.onConfirm();
@@ -523,7 +523,7 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
 
     // Apply dimmed theme color based on current game state when dialog opens
     if (themeManagerRef) {
-        themeManagerRef.applyCurrentThemeColor();
+        themeManagerRef.applyDimmedColorForCurrentState();
     }
 };
 
