@@ -11,10 +11,17 @@ import { Config, ThemeConfig } from '../config';
 
 export type Theme = Extract<keyof typeof config.theme, string>;
 
+export enum GameStateType {
+    Normal = 'normal',
+    Win = 'win',
+    Lose = 'lose',
+}
+
 export class ThemeManager {
     private currentTheme: Theme;
     private selectableThemes: Theme[];
     private isDimmed: boolean = false;
+    private gameStateType: GameStateType = GameStateType.Normal;
 
     private backgroundManager: BackgroundManager;
     private assetManager: AssetManager;
@@ -255,6 +262,7 @@ export class ThemeManager {
      */
     applyNormalThemeColor() {
         this.isDimmed = false;
+        this.gameStateType = GameStateType.Normal;
         const cfg = this.getThemeConfig(this.currentTheme);
         const themeColor = (cfg && cfg.metaThemeColor) || '#000';
         this.updateMetaThemeColor(themeColor);
@@ -284,6 +292,7 @@ export class ThemeManager {
      */
     applyWinThemeColor() {
         this.isDimmed = false;
+        this.gameStateType = GameStateType.Win;
         const cfg = this.getThemeConfig(this.currentTheme);
         const themeColor =
             (cfg && cfg.winStatusBarColor) || (cfg && cfg.winColor) || DEFAULT_WIN_STATUS_BAR_COLOR;
@@ -291,16 +300,92 @@ export class ThemeManager {
     }
 
     /**
+     * Apply the dimmed win state status bar color to the meta tag
+     */
+    applyDimmedWinThemeColor() {
+        this.isDimmed = true;
+        this.gameStateType = GameStateType.Win;
+        const cfg = this.getThemeConfig(this.currentTheme);
+        const normalColor =
+            (cfg && cfg.winStatusBarColor) || (cfg && cfg.winColor) || DEFAULT_WIN_STATUS_BAR_COLOR;
+
+        // Get overlay color and alpha from the .overlay-back element
+        const { color: overlayRgb, alpha: overlayAlpha } = this.getOverlayColorAndAlpha();
+
+        // Convert to RGB, blend with overlay, convert back to hex
+        const normalRgb = this.hexToRgb(normalColor);
+        const blendedRgb = this.blendColors(overlayRgb, normalRgb, overlayAlpha);
+        const dimmedHex = this.rgbToHex(blendedRgb);
+
+        this.updateMetaThemeColor(dimmedHex);
+    }
+
+    /**
      * Apply the lose state status bar color to the meta tag
      */
     applyLoseThemeColor() {
         this.isDimmed = false;
+        this.gameStateType = GameStateType.Lose;
         const cfg = this.getThemeConfig(this.currentTheme);
         const themeColor =
             (cfg && cfg.loseStatusBarColor) ||
             (cfg && cfg.loseColor) ||
             DEFAULT_LOSE_STATUS_BAR_COLOR;
         this.updateMetaThemeColor(themeColor);
+    }
+
+    /**
+     * Apply the dimmed lose state status bar color to the meta tag
+     */
+    applyDimmedLoseThemeColor() {
+        this.isDimmed = true;
+        this.gameStateType = GameStateType.Lose;
+        const cfg = this.getThemeConfig(this.currentTheme);
+        const normalColor =
+            (cfg && cfg.loseStatusBarColor) ||
+            (cfg && cfg.loseColor) ||
+            DEFAULT_LOSE_STATUS_BAR_COLOR;
+
+        // Get overlay color and alpha from the .overlay-back element
+        const { color: overlayRgb, alpha: overlayAlpha } = this.getOverlayColorAndAlpha();
+
+        // Convert to RGB, blend with overlay, convert back to hex
+        const normalRgb = this.hexToRgb(normalColor);
+        const blendedRgb = this.blendColors(overlayRgb, normalRgb, overlayAlpha);
+        const dimmedHex = this.rgbToHex(blendedRgb);
+
+        this.updateMetaThemeColor(dimmedHex);
+    }
+
+    /**
+     * Apply the current theme color based on current state (dimmed/normal, win/lose/normal)
+     */
+    applyCurrentThemeColor() {
+        if (this.isDimmed) {
+            switch (this.gameStateType) {
+                case GameStateType.Win:
+                    this.applyDimmedWinThemeColor();
+                    break;
+                case GameStateType.Lose:
+                    this.applyDimmedLoseThemeColor();
+                    break;
+                default:
+                    this.applyDimmedThemeColor();
+                    break;
+            }
+        } else {
+            switch (this.gameStateType) {
+                case GameStateType.Win:
+                    this.applyWinThemeColor();
+                    break;
+                case GameStateType.Lose:
+                    this.applyLoseThemeColor();
+                    break;
+                default:
+                    this.applyNormalThemeColor();
+                    break;
+            }
+        }
     }
 
     switchTheme(theme: Theme) {
@@ -314,12 +399,8 @@ export class ThemeManager {
 
         this.currentTheme = theme;
 
-        // Update theme color based on dimmed state
-        if (this.isDimmed) {
-            this.applyDimmedThemeColor();
-        } else {
-            this.applyNormalThemeColor();
-        }
+        // Update theme color based on current state (dimmed/normal, win/lose/normal)
+        this.applyCurrentThemeColor();
 
         const cfg = this.getThemeConfig(theme);
         this.backgroundManager.switchTheme(theme, cfg);

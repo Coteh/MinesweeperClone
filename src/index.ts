@@ -307,8 +307,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // but if an invalid dialog is being passed, it might not be on the screen either.
         // In this case, it may be better to leave this as-is and always have the backdrop close so that players can still play.
         overlayBackElem.style.display = 'none';
-        // Restore normal theme color when dialog closes
-        themeManager.applyNormalThemeColor();
+        // Restore appropriate theme color based on current game state when dialog closes
+        themeManager.applyCurrentThemeColor();
     };
 
     const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
