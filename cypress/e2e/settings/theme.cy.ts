@@ -186,7 +186,7 @@ describe('Theme Selector', () => {
         cy.get("meta[name='theme-color']").should('have.attr', 'content', expectedDimmedColor);
         
         // Close dialog by clicking overlay
-        cy.get('.overlay-back').click();
+        cy.get('.overlay-back').click('left');
         
         // Should restore normal color
         cy.get("meta[name='theme-color']").should('have.attr', 'content', normalColor);
