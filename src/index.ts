@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }, 500);
                 renderDigits(timeBoard, gameState.elapsedTimeMS / 1000, assetManager);
                 backgroundManager.renderInitial();
+                themeManager.applyNormalThemeColor();
                 if (!interactionSubsystem) {
                     interactionSubsystem = setupInteractionSubsystem(
                         transformManager,
@@ -188,6 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 clearInterval(timeBoardInterval);
                 transformManager.resetZoom(true);
                 backgroundManager.renderLose();
+                themeManager.applyLoseThemeColor();
                 if (!data.onInitialization) {
                     audioManager.playSoundEffect(SoundEffect.Explode);
                 }
@@ -201,6 +203,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 transformManager.resetZoom(true);
                 backgroundManager.renderWin();
+                themeManager.applyWinThemeColor();
                 if (!data.onInitialization) {
                     audioManager.playSoundEffect(SoundEffect.Win, {
                         seconds: 0.3,

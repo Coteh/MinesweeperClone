@@ -20,6 +20,8 @@ export type ThemeConfig = {
     loseColor: string;
     highlightColor: string;
     metaThemeColor: string;
+    winStatusBarColor?: string;
+    loseStatusBarColor?: string;
     popupBackground: string;
     textColor: string;
     tileBackground: string;
