@@ -9,6 +9,7 @@ export type TransformEventFunction = () => void;
 
 export const MIN_ZOOM = 0.5;
 export const MAX_ZOOM = 2;
+const DEFAULT_CELL_SIZE = 30; // Default cell size in pixels if measurement fails
 
 import type { Bounds } from '../config';
 
@@ -83,8 +84,8 @@ export class TransformManager {
             }
 
             const cellRect = cellElem.getBoundingClientRect();
-            const cellW = cellRect.width || 30;
-            const cellH = cellRect.height || 30;
+            const cellW = cellRect.width || DEFAULT_CELL_SIZE;
+            const cellH = cellRect.height || DEFAULT_CELL_SIZE;
 
             // Calculate the tile's bounding box in screen coordinates
             const boardElem = document.querySelector('#board') as HTMLElement | null;

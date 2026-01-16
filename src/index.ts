@@ -184,10 +184,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 transformManager.resetZoom(true);
                 
                 // After resetting zoom, check if losing mine is in view and pan minimally if needed
-                for (let y = 0; y < gameState.board.length; y++) {
+                let losingSpotFound = false;
+                for (let y = 0; y < gameState.board.length && !losingSpotFound; y++) {
                     for (let x = 0; x < gameState.board[y].length; x++) {
                         if (gameState.board[y][x].isLosingSpot) {
                             transformManager.panToShowTile(x, y);
+                            losingSpotFound = true;
                             break;
                         }
                     }
