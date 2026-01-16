@@ -20,6 +20,8 @@ import {
     SOUND_SETTING_NAME,
     SOUND_PREFERENCE_NAME,
     THEME_SETTING_NAME,
+    SMILEY_PROUD,
+    SMILEY_SAD,
 } from '../consts';
 import { BackgroundManager } from '../manager/background';
 import { AudioManager, SoundEffect } from '../manager/audio';
@@ -288,9 +290,7 @@ export function setupSettingsSubsystem(
             // Update smiley face data-asset based on game state before theme switch
             const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
             if (newGameImage && gameState.ended) {
-                const smileyFaceImgName = gameState.won
-                    ? 'img/Smiley_proud.png'
-                    : 'img/Smiley_sad.png';
+                const smileyFaceImgName = gameState.won ? SMILEY_PROUD : SMILEY_SAD;
                 newGameImage.dataset.asset = smileyFaceImgName;
             }
 
