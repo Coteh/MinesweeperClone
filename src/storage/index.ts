@@ -1,5 +1,5 @@
-import { GamePersistentState, GameState } from "../game";
-import { Preferences } from "../preferences";
+import { GamePersistentState, GameState } from '../game';
+import { Preferences } from '../preferences';
 
 export interface IGameStorage {
     saveGame: (gameState: GameState) => void;

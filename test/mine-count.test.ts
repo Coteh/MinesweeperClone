@@ -17,9 +17,7 @@ describe('mine count with flags on loss', function () {
 
     function calculateFlaggedCount(gameState: GameState): number {
         return gameState.board.reduce(
-            (acc, row) =>
-                acc +
-                row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
+            (acc, row) => acc + row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
             0
         );
     }

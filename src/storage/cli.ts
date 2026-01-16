@@ -1,12 +1,12 @@
-import * as fs from "fs";
-import * as path from "path";
-import { GameState, GamePersistentState } from "../game";
-import { Preferences } from "../preferences";
-import { IGameStorage } from ".";
+import * as fs from 'fs';
+import * as path from 'path';
+import { GameState, GamePersistentState } from '../game';
+import { Preferences } from '../preferences';
+import { IGameStorage } from '.';
 
-export const GAME_STATE_JSON_FILENAME = "state.json";
-export const PERSISTENT_STATE_JSON_FILENAME = "persistent_state.json";
-export const PREFERENCES_JSON_FILENAME = "preferences.json";
+export const GAME_STATE_JSON_FILENAME = 'state.json';
+export const PERSISTENT_STATE_JSON_FILENAME = 'persistent_state.json';
+export const PREFERENCES_JSON_FILENAME = 'preferences.json';
 
 export class CLIGameStorage implements IGameStorage {
     saveGame = (gameState: GameState) => {
@@ -74,7 +74,7 @@ export class CLIGameStorage implements IGameStorage {
             const jsonStr = fs.readFileSync(filename);
             // @ts-ignore TODO: Resolve Buffer cannot be assigned to string param type issue
             const json = JSON.parse(jsonStr);
-            if (typeof json !== "object") {
+            if (typeof json !== 'object') {
                 return {};
             }
             return json;
@@ -85,6 +85,6 @@ export class CLIGameStorage implements IGameStorage {
     };
 
     resetFile = (filename: string) => {
-        fs.writeFileSync(filename, "{}");
+        fs.writeFileSync(filename, '{}');
     };
 }

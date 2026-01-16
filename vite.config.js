@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite';
-import path from "path";
+import path from 'path';
 import { version } from './package.json';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import * as childProcess from "child_process";
+import * as childProcess from 'child_process';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
-const commitHash = childProcess.execSync("git rev-parse --short HEAD").toString();
+const commitHash = childProcess.execSync('git rev-parse --short HEAD').toString();
 
 export default defineConfig({
     define: {
@@ -21,7 +21,7 @@ export default defineConfig({
         },
         commonjsOptions: {
             transformMixedEsModules: true,
-        }
+        },
     },
     server: {
         host: true,
@@ -36,5 +36,5 @@ export default defineConfig({
                 },
             ],
         }),
-    ]
-})
+    ],
+});

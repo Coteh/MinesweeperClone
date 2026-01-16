@@ -1,10 +1,10 @@
-import { IGameStorage } from ".";
-import { GamePersistentState, GameState } from "../game";
-import { Preferences } from "../preferences";
+import { IGameStorage } from '.';
+import { GamePersistentState, GameState } from '../game';
+import { Preferences } from '../preferences';
 
-export const GAME_STATE_KEY = "game-state";
-export const PERSISTENT_STATE_KEY = "persistent-state";
-export const PREFERENCES_KEY = "preferences";
+export const GAME_STATE_KEY = 'game-state';
+export const PERSISTENT_STATE_KEY = 'persistent-state';
+export const PREFERENCES_KEY = 'preferences';
 
 export class BrowserGameStorage implements IGameStorage {
     saveGame = (gameState: GameState) => {
@@ -26,7 +26,7 @@ export class BrowserGameStorage implements IGameStorage {
     persistentStateExists = () => {
         return this.stateExists(PERSISTENT_STATE_KEY);
     };
-    
+
     preferencesExists = () => {
         return this.stateExists(PREFERENCES_KEY);
     };
@@ -66,7 +66,7 @@ export class BrowserGameStorage implements IGameStorage {
     loadState: <T>(key: string) => T = (key) => {
         try {
             const preferences = JSON.parse(window.localStorage.getItem(key)!);
-            if (!preferences || typeof preferences !== "object") {
+            if (!preferences || typeof preferences !== 'object') {
                 return {};
             }
             return preferences;

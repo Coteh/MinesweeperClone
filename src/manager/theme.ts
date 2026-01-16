@@ -133,13 +133,15 @@ export class ThemeManager {
     private getOverlayColorAndAlpha(): { color: string; alpha: number } {
         const overlayElem = document.querySelector('.overlay-back') as HTMLElement;
         if (!overlayElem) {
-            console.warn('ThemeManager: .overlay-back element not found, using defaults (black, 0.5)');
+            console.warn(
+                'ThemeManager: .overlay-back element not found, using defaults (black, 0.5)'
+            );
             return { color: 'rgb(0, 0, 0)', alpha: 0.5 };
         }
 
         const computedStyle = window.getComputedStyle(overlayElem);
         const bgColor = computedStyle.backgroundColor;
-        
+
         // Parse rgba or rgb format
         const match = bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
         if (match) {
@@ -151,7 +153,9 @@ export class ThemeManager {
             return { color: `rgb(${r}, ${g}, ${b})`, alpha };
         }
 
-        console.warn(`ThemeManager: Unable to parse overlay background color "${bgColor}", using defaults (black, 0.5)`);
+        console.warn(
+            `ThemeManager: Unable to parse overlay background color "${bgColor}", using defaults (black, 0.5)`
+        );
         return { color: 'rgb(0, 0, 0)', alpha: 0.5 };
     }
 
@@ -163,12 +167,12 @@ export class ThemeManager {
     private hexToRgb(hex: string): string {
         // Remove # if present
         hex = hex.replace(/^#/, '');
-        
+
         // Parse hex values
         const r = parseInt(hex.substring(0, 2), 16);
         const g = parseInt(hex.substring(2, 4), 16);
         const b = parseInt(hex.substring(4, 6), 16);
-        
+
         return `rgb(${r}, ${g}, ${b})`;
     }
 
@@ -180,19 +184,21 @@ export class ThemeManager {
     private rgbToHex(rgb: string): string {
         const match = rgb.match(/\d+/g);
         if (!match || match.length < 3) {
-            console.warn(`ThemeManager: Failed to parse RGB color "${rgb}", falling back to #000000`);
+            console.warn(
+                `ThemeManager: Failed to parse RGB color "${rgb}", falling back to #000000`
+            );
             return '#000000';
         }
-        
+
         const r = parseInt(match[0]);
         const g = parseInt(match[1]);
         const b = parseInt(match[2]);
-        
+
         const toHex = (n: number) => {
             const hex = n.toString(16);
             return hex.length === 1 ? '0' + hex : hex;
         };
-        
+
         return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
     }
 
@@ -207,15 +213,17 @@ export class ThemeManager {
         // Extract RGB components
         const overlayMatch = overlayColor.match(/\d+/g);
         const bgMatch = backgroundColor.match(/\d+/g);
-        
+
         if (!overlayMatch || overlayMatch.length < 3 || !bgMatch || bgMatch.length < 3) {
-            console.warn(`ThemeManager: Failed to parse colors for blending (overlay: "${overlayColor}", background: "${backgroundColor}"), using background as fallback`);
+            console.warn(
+                `ThemeManager: Failed to parse colors for blending (overlay: "${overlayColor}", background: "${backgroundColor}"), using background as fallback`
+            );
             return backgroundColor;
         }
-        
+
         const overlay = overlayMatch.map(Number);
         const bg = bgMatch.map(Number);
-        
+
         // Calculate the resulting RGB values using alpha compositing
         const r = Math.round(alpha * overlay[0] + (1 - alpha) * bg[0]);
         const g = Math.round(alpha * overlay[1] + (1 - alpha) * bg[1]);
@@ -254,15 +262,15 @@ export class ThemeManager {
         this.isDimmed = true;
         const cfg = this.getThemeConfig(this.currentTheme);
         const normalColor = (cfg && cfg.metaThemeColor) || '#000';
-        
+
         // Get overlay color and alpha from the .overlay-back element
         const { color: overlayRgb, alpha: overlayAlpha } = this.getOverlayColorAndAlpha();
-        
+
         // Convert to RGB, blend with overlay, convert back to hex
         const normalRgb = this.hexToRgb(normalColor);
         const blendedRgb = this.blendColors(overlayRgb, normalRgb, overlayAlpha);
         const dimmedHex = this.rgbToHex(blendedRgb);
-        
+
         this.updateMetaThemeColor(dimmedHex);
     }
 
@@ -296,14 +304,14 @@ export class ThemeManager {
         document.body.classList.add(theme);
 
         this.currentTheme = theme;
-        
+
         // Update theme color based on dimmed state
         if (this.isDimmed) {
             this.applyDimmedThemeColor();
         } else {
             this.applyNormalThemeColor();
         }
-        
+
         const cfg = this.getThemeConfig(theme);
         this.backgroundManager.switchTheme(theme, cfg);
 

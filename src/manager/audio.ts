@@ -1,14 +1,14 @@
 import { AssetManager } from './asset';
 
 export enum SoundEffect {
-    Click = "click",
-    Explode = "explode",
-    Reveal = "reveal",
-    Flag = "flag",
-    Win = "win",
-    ZoomIn = "zoom-in",
-    ZoomOut = "zoom-out",
-    ZoomReset = "zoom-reset",
+    Click = 'click',
+    Explode = 'explode',
+    Reveal = 'reveal',
+    Flag = 'flag',
+    Win = 'win',
+    ZoomIn = 'zoom-in',
+    ZoomOut = 'zoom-out',
+    ZoomReset = 'zoom-reset',
 }
 
 export type SoundSettings = {
@@ -52,21 +52,21 @@ export class AudioManager {
 
     playSoundEffect(soundEffect: SoundEffect, settings?: SoundSettings) {
         if (!this.soundEffectsEnabled) return;
-        
+
         const soundEffectName = soundEffectsMap[soundEffect];
         const extensions = ['.wav', '.mp3', '.ogg'];
-        
+
         let sound;
         for (const ext of extensions) {
             sound = this.assetManager.getSoundEffect(`sound/${soundEffectName}${ext}`);
             if (sound) break;
         }
-        
+
         if (!sound) {
             console.error('Sound not loaded:', soundEffectName);
             return;
         }
-        
+
         if (typeof settings !== 'undefined') {
             if (typeof settings.seconds !== 'undefined') {
                 sound.seek(settings.seconds);
