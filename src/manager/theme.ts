@@ -266,6 +266,26 @@ export class ThemeManager {
         this.updateMetaThemeColor(dimmedHex);
     }
 
+    /**
+     * Apply the win state status bar color to the meta tag
+     */
+    applyWinThemeColor() {
+        this.isDimmed = false;
+        const cfg = this.getThemeConfig(this.currentTheme);
+        const themeColor = (cfg && cfg.winStatusBarColor) || (cfg && cfg.winColor) || '#2ECC71';
+        this.updateMetaThemeColor(themeColor);
+    }
+
+    /**
+     * Apply the lose state status bar color to the meta tag
+     */
+    applyLoseThemeColor() {
+        this.isDimmed = false;
+        const cfg = this.getThemeConfig(this.currentTheme);
+        const themeColor = (cfg && cfg.loseStatusBarColor) || (cfg && cfg.loseColor) || '#E74C3C';
+        this.updateMetaThemeColor(themeColor);
+    }
+
     switchTheme(theme: Theme) {
         // Validate incoming theme and fallback to default
         if (!theme || !this.getSelectableThemes().includes(theme)) {
