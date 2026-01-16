@@ -403,9 +403,9 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
                 dialog.close();
                 dialog.remove();
                 overlayBackElem.style.display = 'none';
-                // Restore normal theme color when dialog closes
+                // Restore appropriate theme color based on current game state when dialog closes
                 if (themeManagerRef) {
-                    themeManagerRef.applyNormalThemeColor();
+                    themeManagerRef.applyCurrentThemeColor();
                 }
             });
         } else {
@@ -427,9 +427,9 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
 
     dialog.show();
 
-    // Apply dimmed theme color when dialog opens
+    // Apply dimmed theme color based on current game state when dialog opens
     if (themeManagerRef) {
-        themeManagerRef.applyDimmedThemeColor();
+        themeManagerRef.applyCurrentThemeColor();
     }
 };
 
@@ -491,9 +491,9 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
         dialog.close();
         dialog.remove();
         overlayBackElem.style.display = 'none';
-        // Restore normal theme color when dialog closes
+        // Restore appropriate theme color based on current game state when dialog closes
         if (themeManagerRef) {
-            themeManagerRef.applyNormalThemeColor();
+            themeManagerRef.applyCurrentThemeColor();
         }
         if (options && options.onCancel) {
             options.onCancel();
@@ -506,9 +506,9 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
         dialog.close();
         dialog.remove();
         overlayBackElem.style.display = 'none';
-        // Restore normal theme color when dialog closes
+        // Restore appropriate theme color based on current game state when dialog closes
         if (themeManagerRef) {
-            themeManagerRef.applyNormalThemeColor();
+            themeManagerRef.applyCurrentThemeColor();
         }
         if (options && options.onConfirm) {
             options.onConfirm();
@@ -521,9 +521,9 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
 
     dialog.show();
 
-    // Apply dimmed theme color when dialog opens
+    // Apply dimmed theme color based on current game state when dialog opens
     if (themeManagerRef) {
-        themeManagerRef.applyDimmedThemeColor();
+        themeManagerRef.applyCurrentThemeColor();
     }
 };
 

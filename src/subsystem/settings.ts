@@ -298,10 +298,8 @@ export function setupSettingsSubsystem(
             if (gameState.ended) {
                 if (gameState.won) {
                     backgroundManager.renderWin();
-                    themeManager.applyWinThemeColor();
                 } else {
                     backgroundManager.renderLose();
-                    themeManager.applyLoseThemeColor();
                 }
             }
             savePreferenceValue(THEME_PREFERENCE_NAME, themeValue);
