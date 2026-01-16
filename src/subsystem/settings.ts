@@ -284,6 +284,14 @@ export function setupSettingsSubsystem(
         });
         themeSelector.addEventListener('change', (e) => {
             const themeValue = (e.target as HTMLSelectElement).value as Theme;
+            
+            // Update smiley face data-asset based on game state before theme switch
+            const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
+            if (newGameImage && gameState.ended) {
+                const smileyFaceImgName = gameState.won ? 'img/Smiley_proud.png' : 'img/Smiley_sad.png';
+                newGameImage.dataset.asset = smileyFaceImgName;
+            }
+            
             themeManager.switchTheme(themeValue);
             if (gameState.ended) {
                 if (gameState.won) {
