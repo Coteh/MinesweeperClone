@@ -426,7 +426,7 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
     feather.replace();
 
     dialog.show();
-    
+
     // Apply dimmed theme color when dialog opens
     if (themeManagerRef) {
         themeManagerRef.applyDimmedThemeColor();
@@ -520,7 +520,7 @@ export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogO
     overlayBackElem.style.display = 'block';
 
     dialog.show();
-    
+
     // Apply dimmed theme color when dialog opens
     if (themeManagerRef) {
         themeManagerRef.applyDimmedThemeColor();

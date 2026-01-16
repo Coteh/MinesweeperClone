@@ -5,19 +5,19 @@
 
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 export default {
-    coverageProvider: "v8",
+    coverageProvider: 'v8',
     reporters: [
-        "default",
+        'default',
         [
-            "jest-junit",
+            'jest-junit',
             {
-                outputFile: "./results/unit-test-results.xml",
+                outputFile: './results/unit-test-results.xml',
             },
         ],
     ],
-    testMatch: ["**/test/**/*.test.[jt]s?(x)"],
-    testEnvironment: "node",
+    testMatch: ['**/test/**/*.test.[jt]s?(x)'],
+    testEnvironment: 'node',
     transform: {
-        "^.+.tsx?$": ["ts-jest", {}],
+        '^.+.tsx?$': ['ts-jest', {}],
     },
 };

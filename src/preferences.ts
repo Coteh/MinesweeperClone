@@ -1,4 +1,4 @@
-import { IGameStorage } from "./storage";
+import { IGameStorage } from './storage';
 
 export class Preferences {
     [key: string]: any;

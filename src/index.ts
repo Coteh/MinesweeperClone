@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let transformManager = new TransformManager(middleElem);
     let themeManager = new ThemeManager(backgroundManager, assetManager, gameConfig);
     let audioManager = new AudioManager(assetManager);
-    
+
     // Set the theme manager reference for dialog dimming
     setThemeManager(themeManager);
 
@@ -159,11 +159,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     gameState.gameOptions.numberOfMines -
                     gameState.board.reduce(
                         (acc, row) =>
-                            acc +
-                            row.reduce(
-                                (acc, val) => acc + (val.isFlagged ? 1 : 0),
-                                0
-                            ),
+                            acc + row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
                         0
                     );
                 renderDigits(mineCountBoard, unflaggedCount, assetManager);
