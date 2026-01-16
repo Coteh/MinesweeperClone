@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // In this case, it may be better to leave this as-is and always have the backdrop close so that players can still play.
         overlayBackElem.style.display = 'none';
         // Restore appropriate theme color based on current game state when dialog closes
-        themeManager.applyCurrentThemeColor();
+        themeManager.applyNormalColorForCurrentState();
     };
 
     const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
