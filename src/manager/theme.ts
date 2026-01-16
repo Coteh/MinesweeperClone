@@ -1,5 +1,10 @@
 import * as config from '../config.json';
-import { CLASSIC_THEME, BASIC_THEME } from '../consts';
+import {
+    CLASSIC_THEME,
+    BASIC_THEME,
+    DEFAULT_WIN_STATUS_BAR_COLOR,
+    DEFAULT_LOSE_STATUS_BAR_COLOR,
+} from '../consts';
 import { BackgroundManager } from './background';
 import type { AssetManager } from './asset';
 import { Config, ThemeConfig } from '../config';
@@ -280,7 +285,8 @@ export class ThemeManager {
     applyWinThemeColor() {
         this.isDimmed = false;
         const cfg = this.getThemeConfig(this.currentTheme);
-        const themeColor = (cfg && cfg.winStatusBarColor) || (cfg && cfg.winColor) || '#2ECC71';
+        const themeColor =
+            (cfg && cfg.winStatusBarColor) || (cfg && cfg.winColor) || DEFAULT_WIN_STATUS_BAR_COLOR;
         this.updateMetaThemeColor(themeColor);
     }
 
@@ -290,7 +296,10 @@ export class ThemeManager {
     applyLoseThemeColor() {
         this.isDimmed = false;
         const cfg = this.getThemeConfig(this.currentTheme);
-        const themeColor = (cfg && cfg.loseStatusBarColor) || (cfg && cfg.loseColor) || '#E74C3C';
+        const themeColor =
+            (cfg && cfg.loseStatusBarColor) ||
+            (cfg && cfg.loseColor) ||
+            DEFAULT_LOSE_STATUS_BAR_COLOR;
         this.updateMetaThemeColor(themeColor);
     }
 

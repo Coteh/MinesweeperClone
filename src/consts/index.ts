@@ -26,3 +26,11 @@ export const SETTING_DISABLED = 'disabled';
 export const DIFFICULTY_EASY = 'easy';
 export const DIFFICULTY_MEDIUM = 'medium';
 export const DIFFICULTY_HARD = 'hard';
+
+export const SMILEY_NORMAL = 'img/Smiley.png';
+export const SMILEY_PROUD = 'img/Smiley_proud.png';
+export const SMILEY_SAD = 'img/Smiley_sad.png';
+export const SMILEY_SURPRISED = 'img/Smiley_surprised.png';
+
+export const DEFAULT_WIN_STATUS_BAR_COLOR = '#2ECC71';
+export const DEFAULT_LOSE_STATUS_BAR_COLOR = '#E74C3C';
