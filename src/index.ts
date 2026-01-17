@@ -128,8 +128,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 gameState = data.gameState;
                 persistentState = data.persistentState;
                 {
-                    const pre = assetManager.getImage('img/Smiley.png');
-                    newGameImage.src = pre ? pre.src : 'img/Smiley.png';
+                    const smiley = 'img/Smiley.png';
+                    const pre = assetManager.getImage(smiley);
+                    newGameImage.src = pre ? pre.src : smiley;
+                    newGameImage.dataset.asset = smiley;
                 }
                 clearInterval(timeBoardInterval);
                 timeBoardInterval = setInterval(() => {
@@ -179,8 +181,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             case 'lose': {
                 console.log('Player loses!');
                 {
-                    const pre = assetManager.getImage('img/Smiley_sad.png');
-                    newGameImage.src = pre ? pre.src : 'img/Smiley_sad.png';
+                    const smiley = 'img/Smiley_sad.png';
+                    const pre = assetManager.getImage(smiley);
+                    newGameImage.src = pre ? pre.src : smiley;
+                    newGameImage.dataset.asset = smiley;
                 }
                 clearInterval(timeBoardInterval);
                 transformManager.resetZoom(true);
@@ -194,8 +198,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             case 'win': {
                 console.log('Player wins!');
                 {
-                    const pre = assetManager.getImage('img/Smiley_proud.png');
-                    newGameImage.src = pre ? pre.src : 'img/Smiley_proud.png';
+                    const smiley = 'img/Smiley_proud.png';
+                    const pre = assetManager.getImage(smiley);
+                    newGameImage.src = pre ? pre.src : smiley;
+                    newGameImage.dataset.asset = smiley;
                 }
                 transformManager.resetZoom(true);
                 backgroundManager.renderWin();
