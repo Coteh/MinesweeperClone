@@ -29,6 +29,7 @@ import { SettingsSubsystem, setupSettingsSubsystem } from './subsystem/settings'
 import { DebugSubsystem, setupDebugSubsystem } from './subsystem/debug';
 import { AudioManager, SoundEffect } from './manager/audio';
 import { ThemeManager } from './manager/theme';
+import { SMILEY_NORMAL, SMILEY_PROUD, SMILEY_SAD } from './consts';
 
 import { loadConfig } from './config/index';
 import type { Config } from './config';
@@ -57,6 +58,17 @@ const formatTime = (timeMS: number): string => {
     const minutes = Math.floor(timeSeconds / 60);
     const seconds = timeSeconds % 60;
     return `${timeSeconds}s (${minutes}:${seconds.toString().padStart(2, '0')})`;
+};
+
+// Helper to set the smiley face image
+const setSmileyImage = (
+    imageElement: HTMLImageElement,
+    smileyPath: string,
+    assetManager: AssetManager
+) => {
+    const pre = assetManager.getImage(smileyPath);
+    imageElement.src = pre ? pre.src : smileyPath;
+    imageElement.dataset.asset = smileyPath;
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -127,12 +139,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             case 'init':
                 gameState = data.gameState;
                 persistentState = data.persistentState;
-                {
-                    const smiley = 'img/Smiley.png';
-                    const pre = assetManager.getImage(smiley);
-                    newGameImage.src = pre ? pre.src : smiley;
-                    newGameImage.dataset.asset = smiley;
-                }
+                setSmileyImage(newGameImage, SMILEY_NORMAL, assetManager);
                 clearInterval(timeBoardInterval);
                 timeBoardInterval = setInterval(() => {
                     renderDigits(timeBoard, gameState.elapsedTimeMS / 1000, assetManager);
@@ -180,12 +187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             case 'lose': {
                 console.log('Player loses!');
-                {
-                    const smiley = 'img/Smiley_sad.png';
-                    const pre = assetManager.getImage(smiley);
-                    newGameImage.src = pre ? pre.src : smiley;
-                    newGameImage.dataset.asset = smiley;
-                }
+                setSmileyImage(newGameImage, SMILEY_SAD, assetManager);
                 clearInterval(timeBoardInterval);
                 transformManager.resetZoom(true);
                 backgroundManager.renderLose();
@@ -197,12 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             case 'win': {
                 console.log('Player wins!');
-                {
-                    const smiley = 'img/Smiley_proud.png';
-                    const pre = assetManager.getImage(smiley);
-                    newGameImage.src = pre ? pre.src : smiley;
-                    newGameImage.dataset.asset = smiley;
-                }
+                setSmileyImage(newGameImage, SMILEY_PROUD, assetManager);
                 transformManager.resetZoom(true);
                 backgroundManager.renderWin();
                 themeManager.applyWinThemeColor();

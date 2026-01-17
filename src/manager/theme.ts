@@ -362,29 +362,9 @@ export class ThemeManager {
      */
     applyCurrentThemeColor() {
         if (this.isDimmed) {
-            switch (this.gameStateType) {
-                case GameStateType.Win:
-                    this.applyDimmedWinThemeColor();
-                    break;
-                case GameStateType.Lose:
-                    this.applyDimmedLoseThemeColor();
-                    break;
-                default:
-                    this.applyDimmedThemeColor();
-                    break;
-            }
+            this.applyDimmedColorForCurrentState();
         } else {
-            switch (this.gameStateType) {
-                case GameStateType.Win:
-                    this.applyWinThemeColor();
-                    break;
-                case GameStateType.Lose:
-                    this.applyLoseThemeColor();
-                    break;
-                default:
-                    this.applyNormalThemeColor();
-                    break;
-            }
+            this.applyNormalColorForCurrentState();
         }
     }
 
