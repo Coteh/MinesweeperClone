@@ -146,6 +146,17 @@ export class ThemeManager {
         
         document.documentElement.style.setProperty('--dialog-background-color', dialogBgColor);
         document.documentElement.style.setProperty('--dialog-text-color', dialogTextColor);
+        
+        // Set theme text color based on theme background
+        // Use explicit textColor if provided, otherwise calculate based on backgroundColor
+        if (themeConfig.textColor) {
+            document.documentElement.style.setProperty('--theme-text-color', themeConfig.textColor);
+        } else if (themeConfig.backgroundColor) {
+            const calculatedTextColor = this.getContrastingTextColor(themeConfig.backgroundColor);
+            document.documentElement.style.setProperty('--theme-text-color', calculatedTextColor);
+        } else {
+            document.documentElement.style.removeProperty('--theme-text-color');
+        }
     }
 
     /**
@@ -179,14 +190,21 @@ export class ThemeManager {
 
     /**
      * Calculate the best contrasting text color (black or white) for a given background
+     * Uses WCAG contrast ratio formula to pick the color with better contrast
      * @param backgroundColor - Background color in hex format
      * @returns Either '#000000' for black or '#FFFFFF' for white
      */
     private getContrastingTextColor(backgroundColor: string): string {
-        const luminance = this.getRelativeLuminance(backgroundColor);
-        // Use white text for dark backgrounds (luminance < 0.5), black for light backgrounds
-        // This threshold provides good contrast according to WCAG guidelines
-        return luminance > 0.5 ? '#000000' : '#FFFFFF';
+        const Lb = this.getRelativeLuminance(backgroundColor); // 0..1
+
+        const Lwhite = 1;
+        const Lblack = 0;
+
+        const contrastWithWhite = (Math.max(Lwhite, Lb) + 0.05) / (Math.min(Lwhite, Lb) + 0.05);
+        const contrastWithBlack = (Math.max(Lblack, Lb) + 0.05) / (Math.min(Lblack, Lb) + 0.05);
+
+        // Pick the color that yields higher contrast
+        return contrastWithWhite >= contrastWithBlack ? '#FFFFFF' : '#000000';
     }
 
     /**

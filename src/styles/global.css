@@ -71,6 +71,7 @@
     --item-background-color: rgba(0, 0, 0, 0);
     --dialog-background-color: var(--gray-7);
     --dialog-text-color: var(--black);
+    --theme-text-color: var(--black);
 
     --text-color: var(--black);
     --letter-text-color: var(--white);
@@ -116,7 +117,7 @@ body {
 }
 
 svg {
-    color: var(--dialog-text-color, var(--text-color));
+    color: var(--theme-text-color, var(--text-color));
 }
 
 a.link-icon {
@@ -222,7 +223,7 @@ span.error-text {
 /* Text Content */
 
 a {
-    color: var(--dialog-text-color, var(--text-color));
+    color: var(--theme-text-color, var(--text-color));
 }
 
 /* HACK: This will undo the 125% font-size change from html CSS rule.
