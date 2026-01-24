@@ -59,7 +59,8 @@
             "popupBackground": "#FFFFFF",
             "textColor": "#000000",
             "tileBackground": "#BBBBBB",
-            "tileBorder": "#888888"
+            "tileBorder": "#888888",
+            "dialogBackgroundColor": "#D3D3D3"
         },
         "ocean": {
             "displayName": "Ocean",
@@ -82,7 +83,8 @@
             "popupBackground": "#05283A",
             "textColor": "#FFFFFF",
             "tileBackground": "#1E3A5F",
-            "tileBorder": "#123144"
+            "tileBorder": "#123144",
+            "dialogBackgroundColor": "#0D3D56"
         },
         "desert": {
             "displayName": "Desert",
@@ -105,7 +107,8 @@
             "popupBackground": "#05283A",
             "textColor": "#FFFFFF",
             "tileBackground": "#1E3A5F",
-            "tileBorder": "#123144"
+            "tileBorder": "#123144",
+            "dialogBackgroundColor": "#C89F6F"
         },
         "classic": {
             "displayName": "Classic",
@@ -128,7 +131,8 @@
             "popupBackground": "#F8F8F8",
             "textColor": "#000000",
             "tileBackground": "#808080",
-            "tileBorder": "#666666"
+            "tileBorder": "#666666",
+            "dialogBackgroundColor": "#D3D3D3"
         }
     }
 }

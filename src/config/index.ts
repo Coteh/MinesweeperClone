@@ -35,6 +35,8 @@ export type ThemeConfig = {
     mineText6: string;
     mineText7: string;
     mineText8: string;
+    dialogBackgroundColor?: string;
+    dialogTextColor?: string;
 };
 
 export type Config = {
