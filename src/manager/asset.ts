@@ -49,10 +49,10 @@ export class AssetManager {
     async registerAssets(assetMap: Record<string, string>, onProgress?: () => void) {
         // assetMap: logicalKey -> resolved URL
         const imageEntries = Object.entries(assetMap).filter(([k]) =>
-            ['.png', '.jpg', '.jpeg'].some((ext) => k.endsWith(ext))
+            ['.png', '.jpg', '.jpeg'].some((ext) => k.endsWith(ext)),
         );
         const soundEntries = Object.entries(assetMap).filter(([k]) =>
-            ['.mp3', '.ogg', '.wav'].some((ext) => k.endsWith(ext))
+            ['.mp3', '.ogg', '.wav'].some((ext) => k.endsWith(ext)),
         );
 
         // Preload images

@@ -17,7 +17,7 @@ describe('board setup', function () {
 
     async function setupGame(
         gameStorage: IGameStorage,
-        gameOptions: GameOptions
+        gameOptions: GameOptions,
     ): Promise<GameState> {
         await initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
@@ -54,7 +54,7 @@ describe('board overfill', function () {
 
     async function setupGame(
         gameStorage: IGameStorage,
-        gameOptions: GameOptions
+        gameOptions: GameOptions,
     ): Promise<GameState> {
         await initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
@@ -72,11 +72,11 @@ describe('board overfill', function () {
                 numberOfMines: 101,
                 revealBoardOnLoss: true,
                 difficultyKey: 'easy',
-            })
+            }),
         ).rejects.toThrow(
             new BoardOverfillException(
-                'Amount of mines to generate exceeds amount of board pieces.'
-            )
+                'Amount of mines to generate exceeds amount of board pieces.',
+            ),
         );
     });
 
@@ -88,11 +88,11 @@ describe('board overfill', function () {
                 numberOfMines: 100,
                 revealBoardOnLoss: true,
                 difficultyKey: 'easy',
-            })
+            }),
         ).rejects.toThrow(
             new BoardOverfillException(
-                'Amount of mines to generate is equal to the amount of board pieces.'
-            )
+                'Amount of mines to generate is equal to the amount of board pieces.',
+            ),
         );
     });
 });
@@ -102,7 +102,7 @@ describe('first click', () => {
 
     async function setupGame(
         gameStorage: IGameStorage,
-        gameOptions: GameOptions
+        gameOptions: GameOptions,
     ): Promise<GameState> {
         await initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();

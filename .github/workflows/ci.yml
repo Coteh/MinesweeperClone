@@ -26,6 +26,8 @@ jobs:
         run: pnpm run type-check:test
       - name: Run lint
         run: pnpm run lint
+      - name: Run format check
+        run: pnpm run format:check
       - name: Run test
         run: pnpm run test-ci
       - name: Upload test results

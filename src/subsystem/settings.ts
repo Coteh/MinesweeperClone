@@ -48,7 +48,7 @@ export function setupSettingsSubsystem(
     transformManager: import('../manager/transform').TransformManager,
     frontendState: FrontendState,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
-    onThemeSwitch?: (theme: string) => void
+    onThemeSwitch?: (theme: string) => void,
 ): SettingsSubsystem {
     let gameState: GameState;
 
@@ -119,7 +119,7 @@ export function setupSettingsSubsystem(
     function toggleSettings(enabled: boolean) {
         if (enabled) {
             const settingsTemplateElem = createDialogContentFromTemplate(
-                '#settings-dialog-content'
+                '#settings-dialog-content',
             );
             renderDialog(settingsTemplateElem, {
                 fadeIn: true,
@@ -132,11 +132,11 @@ export function setupSettingsSubsystem(
             });
 
             const settingsDialogContent = document.querySelector(
-                '.dialog-content > .settings'
+                '.dialog-content > .settings',
             ) as HTMLElement;
 
             const versionElem = settingsDialogContent.querySelector(
-                '.version-number'
+                '.version-number',
             ) as HTMLElement;
             versionElem.innerText = `v${GAME_VERSION}`;
 
@@ -150,7 +150,7 @@ export function setupSettingsSubsystem(
 
             // Changelog link click handler
             const changelogLink = settingsDialogContent.querySelector(
-                '#changelog-link'
+                '#changelog-link',
             ) as HTMLAnchorElement;
             if (changelogLink) {
                 changelogLink.addEventListener('click', async (e) => {
@@ -178,7 +178,7 @@ export function setupSettingsSubsystem(
                     // Create dialog content from template
                     const dialogElem = createDialogContentFromTemplate('#changelog-content');
                     const changelogElem = dialogElem.querySelector(
-                        '#changelog-text'
+                        '#changelog-text',
                     ) as HTMLElement;
                     changelogElem.innerHTML = changelogHTML;
 
@@ -215,7 +215,7 @@ export function setupSettingsSubsystem(
 
             // Set up credits button
             const creditsButton = settingsDialogContent.querySelector(
-                '.credits-link'
+                '.credits-link',
             ) as HTMLElement;
             if (creditsButton) {
                 creditsButton.addEventListener('click', () => {
@@ -271,7 +271,7 @@ export function setupSettingsSubsystem(
 
         // Initialize the difficulty UI element
         const difficultySelector = document.getElementById(
-            'difficulty-selector'
+            'difficulty-selector',
         ) as HTMLSelectElement;
         // Populate options dynamically from gameConfig
         difficultySelector.innerHTML = '';
@@ -311,7 +311,7 @@ export function setupSettingsSubsystem(
                     }
                     savePreferenceValue(
                         HIGHLIGHT_PREFERENCE_NAME,
-                        !canHighlight ? SETTING_ENABLED : SETTING_DISABLED
+                        !canHighlight ? SETTING_ENABLED : SETTING_DISABLED,
                     );
                     const knob = setting.querySelector('.knob') as HTMLElement;
                     if (!canHighlight) {
@@ -331,7 +331,7 @@ export function setupSettingsSubsystem(
                     audioManager.toggleSoundEffects();
                     savePreferenceValue(
                         SOUND_PREFERENCE_NAME,
-                        audioManager.isSoundEffectsEnabled() ? SETTING_ENABLED : SETTING_DISABLED
+                        audioManager.isSoundEffectsEnabled() ? SETTING_ENABLED : SETTING_DISABLED,
                     );
                     const knob = setting.querySelector('.knob') as HTMLElement;
                     if (audioManager.isSoundEffectsEnabled()) {
@@ -342,13 +342,13 @@ export function setupSettingsSubsystem(
 
                     // Get current volume for icon selection
                     const volumeSlider = document.getElementById(
-                        'volume-slider'
+                        'volume-slider',
                     ) as HTMLInputElement;
                     const currentVolume = volumeSlider ? parseInt(volumeSlider.value, 10) : 100;
 
                     actionIconManager.changeIcon(
                         knob,
-                        getVolumeIcon(audioManager.isSoundEffectsEnabled(), currentVolume)
+                        getVolumeIcon(audioManager.isSoundEffectsEnabled(), currentVolume),
                     );
                 }
             });
@@ -415,7 +415,7 @@ export function setupSettingsSubsystem(
             .querySelector(`.settings-item.${DIFFICULTY_SETTING_NAME}`)
             ?.addEventListener('click', () => {
                 const difficultySelector = document.getElementById(
-                    'difficulty-selector'
+                    'difficulty-selector',
                 ) as HTMLSelectElement;
                 if (difficultySelector) {
                     difficultySelector.focus();
@@ -427,7 +427,7 @@ export function setupSettingsSubsystem(
             .querySelector(`.settings-item.${THEME_SETTING_NAME}`)
             ?.addEventListener('click', () => {
                 const themeSelector = document.getElementById(
-                    'theme-selector'
+                    'theme-selector',
                 ) as HTMLSelectElement;
                 if (themeSelector) {
                     themeSelector.focus();
@@ -442,14 +442,14 @@ export function setupSettingsSubsystem(
             // Get stored volume or default to 100
             const storedVolume = parseInt(
                 getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100',
-                10
+                10,
             );
 
             const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
 
             actionIconManager.changeIcon(
                 knob,
-                getVolumeIcon(audioManager.isSoundEffectsEnabled(), storedVolume)
+                getVolumeIcon(audioManager.isSoundEffectsEnabled(), storedVolume),
             );
             if (soundsEnabled === SETTING_ENABLED) {
                 knob.classList.add('enabled');

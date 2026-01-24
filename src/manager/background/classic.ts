@@ -25,7 +25,7 @@ export class ClassicTheme implements BackgroundTheme {
     constructor(
         renderer: Renderer<HTMLCanvasElement>,
         background: Container,
-        assetManager: AssetManager
+        assetManager: AssetManager,
     ) {
         this.renderer = renderer;
         this.background = background;

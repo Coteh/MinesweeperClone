@@ -85,7 +85,7 @@ export type EventHandler = (event: GameEvent) => void;
 type SpotRevealCallback = (
     isMine: boolean,
     amountOfAdjMines: number,
-    adjacentSpots: MineBlock[] | null
+    adjacentSpots: MineBlock[] | null,
 ) => void;
 
 let gameState: GameState = {} as GameState;
@@ -141,7 +141,7 @@ const initPersistentState = () => {
 export const initGame = async (
     gameOptions: GameOptions,
     _eventHandler: EventHandler,
-    _gameStorage: IGameStorage
+    _gameStorage: IGameStorage,
 ) => {
     eventHandler = _eventHandler;
     gameStorage = _gameStorage;
@@ -201,7 +201,7 @@ export const newGame = (gameOptions: GameOptions, debugState?: GameState) => {
     const amountOfMines = gameOptions.numberOfMines;
     const mineSpots = determineMineSpots(
         gameOptions.boardWidth * gameOptions.boardHeight,
-        amountOfMines
+        amountOfMines,
     );
     if (debugEnabled) console.log(mineSpots);
     const mineSpotsToUse = mineSpots.slice(0, -1);
@@ -222,7 +222,7 @@ export const newGame = (gameOptions: GameOptions, debugState?: GameState) => {
             mineSpots[mineSpots.length - 1],
             'are:',
             gameState.spareMineSpot.x,
-            gameState.spareMineSpot.y
+            gameState.spareMineSpot.y,
         );
 
     clearInterval(gameTimer);
@@ -253,12 +253,12 @@ const determineMineSpots = (amountOfBoardPieces: number, amountOfMines: number) 
         }
     } else if (amountOfMines == amountOfBoardPieces) {
         throw new BoardOverfillException(
-            'Amount of mines to generate is equal to the amount of board pieces.'
+            'Amount of mines to generate is equal to the amount of board pieces.',
         );
     } else {
         //amountOfMines > amountOfBoardPieces
         throw new BoardOverfillException(
-            'Amount of mines to generate exceeds amount of board pieces.'
+            'Amount of mines to generate exceeds amount of board pieces.',
         );
     }
 
@@ -410,29 +410,33 @@ const revealSpot: (x: number, y: number) => Promise<boolean> = function (x: numb
             resolve(false);
             return;
         }
-        performSpotReveal(x, y, function (
-            isMine: boolean,
-            amountOfAdjMines: number,
-            adjacentSpots: Array<MineBlock> | null
-        ) {
-            if (!isMine) {
-                // If mine count is 0, then recursively call revealSpot on all adjacent spots that are not flagged
-                if (amountOfAdjMines <= 0) {
-                    revealMultiple(adjacentSpots?.filter((spot) => !spot.isFlagged) ?? []);
-                }
-            } else {
-                for (let a = 0; a < gameState.gameOptions.boardWidth; a++) {
-                    for (let b = 0; b < gameState.gameOptions.boardHeight; b++) {
-                        if (
-                            gameState.gameOptions.revealBoardOnLoss ||
-                            gameState.board[b][a].isMine
-                        ) {
-                            performSpotReveal(a, b);
+        performSpotReveal(
+            x,
+            y,
+            function (
+                isMine: boolean,
+                amountOfAdjMines: number,
+                adjacentSpots: Array<MineBlock> | null,
+            ) {
+                if (!isMine) {
+                    // If mine count is 0, then recursively call revealSpot on all adjacent spots that are not flagged
+                    if (amountOfAdjMines <= 0) {
+                        revealMultiple(adjacentSpots?.filter((spot) => !spot.isFlagged) ?? []);
+                    }
+                } else {
+                    for (let a = 0; a < gameState.gameOptions.boardWidth; a++) {
+                        for (let b = 0; b < gameState.gameOptions.boardHeight; b++) {
+                            if (
+                                gameState.gameOptions.revealBoardOnLoss ||
+                                gameState.board[b][a].isMine
+                            ) {
+                                performSpotReveal(a, b);
+                            }
                         }
                     }
                 }
-            }
-        });
+            },
+        );
         resolve(true);
     });
 };

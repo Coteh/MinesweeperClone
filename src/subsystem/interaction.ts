@@ -24,7 +24,7 @@ export function setupInteractionSubsystem(
     toggleSettings: (enabled: boolean) => void,
     toggleDebugHud: (isVisible: boolean) => void,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
-    frontendState: FrontendState
+    frontendState: FrontendState,
 ): InteractionSubsystem {
     const zoomInButton = document.querySelector('#zoom-in') as HTMLElement;
     const zoomOutButton = document.querySelector('#zoom-out') as HTMLElement;
@@ -230,9 +230,8 @@ export function setupInteractionSubsystem(
                 // TODO: Prevent taps from being sent to the mine blocks if pinching to zoom
                 // event.stopImmediatePropagation();
                 isPinching = true;
-                (document.querySelector(
-                    '#pinch'
-                ) as HTMLSpanElement).innerText = isPinching.toString();
+                (document.querySelector('#pinch') as HTMLSpanElement).innerText =
+                    isPinching.toString();
                 return;
             } else if (event.touches.length === 1) {
                 isMoving = true;
@@ -244,7 +243,7 @@ export function setupInteractionSubsystem(
             }
             // event.stopPropagation();
         },
-        true
+        true,
     );
 
     zoomable.addEventListener(
@@ -266,7 +265,7 @@ export function setupInteractionSubsystem(
                 newBoardTransform.scale *= zoomFactor;
                 newBoardTransform.scale = Math.max(
                     MIN_ZOOM,
-                    Math.min(MAX_ZOOM, newBoardTransform.scale)
+                    Math.min(MAX_ZOOM, newBoardTransform.scale),
                 ); // Limit scale between min and max
                 transformManager.boardTransform = newBoardTransform;
                 transformManager.adjustBoardTransform(false);
@@ -300,7 +299,7 @@ export function setupInteractionSubsystem(
                 transformManager.adjustBoardTransform(false);
             }
         },
-        true
+        true,
     );
 
     zoomable.addEventListener(
@@ -315,9 +314,8 @@ export function setupInteractionSubsystem(
                 if (event.touches.length === 0) {
                     isPinching = false;
                     console.log('pinch ended');
-                    (document.querySelector(
-                        '#pinch'
-                    ) as HTMLSpanElement).innerText = isPinching.toString();
+                    (document.querySelector('#pinch') as HTMLSpanElement).innerText =
+                        isPinching.toString();
                     startDistance = 0;
                 }
                 return;
@@ -352,14 +350,14 @@ export function setupInteractionSubsystem(
                 const touchDiffY = changedTouch.clientY - startTouchY;
                 console.log(
                     'movement?',
-                    Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY)
+                    Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY),
                 );
                 if (Math.sqrt(touchDiffX * touchDiffX + touchDiffY * touchDiffY) > 1) {
                     event.stopPropagation();
                 }
             }
         },
-        true
+        true,
     );
 
     function update() {

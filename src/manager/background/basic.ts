@@ -9,7 +9,7 @@ export class BasicTheme implements BackgroundTheme {
     constructor(
         renderer: Renderer<HTMLCanvasElement>,
         _background: Container,
-        themeConfig: ThemeConfig
+        themeConfig: ThemeConfig,
     ) {
         this.renderer = renderer;
         this.themeConfig = themeConfig;
