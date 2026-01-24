@@ -1,6 +1,7 @@
 import feather from 'feather-icons';
 
 export class ActionIconManager {
+    // @ts-ignore See TODO in changeIcon method
     private iconsLoaded: boolean = false;
 
     constructor() {

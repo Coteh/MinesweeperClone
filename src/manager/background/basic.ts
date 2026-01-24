@@ -1,4 +1,4 @@
-import { Renderer, Container, Graphics, Ticker } from 'pixi.js';
+import { Renderer, Container } from 'pixi.js';
 import { BackgroundTheme } from '.';
 import { ThemeConfig } from '../../config';
 
@@ -8,7 +8,7 @@ export class BasicTheme implements BackgroundTheme {
 
     constructor(
         renderer: Renderer<HTMLCanvasElement>,
-        background: Container,
+        _background: Container,
         themeConfig: ThemeConfig
     ) {
         this.renderer = renderer;

@@ -1,6 +1,5 @@
 import * as config from '../config.json';
 import {
-    CLASSIC_THEME,
     BASIC_THEME,
     DEFAULT_WIN_STATUS_BAR_COLOR,
     DEFAULT_LOSE_STATUS_BAR_COLOR,
