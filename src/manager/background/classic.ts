@@ -59,7 +59,7 @@ export class ClassicTheme implements BackgroundTheme {
         });
         this.background.addChild(this.tilingTile);
 
-        const updateRenderer = (ticker: Ticker) => {
+        const updateRenderer = (_ticker: Ticker) => {
             // Tiling Sprite update
             this.tilingTile.tilePosition.x -= this.tileDelta;
             this.tilingTile.tilePosition.y -= this.tileDelta;

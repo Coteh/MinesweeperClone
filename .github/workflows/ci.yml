@@ -22,6 +22,8 @@ jobs:
         run: pnpm -v
       - name: Run npm clean install
         run: pnpm ci
+      - name: Run type check
+        run: pnpm run type-check
       - name: Run test
         run: pnpm run test-ci
       - name: Upload test results
