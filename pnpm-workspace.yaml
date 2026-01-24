@@ -1,0 +1,8 @@
+onlyBuiltDependencies:
+  - core-js
+  - cypress
+  - esbuild
+
+# pnpm's side effects caching is incompatible with Cypress' own caching
+# https://docs.cypress.io/app/get-started/install-cypress#pnpm-configuration
+sideEffectsCache: false
