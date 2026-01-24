@@ -28,10 +28,10 @@ h2,
 h3,
 h4,
 h5 {
-    color: var(--text-color);
+    color: var(--dialog-text-color, var(--text-color));
 }
 
 .pane > .footer {
-    color: var(--text-color);
+    color: var(--dialog-text-color, var(--text-color));
     text-align: center;
 }
