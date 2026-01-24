@@ -19,7 +19,7 @@
 }
 
 .settings .settings-item {
-    color: var(--text-color);
+    color: var(--dialog-text-color, var(--text-color));
     display: flex;
     flex-direction: column;
     width: 100%;
