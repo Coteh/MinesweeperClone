@@ -145,6 +145,12 @@ export class ThemeManager {
         // Remove # if present
         hex = hex.replace(/^#/, '');
         
+        // Validate hex format (should be 6 characters)
+        if (hex.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(hex)) {
+            console.warn(`ThemeManager: Invalid hex color format "${hex}", defaulting to black (#000000)`);
+            hex = '000000';
+        }
+        
         // Parse hex values
         const r = parseInt(hex.substring(0, 2), 16) / 255;
         const g = parseInt(hex.substring(2, 4), 16) / 255;
