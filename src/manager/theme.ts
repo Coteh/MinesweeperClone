@@ -185,11 +185,12 @@ export class ThemeManager {
     private getContrastingTextColor(backgroundColor: string): string {
         const Lb = this.getRelativeLuminance(backgroundColor); // 0..1
 
-        const Lwhite = 1;
-        const Lblack = 0;
-
-        const contrastWithWhite = (Math.max(Lwhite, Lb) + 0.05) / (Math.min(Lwhite, Lb) + 0.05);
-        const contrastWithBlack = (Math.max(Lblack, Lb) + 0.05) / (Math.min(Lblack, Lb) + 0.05);
+        // Simplified WCAG contrast ratio calculations
+        // Since Lblack = 0 and Lwhite = 1:
+        // contrastWithWhite = 1.05 / (Lb + 0.05)
+        // contrastWithBlack = (Lb + 0.05) / 0.05
+        const contrastWithWhite = 1.05 / (Lb + 0.05);
+        const contrastWithBlack = (Lb + 0.05) / 0.05;
 
         // Pick the color that yields higher contrast
         return contrastWithWhite >= contrastWithBlack ? '#FFFFFF' : '#000000';
