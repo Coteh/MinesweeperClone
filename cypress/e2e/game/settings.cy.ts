@@ -8,7 +8,7 @@ const standardMineBlock: (
     x: number,
     y: number,
     isMine: boolean,
-    adjMinesCount: number
+    adjMinesCount: number,
 ) => MineBlock = (x, y, isMine, adjMinesCount) => {
     return {
         x,
@@ -134,7 +134,7 @@ describe('settings', () => {
             'preferences',
             JSON.stringify({
                 highlight: 'enabled',
-            })
+            }),
         );
 
         cy.reload();

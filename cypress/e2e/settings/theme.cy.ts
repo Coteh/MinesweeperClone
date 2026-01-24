@@ -13,7 +13,7 @@ const standardMineBlock: (
     isRevealed: boolean,
     isFlagged: boolean,
     isLosingSpot: boolean,
-    isQuestionMark: boolean
+    isQuestionMark: boolean,
 ) => MineBlock = (
     x,
     y,
@@ -22,7 +22,7 @@ const standardMineBlock: (
     isRevealed,
     isFlagged,
     isLosingSpot,
-    isQuestionMark
+    isQuestionMark,
 ) => {
     return {
         x,
@@ -94,7 +94,7 @@ describe('Theme Selector', () => {
         cy.get("meta[name='theme-color']").should(
             'have.attr',
             'content',
-            config.theme['ocean'].metaThemeColor
+            config.theme['ocean'].metaThemeColor,
         );
     });
 
@@ -156,7 +156,7 @@ describe('Theme Selector', () => {
         cy.get("meta[name='theme-color']").should(
             'have.attr',
             'content',
-            expectedClassicDimmedColor
+            expectedClassicDimmedColor,
         );
 
         // Close dialog
@@ -236,7 +236,7 @@ describe('Theme Selector', () => {
             'background-color',
             `rgb(${hexToRgb(normalColor).r}, ${hexToRgb(normalColor).g}, ${
                 hexToRgb(normalColor).b
-            })`
+            })`,
         );
     });
 
@@ -249,7 +249,7 @@ describe('Theme Selector', () => {
         cy.get('body').should(
             'have.css',
             'background-color',
-            `rgb(${normalRgb.r}, ${normalRgb.g}, ${normalRgb.b})`
+            `rgb(${normalRgb.r}, ${normalRgb.g}, ${normalRgb.b})`,
         );
 
         // Open dialog
@@ -260,7 +260,7 @@ describe('Theme Selector', () => {
         cy.get('body').should(
             'have.css',
             'background-color',
-            `rgb(${dimmedRgb.r}, ${dimmedRgb.g}, ${dimmedRgb.b})`
+            `rgb(${dimmedRgb.r}, ${dimmedRgb.g}, ${dimmedRgb.b})`,
         );
 
         // Close dialog
@@ -270,7 +270,7 @@ describe('Theme Selector', () => {
         cy.get('body').should(
             'have.css',
             'background-color',
-            `rgb(${normalRgb.r}, ${normalRgb.g}, ${normalRgb.b})`
+            `rgb(${normalRgb.r}, ${normalRgb.g}, ${normalRgb.b})`,
         );
     });
 
@@ -289,7 +289,7 @@ describe('Theme Selector', () => {
         cy.get('body').should(
             'have.css',
             'background-color',
-            `rgb(${oceanRgb.r}, ${oceanRgb.g}, ${oceanRgb.b})`
+            `rgb(${oceanRgb.r}, ${oceanRgb.g}, ${oceanRgb.b})`,
         );
     });
 });
@@ -554,7 +554,7 @@ describe('Win/Lose Status Bar Colors', () => {
         cy.get("meta[name='theme-color']").should(
             'have.attr',
             'content',
-            expectedDimmedBasicWinColor
+            expectedDimmedBasicWinColor,
         );
 
         // Switch to ocean theme
@@ -568,7 +568,7 @@ describe('Win/Lose Status Bar Colors', () => {
         cy.get("meta[name='theme-color']").should(
             'have.attr',
             'content',
-            expectedDimmedOceanWinColor
+            expectedDimmedOceanWinColor,
         );
 
         // Smiley should still be proud
@@ -635,7 +635,7 @@ describe('Win/Lose Status Bar Colors', () => {
         cy.get("meta[name='theme-color']").should(
             'have.attr',
             'content',
-            expectedDimmedBasicLoseColor
+            expectedDimmedBasicLoseColor,
         );
 
         // Switch to classic theme
@@ -649,7 +649,7 @@ describe('Win/Lose Status Bar Colors', () => {
         cy.get("meta[name='theme-color']").should(
             'have.attr',
             'content',
-            expectedDimmedClassicLoseColor
+            expectedDimmedClassicLoseColor,
         );
 
         // Smiley should still be sad

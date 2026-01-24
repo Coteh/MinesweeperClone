@@ -16,7 +16,7 @@ declare global {
             waitForGameReady(): Chainable<Subject>;
             verifyBoardMatches(
                 expectedBoard: (MineBlock | undefined)[][],
-                options?: VerifyBoardOptions
+                options?: VerifyBoardOptions,
             ): Chainable<Subject>;
             selectDifficulty(value: string): Chainable<Subject>;
             selectTheme(value: string): Chainable<Subject>;

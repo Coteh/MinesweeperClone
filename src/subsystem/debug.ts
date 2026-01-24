@@ -22,7 +22,7 @@ export type DebugSubsystem = {
 export function setupDebugSubsystem(
     actionIconManager: ActionIconManager,
     transformManager: TransformManager,
-    closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void
+    closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
 ): DebugSubsystem {
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;
     const debugMenuButton = document.querySelector('.link-icon#debug') as HTMLElement;
@@ -52,7 +52,7 @@ export function setupDebugSubsystem(
                     difficultyKey: 'debug',
                 });
                 closeDialogAndOverlay();
-            }
+            },
         );
         (document.querySelector('.button.prompt-dialog') as HTMLElement).addEventListener(
             'click',
@@ -72,7 +72,7 @@ export function setupDebugSubsystem(
                         });
                     },
                 });
-            }
+            },
         );
         (document.querySelector('.button.non-closable-dialog') as HTMLElement).addEventListener(
             'click',
@@ -86,14 +86,14 @@ export function setupDebugSubsystem(
                     effect: 'expand',
                     closable: false,
                 });
-            }
+            },
         );
         (document.querySelector('.button.show-notification') as HTMLElement).addEventListener(
             'click',
             (e) => {
                 e.preventDefault();
                 renderNotification('This is a test notification', 2500);
-            }
+            },
         );
         debugButton.blur();
     });
@@ -102,15 +102,12 @@ export function setupDebugSubsystem(
         debugHudButton.style.display = isEnabled ? '' : 'none';
         debugOverlay.style.display = isVisible ? '' : 'none';
         actionIconManager.changeIcon(debugHudButton, isVisible ? 'eye' : 'eye-off');
-        (document.querySelector(
-            '#x'
-        ) as HTMLSpanElement).innerText = transformManager.boardTransform.x.toString();
-        (document.querySelector(
-            '#y'
-        ) as HTMLSpanElement).innerText = transformManager.boardTransform.y.toString();
-        (document.querySelector(
-            '#zoom'
-        ) as HTMLSpanElement).innerText = transformManager.boardTransform.scale.toString();
+        (document.querySelector('#x') as HTMLSpanElement).innerText =
+            transformManager.boardTransform.x.toString();
+        (document.querySelector('#y') as HTMLSpanElement).innerText =
+            transformManager.boardTransform.y.toString();
+        (document.querySelector('#zoom') as HTMLSpanElement).innerText =
+            transformManager.boardTransform.scale.toString();
     };
 
     debugHudButton.addEventListener('click', (e) => {
@@ -122,7 +119,7 @@ export function setupDebugSubsystem(
         debugOverlay.style.display = isVisible ? 'none' : '';
         savePreferenceValue(
             DEBUG_HUD_VISIBLE_PREFERENCE_NAME,
-            !isVisible ? SETTING_ENABLED : SETTING_DISABLED
+            !isVisible ? SETTING_ENABLED : SETTING_DISABLED,
         );
         updateDebugHudState(isDebugHudEnabled, !isVisible);
     };

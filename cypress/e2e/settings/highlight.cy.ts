@@ -7,7 +7,7 @@ const standardMineBlock: (
     x: number,
     y: number,
     isMine: boolean,
-    adjMinesCount: number
+    adjMinesCount: number,
 ) => MineBlock = (x, y, isMine, adjMinesCount) => {
     return {
         x,
@@ -169,8 +169,7 @@ describe('highlight', () => {
         cy.visit('/', {
             onBeforeLoad: (win) => {
                 Object.defineProperty(win.navigator, 'userAgent', {
-                    value:
-                        'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+                    value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
                 });
             },
         });

@@ -10,7 +10,7 @@ const standardMineBlock: (
     isRevealed: boolean,
     isFlagged: boolean,
     isLosingSpot: boolean,
-    isQuestionMark: boolean
+    isQuestionMark: boolean,
 ) => MineBlock = (
     x,
     y,
@@ -19,7 +19,7 @@ const standardMineBlock: (
     isRevealed,
     isFlagged,
     isLosingSpot,
-    isQuestionMark
+    isQuestionMark,
 ) => {
     return {
         x,

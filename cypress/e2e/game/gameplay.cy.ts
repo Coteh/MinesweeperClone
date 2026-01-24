@@ -10,7 +10,7 @@ const standardMineBlock: (
     isRevealed: boolean,
     isFlagged: boolean,
     isLosingSpot: boolean,
-    isQuestionMark: boolean
+    isQuestionMark: boolean,
 ) => MineBlock = (
     x,
     y,
@@ -19,7 +19,7 @@ const standardMineBlock: (
     isRevealed,
     isFlagged,
     isLosingSpot,
-    isQuestionMark
+    isQuestionMark,
 ) => {
     return {
         x,
@@ -822,7 +822,7 @@ describe('gameplay', () => {
                         const before = win.getComputedStyle($el[0], '::before');
                         const background = before.getPropertyValue('background');
                         expect(background).to.not.contain(
-                            'linear-gradient(45deg, rgba(0, 0, 0, 0) 45%, rgb(255, 0, 0) 45%, rgb(255, 0, 0) 55%, rgba(0, 0, 0, 0) 55%)'
+                            'linear-gradient(45deg, rgba(0, 0, 0, 0) 45%, rgb(255, 0, 0) 45%, rgb(255, 0, 0) 55%, rgba(0, 0, 0, 0) 55%)',
                         );
                     });
             });
@@ -861,7 +861,7 @@ describe('gameplay', () => {
             ],
             {
                 isGameOver: true,
-            }
+            },
         );
         // The incorrect flag (should now appear)
         cy.get('.game-board > .row')
@@ -878,7 +878,7 @@ describe('gameplay', () => {
                         const before = win.getComputedStyle($el[0], '::before');
                         const background = before.getPropertyValue('background');
                         expect(background).to.contain(
-                            'linear-gradient(45deg, rgba(0, 0, 0, 0) 45%, rgb(255, 0, 0) 45%, rgb(255, 0, 0) 55%, rgba(0, 0, 0, 0) 55%)'
+                            'linear-gradient(45deg, rgba(0, 0, 0, 0) 45%, rgb(255, 0, 0) 45%, rgb(255, 0, 0) 55%, rgba(0, 0, 0, 0) 55%)',
                         );
                     });
             });
@@ -981,7 +981,7 @@ describe('gameplay', () => {
             ],
             {
                 isGameOver: true,
-            }
+            },
         );
     });
 
@@ -1052,7 +1052,7 @@ describe('gameplay', () => {
                 ],
                 {
                     isGameOver: true,
-                }
+                },
             );
             // Cannot click on a revealed tile to unreveal it
             cy.get('.game-board > .row')
@@ -1089,7 +1089,7 @@ describe('gameplay', () => {
                 ],
                 {
                     isGameOver: true,
-                }
+                },
             );
         });
 
@@ -1206,7 +1206,7 @@ describe('gameplay', () => {
                 ],
                 {
                     isGameOver: true,
-                }
+                },
             );
         });
 
@@ -1351,7 +1351,7 @@ describe('gameplay', () => {
             ],
             {
                 isGameOver: true,
-            }
+            },
         );
 
         cy.get('.game-board > .row')
@@ -1375,7 +1375,7 @@ describe('gameplay', () => {
                         const before = win.getComputedStyle($el[0], '::before');
                         const background = before.getPropertyValue('background');
                         expect(background).to.contain(
-                            'linear-gradient(45deg, rgba(0, 0, 0, 0) 45%, rgb(255, 0, 0) 45%, rgb(255, 0, 0) 55%, rgba(0, 0, 0, 0) 55%)'
+                            'linear-gradient(45deg, rgba(0, 0, 0, 0) 45%, rgb(255, 0, 0) 45%, rgb(255, 0, 0) 55%, rgba(0, 0, 0, 0) 55%)',
                         );
                     });
             });
@@ -1404,7 +1404,7 @@ describe('gameplay', () => {
                         const before = win.getComputedStyle($el[0], '::before');
                         const background = before.getPropertyValue('background');
                         expect(background).to.contain(
-                            'linear-gradient(45deg, rgba(0, 0, 0, 0) 45%, rgb(255, 0, 0) 45%, rgb(255, 0, 0) 55%, rgba(0, 0, 0, 0) 55%)'
+                            'linear-gradient(45deg, rgba(0, 0, 0, 0) 45%, rgb(255, 0, 0) 45%, rgb(255, 0, 0) 55%, rgba(0, 0, 0, 0) 55%)',
                         );
                     });
             });
@@ -1499,7 +1499,7 @@ describe('gameplay', () => {
                             window.localStorage.setItem('game-state', JSON.stringify(gameState));
                             window.localStorage.setItem(
                                 'persistent-state',
-                                JSON.stringify(persistentState)
+                                JSON.stringify(persistentState),
                             );
                         },
                     });
@@ -1610,7 +1610,7 @@ describe('gameplay', () => {
                     window.localStorage.setItem('game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });

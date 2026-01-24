@@ -13,7 +13,7 @@ export default function fileTransformerPlugin(options: FileTransformerOptions): 
 
     if (!input || !transformer || !output) {
         throw new Error(
-            'fileTransformerPlugin requires "input", "transformer", and "output" options.'
+            'fileTransformerPlugin requires "input", "transformer", and "output" options.',
         );
     }
 

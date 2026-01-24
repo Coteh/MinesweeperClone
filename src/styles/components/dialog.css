@@ -22,11 +22,15 @@
 }
 
 .dialog.expand-effect {
-    transition: transform 0.5s, opacity 0.25s;
+    transition:
+        transform 0.5s,
+        opacity 0.25s;
 }
 
 .dialog.pop-effect {
-    transition: transform 0.2s ease-out, opacity 0.25s;
+    transition:
+        transform 0.2s ease-out,
+        opacity 0.25s;
     animation: pop 0.3s ease-out;
 }
 

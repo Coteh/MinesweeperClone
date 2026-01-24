@@ -135,11 +135,11 @@ export class TransformManager {
 
             this._boardTransform.x = Math.max(
                 minXAllowed,
-                Math.min(maxXAllowed, this._boardTransform.x)
+                Math.min(maxXAllowed, this._boardTransform.x),
             );
             this._boardTransform.y = Math.max(
                 minYAllowed,
-                Math.min(maxYAllowed, this._boardTransform.y)
+                Math.min(maxYAllowed, this._boardTransform.y),
             );
         }
 
@@ -164,15 +164,12 @@ export class TransformManager {
             this.triggerEvent('zoom-in-max');
         }
 
-        (document.querySelector(
-            '#x'
-        ) as HTMLSpanElement).innerText = this._boardTransform.x.toString();
-        (document.querySelector(
-            '#y'
-        ) as HTMLSpanElement).innerText = this._boardTransform.y.toString();
-        (document.querySelector(
-            '#zoom'
-        ) as HTMLSpanElement).innerText = this._boardTransform.scale.toString();
+        (document.querySelector('#x') as HTMLSpanElement).innerText =
+            this._boardTransform.x.toString();
+        (document.querySelector('#y') as HTMLSpanElement).innerText =
+            this._boardTransform.y.toString();
+        (document.querySelector('#zoom') as HTMLSpanElement).innerText =
+            this._boardTransform.scale.toString();
     }
 
     private triggerEvent(event: TransformEvent) {

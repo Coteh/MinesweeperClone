@@ -35,7 +35,7 @@ export class CloudyTheme implements BackgroundTheme {
         renderer: Renderer<HTMLCanvasElement>,
         background: Container,
         themeConfig: ThemeConfig,
-        assetManager: AssetManager
+        assetManager: AssetManager,
     ) {
         this.renderer = renderer;
         this.background = background;
@@ -208,7 +208,7 @@ export class CloudyTheme implements BackgroundTheme {
         // Reset CSS variable
         document.documentElement.style.setProperty(
             '--cloud-overlay-color',
-            'rgba(255, 255, 255, 0)'
+            'rgba(255, 255, 255, 0)',
         );
     }
 
@@ -221,7 +221,7 @@ export class CloudyTheme implements BackgroundTheme {
         // Update CSS variable for CSS clouds
         document.documentElement.style.setProperty(
             '--cloud-overlay-color',
-            'rgba(50, 205, 50, 0.3)'
+            'rgba(50, 205, 50, 0.3)',
         );
     }
 
@@ -234,7 +234,7 @@ export class CloudyTheme implements BackgroundTheme {
         // Update CSS variable for CSS clouds
         document.documentElement.style.setProperty(
             '--cloud-overlay-color',
-            'rgba(220, 20, 60, 0.4)'
+            'rgba(220, 20, 60, 0.4)',
         );
     }
 

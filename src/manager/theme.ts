@@ -29,7 +29,7 @@ export class ThemeManager {
     constructor(
         backgroundManager: BackgroundManager,
         assetManager: AssetManager,
-        gameConfig: Config
+        gameConfig: Config,
     ) {
         this.selectableThemes = Object.keys(gameConfig.theme) as Theme[];
         this.currentTheme =
@@ -59,14 +59,14 @@ export class ThemeManager {
         if (checkboxUnchecked) {
             document.documentElement.style.setProperty(
                 '--checkbox-unchecked-url',
-                `url(${checkboxUnchecked.src})`
+                `url(${checkboxUnchecked.src})`,
             );
         }
 
         if (checkboxChecked) {
             document.documentElement.style.setProperty(
                 '--checkbox-checked-url',
-                `url(${checkboxChecked.src})`
+                `url(${checkboxChecked.src})`,
             );
         }
 
@@ -74,7 +74,7 @@ export class ThemeManager {
         if (themeConfig.standardBlockColor) {
             document.documentElement.style.setProperty(
                 '--standard-block-color',
-                themeConfig.standardBlockColor
+                themeConfig.standardBlockColor,
             );
         } else {
             document.documentElement.style.removeProperty('--standard-block-color');
@@ -82,7 +82,7 @@ export class ThemeManager {
         if (themeConfig.losingBlockColor) {
             document.documentElement.style.setProperty(
                 '--losing-block-color',
-                themeConfig.losingBlockColor
+                themeConfig.losingBlockColor,
             );
         } else {
             document.documentElement.style.removeProperty('--losing-block-color');
@@ -90,7 +90,7 @@ export class ThemeManager {
         if (themeConfig.blockRevealedColor) {
             document.documentElement.style.setProperty(
                 '--block-revealed-color',
-                themeConfig.blockRevealedColor
+                themeConfig.blockRevealedColor,
             );
         } else {
             document.documentElement.style.removeProperty('--block-revealed-color');
@@ -171,7 +171,7 @@ export class ThemeManager {
         // Validate hex format (should be 6 characters)
         if (hex.length !== 6 || !/^[0-9A-Fa-f]{6}$/.test(hex)) {
             console.warn(
-                `ThemeManager: Invalid hex color format "${hex}", defaulting to black (#000000)`
+                `ThemeManager: Invalid hex color format "${hex}", defaulting to black (#000000)`,
             );
             hex = '000000';
         }
@@ -218,7 +218,7 @@ export class ThemeManager {
         const overlayElem = document.querySelector('.overlay-back') as HTMLElement;
         if (!overlayElem) {
             console.warn(
-                'ThemeManager: .overlay-back element not found, using defaults (black, 0.5)'
+                'ThemeManager: .overlay-back element not found, using defaults (black, 0.5)',
             );
             return { color: 'rgb(0, 0, 0)', alpha: 0.5 };
         }
@@ -238,7 +238,7 @@ export class ThemeManager {
         }
 
         console.warn(
-            `ThemeManager: Unable to parse overlay background color "${bgColor}", using defaults (black, 0.5)`
+            `ThemeManager: Unable to parse overlay background color "${bgColor}", using defaults (black, 0.5)`,
         );
         return { color: 'rgb(0, 0, 0)', alpha: 0.5 };
     }
@@ -269,7 +269,7 @@ export class ThemeManager {
         const match = rgb.match(/\d+/g);
         if (!match || match.length < 3) {
             console.warn(
-                `ThemeManager: Failed to parse RGB color "${rgb}", falling back to #000000`
+                `ThemeManager: Failed to parse RGB color "${rgb}", falling back to #000000`,
             );
             return '#000000';
         }
@@ -300,7 +300,7 @@ export class ThemeManager {
 
         if (!overlayMatch || overlayMatch.length < 3 || !bgMatch || bgMatch.length < 3) {
             console.warn(
-                `ThemeManager: Failed to parse colors for blending (overlay: "${overlayColor}", background: "${backgroundColor}"), using background as fallback`
+                `ThemeManager: Failed to parse colors for blending (overlay: "${overlayColor}", background: "${backgroundColor}"), using background as fallback`,
             );
             return backgroundColor;
         }

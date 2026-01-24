@@ -37,7 +37,7 @@ export class NonexistentMockGameStorage implements IGameStorage {
     preferencesExists = () => false;
     loadGame: () => GameState = () => {
         throw new Error(
-            'There should not be any game state loaded from NonexistentMockGameStorage'
+            'There should not be any game state loaded from NonexistentMockGameStorage',
         );
     };
     loadPersistentState: () => GamePersistentState = () => ({

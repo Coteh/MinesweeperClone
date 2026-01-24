@@ -9,7 +9,7 @@ describe('selecting tiles', function () {
 
     async function setupGame(
         gameStorage: IGameStorage,
-        gameOptions: GameOptions
+        gameOptions: GameOptions,
     ): Promise<GameState> {
         await initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
@@ -57,7 +57,7 @@ describe('flagging tiles', function () {
 
     async function setupGame(
         gameStorage: IGameStorage,
-        gameOptions: GameOptions
+        gameOptions: GameOptions,
     ): Promise<GameState> {
         await initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
@@ -91,7 +91,7 @@ describe('unflagging tiles', function () {
 
     async function setupGame(
         gameStorage: IGameStorage,
-        gameOptions: GameOptions
+        gameOptions: GameOptions,
     ): Promise<GameState> {
         await initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();

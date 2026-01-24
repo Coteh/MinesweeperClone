@@ -10,7 +10,8 @@ body.dustfield::before {
     left: -200px;
     width: 200px;
     height: 90px;
-    background: radial-gradient(
+    background:
+        radial-gradient(
             circle at 30% 50%,
             rgba(160, 120, 80, 0.7) 0%,
             rgba(160, 120, 80, 0.5) 40%,
@@ -42,7 +43,8 @@ body.dustfield::after {
     left: -180px;
     width: 170px;
     height: 80px;
-    background: radial-gradient(
+    background:
+        radial-gradient(
             circle at 40% 50%,
             rgba(130, 100, 65, 0.65) 0%,
             rgba(130, 100, 65, 0.45) 40%,

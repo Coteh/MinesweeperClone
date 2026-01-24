@@ -103,7 +103,7 @@ export class BackgroundManager {
                 this.currentTheme = new ClassicTheme(
                     this.renderer,
                     this.background,
-                    this.assetManager
+                    this.assetManager,
                 );
                 break;
             case 'cloudy':
@@ -111,7 +111,7 @@ export class BackgroundManager {
                     this.renderer,
                     this.background,
                     themeConfig,
-                    this.assetManager
+                    this.assetManager,
                 );
                 break;
             case 'dustfield':
