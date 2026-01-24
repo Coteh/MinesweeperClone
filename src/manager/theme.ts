@@ -136,6 +136,51 @@ export class ThemeManager {
         } else {
             document.documentElement.style.removeProperty('--mine-text-8');
         }
+        
+        // Set dialog background and text colors
+        const defaultDialogBgColor = '#D3D3D3'; // lightgrey
+        const dialogBgColor = themeConfig.dialogBackgroundColor || defaultDialogBgColor;
+        
+        // Use explicit dialogTextColor if provided, otherwise calculate based on background
+        const dialogTextColor = themeConfig.dialogTextColor || this.getContrastingTextColor(dialogBgColor);
+        
+        document.documentElement.style.setProperty('--dialog-background-color', dialogBgColor);
+        document.documentElement.style.setProperty('--dialog-text-color', dialogTextColor);
+    }
+
+    /**
+     * Calculate relative luminance of a color (used for contrast calculation)
+     * @param hex - Hex color string (e.g., '#BBBBBB')
+     * @returns Relative luminance value (0-1)
+     */
+    private getRelativeLuminance(hex: string): number {
+        // Remove # if present
+        hex = hex.replace(/^#/, '');
+        
+        // Parse hex values
+        const r = parseInt(hex.substring(0, 2), 16) / 255;
+        const g = parseInt(hex.substring(2, 4), 16) / 255;
+        const b = parseInt(hex.substring(4, 6), 16) / 255;
+        
+        // Apply sRGB gamma correction
+        const rsRGB = r <= 0.03928 ? r / 12.92 : Math.pow((r + 0.055) / 1.055, 2.4);
+        const gsRGB = g <= 0.03928 ? g / 12.92 : Math.pow((g + 0.055) / 1.055, 2.4);
+        const bsRGB = b <= 0.03928 ? b / 12.92 : Math.pow((b + 0.055) / 1.055, 2.4);
+        
+        // Calculate relative luminance
+        return 0.2126 * rsRGB + 0.7152 * gsRGB + 0.0722 * bsRGB;
+    }
+
+    /**
+     * Calculate the best contrasting text color (black or white) for a given background
+     * @param backgroundColor - Background color in hex format
+     * @returns Either '#000000' for black or '#FFFFFF' for white
+     */
+    private getContrastingTextColor(backgroundColor: string): string {
+        const luminance = this.getRelativeLuminance(backgroundColor);
+        // Use white text for dark backgrounds (luminance < 0.5), black for light backgrounds
+        // This threshold provides good contrast according to WCAG guidelines
+        return luminance > 0.5 ? '#000000' : '#FFFFFF';
     }
 
     /**

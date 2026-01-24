@@ -70,6 +70,7 @@
     --fallback-background-color: var(--background-color);
     --item-background-color: rgba(0, 0, 0, 0);
     --dialog-background-color: var(--gray-7);
+    --dialog-text-color: var(--black);
 
     --text-color: var(--black);
     --letter-text-color: var(--white);
@@ -139,7 +140,7 @@ button.close {
     width: 2.5rem;
     height: 2.5rem;
     background-color: rgba(0, 0, 0, 0);
-    color: var(--text-color);
+    color: var(--dialog-text-color, var(--text-color));
 }
 
 button.button {
