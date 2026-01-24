@@ -51,6 +51,15 @@
     right: 0;
 }
 
+/* Dialog-specific overrides for text elements */
+.dialog svg {
+    color: var(--dialog-text-color, var(--text-color));
+}
+
+.dialog a {
+    color: var(--dialog-text-color, var(--text-color));
+}
+
 @keyframes pop {
     0% {
         transform: translate(-50%, -50%) scale(1);
