@@ -217,4 +217,90 @@ describe('dialogs', () => {
             cy.get('.dialog').should('be.visible');
         });
     });
+
+    describe('theme-specific dialog colors', () => {
+        // Helper function to convert hex to RGB string
+        const hexToRgbString = (hex: string): string => {
+            hex = hex.replace(/^#/, '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return `rgb(${r}, ${g}, ${b})`;
+        };
+
+        it('should display correct dialog background and text colors for basic theme', () => {
+            cy.get('.debug-link#debug').click();
+            cy.get('.dialog').should('be.visible');
+
+            // basic theme should have light grey background (#D3D3D3) and black text
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#D3D3D3'));
+            cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
+            
+            // Close button should also have correct text color
+            cy.get('.dialog button.close').should('have.css', 'color', hexToRgbString('#000000'));
+        });
+
+        it('should display correct dialog background and text colors for classic theme', () => {
+            cy.get('.settings-link').click();
+            cy.selectTheme('classic');
+            cy.get('.dialog button.close').click();
+
+            cy.get('.debug-link#debug').click();
+            cy.get('.dialog').should('be.visible');
+
+            // classic theme should have light grey background (#D3D3D3) and black text
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#D3D3D3'));
+            cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
+            
+            cy.get('.dialog button.close').should('have.css', 'color', hexToRgbString('#000000'));
+        });
+
+        it('should display correct dialog background and text colors for ocean theme', () => {
+            cy.get('.settings-link').click();
+            cy.selectTheme('ocean');
+            cy.get('.dialog button.close').click();
+
+            cy.get('.debug-link#debug').click();
+            cy.get('.dialog').should('be.visible');
+
+            // ocean theme should have dark blue background (#0D3D56) and white text
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#0D3D56'));
+            cy.get('.dialog').should('have.css', 'color', hexToRgbString('#FFFFFF'));
+            
+            cy.get('.dialog button.close').should('have.css', 'color', hexToRgbString('#FFFFFF'));
+        });
+
+        it('should display correct dialog background and text colors for desert theme', () => {
+            cy.get('.settings-link').click();
+            cy.selectTheme('desert');
+            cy.get('.dialog button.close').click();
+
+            cy.get('.debug-link#debug').click();
+            cy.get('.dialog').should('be.visible');
+
+            // desert theme should have sand background (#C89F6F) and black text
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#C89F6F'));
+            cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
+            
+            cy.get('.dialog button.close').should('have.css', 'color', hexToRgbString('#000000'));
+        });
+
+        it('should update dialog colors when switching themes with dialog open', () => {
+            cy.get('.settings-link').click();
+            
+            // Initially basic theme - light grey background, black text
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#D3D3D3'));
+            cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
+            
+            // Switch to ocean theme - should change to dark blue background, white text
+            cy.selectTheme('ocean');
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#0D3D56'));
+            cy.get('.dialog').should('have.css', 'color', hexToRgbString('#FFFFFF'));
+            
+            // Switch to desert theme - should change to sand background, black text
+            cy.selectTheme('desert');
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#C89F6F'));
+            cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
+        });
+    });
 });
