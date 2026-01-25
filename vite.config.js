@@ -16,7 +16,7 @@ function removeCanonicalInDev() {
             handler(html, ctx) {
                 // Only remove canonical link in dev mode
                 if (ctx.server) {
-                    return html.replace(/<link[^>]*rel="canonical"[^>]*>/gi, '');
+                    return html.replace(/<link[^>]+rel=["']canonical["'][^>]*>/gi, '');
                 }
                 return html;
             }
