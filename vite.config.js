@@ -7,6 +7,23 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 const commitHash = childProcess.execSync('git rev-parse --short HEAD').toString();
 
+// Plugin to remove canonical link in dev mode
+function removeCanonicalInDev() {
+    return {
+        name: 'remove-canonical-in-dev',
+        transformIndexHtml: {
+            order: 'pre',
+            handler(html, ctx) {
+                // Only remove canonical link in dev mode
+                if (ctx.server) {
+                    return html.replace(/<link[^>]*rel="canonical"[^>]*>/gi, '');
+                }
+                return html;
+            }
+        }
+    };
+}
+
 export default defineConfig({
     define: {
         GAME_VERSION: JSON.stringify(version),
@@ -27,6 +44,7 @@ export default defineConfig({
         host: true,
     },
     plugins: [
+        removeCanonicalInDev(),
         nodePolyfills(),
         viteStaticCopy({
             targets: [
