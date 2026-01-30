@@ -20,8 +20,6 @@ import {
     SOUND_SETTING_NAME,
     SOUND_PREFERENCE_NAME,
     THEME_SETTING_NAME,
-    SMILEY_PROUD,
-    SMILEY_SAD,
 } from '../consts';
 import { BackgroundManager } from '../manager/background';
 import { AudioManager, SoundEffect } from '../manager/audio';
