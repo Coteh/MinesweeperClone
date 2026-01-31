@@ -64,7 +64,7 @@ const formatTime = (timeMS: number): string => {
 const setSmileyImage = (
     imageElement: HTMLImageElement,
     smileyPath: string,
-    assetManager: AssetManager
+    assetManager: AssetManager,
 ) => {
     const pre = assetManager.getImage(smileyPath);
     imageElement.src = pre ? pre.src : smileyPath;
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         settingsSubsystem.toggleSettings,
                         debugSubsystem.toggleDebugHud,
                         closeDialog,
-                        frontendState
+                        frontendState,
                     );
                 }
                 settingsSubsystem.setGameState(gameState);
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     gameState.board.reduce(
                         (acc, row) =>
                             acc + row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
-                        0
+                        0,
                     );
                 renderDigits(mineCountBoard, unflaggedCount, assetManager);
                 break;
@@ -212,13 +212,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (gameState.achievedHighscore) {
                         setTimeout(() => {
                             const dialogElem = createDialogContentFromTemplate(
-                                '#high-score-dialog-content'
+                                '#high-score-dialog-content',
                             );
                             const timeFormatted = formatTime(gameState.elapsedTimeMS);
 
-                            (dialogElem.querySelector(
-                                '.high-score-time'
-                            ) as HTMLElement).innerText = timeFormatted;
+                            (
+                                dialogElem.querySelector('.high-score-time') as HTMLElement
+                            ).innerText = timeFormatted;
 
                             renderDialog(dialogElem, {
                                 fadeIn: true,
@@ -402,8 +402,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
-
     try {
         // Load assets via import.meta.glob via theme-assets helper
         const mod = await import('./manager/theme-assets');
@@ -418,7 +416,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         await backgroundManager.initialize();
 
-        (document.querySelector('.loader-wrapper') as HTMLElement).style.display = 'none';
+        const loaderWrapper = document.querySelector('.loader-wrapper') as HTMLElement;
+        const loaderElem = loaderWrapper.querySelector('.loader') as HTMLElement;
+
+        loaderElem.style.display = 'none';
+        loaderWrapper.style.backgroundColor = 'rgba(0,0,0,0)';
+        setTimeout(() => {
+            loaderWrapper.style.display = 'none';
+        }, 1000);
 
         settingsSubsystem = setupSettingsSubsystem(
             gameConfig,
@@ -430,7 +435,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             actionIconManager,
             transformManager,
             frontendState,
-            closeDialog
+            closeDialog,
         );
         // Debug subsystem needs settings subsystem to be set up first to ensure that preferences are loaded
         debugSubsystem = setupDebugSubsystem(actionIconManager, transformManager, closeDialog);
