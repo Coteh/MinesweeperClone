@@ -141,7 +141,7 @@ button.close {
     width: 2.5rem;
     height: 2.5rem;
     background-color: rgba(0, 0, 0, 0);
-    color: var(--dialog-text-color, var(--text-color));
+    color: var(--theme-text-color, var(--text-color));
 }
 
 button.button {
