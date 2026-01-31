@@ -2,11 +2,8 @@ import { VerifyBoardOptions } from '..';
 import { MineBlock } from '../../../src/game';
 
 Cypress.Commands.add('waitForGameReady', () => {
-    // Wait for loader to disappear
-    cy.get('.loader-wrapper', { timeout: 30000 }).should('have.css', 'display', 'none');
-
     // Wait for board to have actual rendered height (assets loaded)
-    cy.get('.game-board', { timeout: 30000 }).should(($board) => {
+    cy.get('.game-board').should(($board) => {
         const height = $board[0].getBoundingClientRect().height;
         expect(height, 'Board should have height > 0').to.be.greaterThan(0);
     });

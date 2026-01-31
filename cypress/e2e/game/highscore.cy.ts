@@ -10,7 +10,7 @@ const standardMineBlock: (
     isRevealed: boolean,
     isFlagged: boolean,
     isLosingSpot: boolean,
-    isQuestionMark: boolean
+    isQuestionMark: boolean,
 ) => MineBlock = (
     x,
     y,
@@ -19,7 +19,7 @@ const standardMineBlock: (
     isRevealed,
     isFlagged,
     isLosingSpot,
-    isQuestionMark
+    isQuestionMark,
 ) => {
     return {
         x,
@@ -90,7 +90,7 @@ describe('high score system', () => {
                     window.localStorage.setItem('game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -112,7 +112,7 @@ describe('high score system', () => {
             // Verify persistent state was updated
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}'
+                    win.localStorage.getItem('persistent-state') || '{}',
                 );
                 expect(persistentState.highscore).to.have.property('easy');
                 expect(persistentState.highscore.easy).to.equal(45000);
@@ -176,7 +176,7 @@ describe('high score system', () => {
                     window.localStorage.setItem('game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -195,7 +195,7 @@ describe('high score system', () => {
             // Verify persistent state was updated with better score
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}'
+                    win.localStorage.getItem('persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(30000);
             });
@@ -258,7 +258,7 @@ describe('high score system', () => {
                     window.localStorage.setItem('game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -276,7 +276,7 @@ describe('high score system', () => {
             // Verify persistent state was NOT updated
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}'
+                    win.localStorage.getItem('persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(45000); // Still the old score
             });
@@ -339,7 +339,7 @@ describe('high score system', () => {
                     window.localStorage.setItem('game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -357,7 +357,7 @@ describe('high score system', () => {
             // Verify persistent state was NOT updated
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}'
+                    win.localStorage.getItem('persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(45000); // No change
             });
@@ -420,7 +420,7 @@ describe('high score system', () => {
                     window.localStorage.setItem('game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -439,7 +439,7 @@ describe('high score system', () => {
             // Verify both easy and medium scores are maintained separately
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}'
+                    win.localStorage.getItem('persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(45000); // Easy score unchanged
                 expect(persistentState.highscore.medium).to.equal(90000); // Medium score added
@@ -475,7 +475,7 @@ describe('high score system', () => {
                     };
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -505,7 +505,7 @@ describe('high score system', () => {
                     };
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -547,7 +547,7 @@ describe('high score system', () => {
                     };
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -589,7 +589,7 @@ describe('high score system', () => {
                     };
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                 },
             });
@@ -669,7 +669,7 @@ describe('high score system', () => {
                     window.localStorage.setItem('game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
                         'persistent-state',
-                        JSON.stringify(persistentState)
+                        JSON.stringify(persistentState),
                     );
                     window.localStorage.setItem('preferences', JSON.stringify(preferences));
                 },
@@ -692,7 +692,7 @@ describe('high score system', () => {
             // Verify easy high score was saved
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}'
+                    win.localStorage.getItem('persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(50000);
             });
@@ -765,7 +765,7 @@ describe('high score system', () => {
             // Verify both high scores are maintained separately
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}'
+                    win.localStorage.getItem('persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(50000);
                 expect(persistentState.highscore.medium).to.equal(75000);
