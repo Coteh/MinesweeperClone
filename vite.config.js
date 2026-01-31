@@ -11,6 +11,17 @@ const commitHash = childProcess.execSync('git rev-parse --short HEAD').toString(
 function removeCanonicalInDev() {
     return {
         name: 'remove-canonical-in-dev',
+        configureServer(server) {
+            // Disable caching for HTML in dev mode to prevent stale canonical links
+            server.middlewares.use((req, res, next) => {
+                if (req.url === '/' || req.url === '/index.html' || req.url?.endsWith('.html')) {
+                    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+                    res.setHeader('Pragma', 'no-cache');
+                    res.setHeader('Expires', '0');
+                }
+                next();
+            });
+        },
         transformIndexHtml: {
             order: 'pre',
             handler(html, ctx) {
