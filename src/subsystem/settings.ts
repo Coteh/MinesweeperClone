@@ -465,22 +465,13 @@ export function setupSettingsSubsystem(
                     }
                 });
                 
-                // Play click sound when releasing slider (works for both mouse and touch)
-                // Use a timestamp to prevent duplicate playback on touch devices
-                let lastSoundPlayTime = 0;
-                const playVolumePreviewSound = () => {
-                    const now = Date.now();
-                    // Prevent duplicate sounds within 100ms
-                    if (now - lastSoundPlayTime < 100) return;
-                    lastSoundPlayTime = now;
-                    
+                // Play click sound when releasing slider
+                // The 'change' event fires on both mouse and touch interactions when the value changes
+                volumeSlider.addEventListener('change', () => {
                     if (audioManager.isSoundEffectsEnabled()) {
                         audioManager.playSoundEffect(SoundEffect.Click);
                     }
-                };
-                
-                volumeSlider.addEventListener('change', playVolumePreviewSound);
-                volumeSlider.addEventListener('touchend', playVolumePreviewSound);
+                });
             }
         }
     }
