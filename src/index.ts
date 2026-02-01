@@ -190,6 +190,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     volume: 0.25,
                 });
                 break;
+            case 'question_mark':
+                audioManager.playSoundEffect(SoundEffect.Click);
+                break;
             case 'error':
                 break;
             case 'lose': {
@@ -212,7 +215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 themeManager.applyWinThemeColor();
                 if (!data.onInitialization) {
                     audioManager.playSoundEffect(SoundEffect.Win, {
-                        seconds: 0.3,
+                        seek: 0.3,
                     });
 
                     // Show high score dialog after a short delay if achieved

@@ -151,13 +151,19 @@ export function setupInteractionSubsystem(
 
     zoomInButton.addEventListener('click', (e) => {
         e.preventDefault();
+        const wasDisabled = zoomInButton.classList.contains('disabled');
         transformManager.zoomIn();
-        audioManager.playSoundEffect(SoundEffect.ZoomIn);
+        if (!wasDisabled) {
+            audioManager.playSoundEffect(SoundEffect.ZoomIn);
+        }
     });
     zoomOutButton.addEventListener('click', (e) => {
         e.preventDefault();
+        const wasDisabled = zoomOutButton.classList.contains('disabled');
         transformManager.zoomOut();
-        audioManager.playSoundEffect(SoundEffect.ZoomOut);
+        if (!wasDisabled) {
+            audioManager.playSoundEffect(SoundEffect.ZoomOut);
+        }
     });
     (document.querySelector('#zoom-reset') as HTMLElement).addEventListener('click', (e) => {
         e.preventDefault();

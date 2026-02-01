@@ -522,6 +522,9 @@ export const questionMarkSpot = function (x: number, y: number) {
 
     gameState.board[y][x].isQuestionMark = !gameState.board[y][x].isQuestionMark;
 
+    // Notify event for question mark action
+    eventHandler('question_mark', { gameState, persistentState });
+    
     // Notify and persist
     eventHandler('draw', { gameState, persistentState });
     gameStorage.saveGame(gameState);
