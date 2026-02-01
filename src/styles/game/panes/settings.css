@@ -91,8 +91,8 @@
 
 .settings .setting-controls input[type="range"] {
     width: 100%;
-    max-width: 300px;
-    height: 6px;
+    max-width: 400px;
+    height: 10px;
     -webkit-appearance: none;
     appearance: none;
     background: var(--gray-3);
@@ -104,16 +104,16 @@
 .settings .setting-controls input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 28px;
+    height: 28px;
     background: var(--correct-color, #4CAF50);
     border-radius: 50%;
     cursor: pointer;
 }
 
 .settings .setting-controls input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 28px;
+    height: 28px;
     background: var(--correct-color, #4CAF50);
     border-radius: 50%;
     cursor: pointer;
@@ -147,5 +147,53 @@ body a > .commit-hash {
 }
 
 .footer .sound-credits a:hover {
+    text-decoration: underline;
+}
+
+.footer .credits-link {
+    margin-top: 1em;
+    padding: 0.5em 1em;
+    font-size: 0.9em;
+}
+
+/* Credits Dialog */
+
+.credits {
+    font-family: var(--text-font-family);
+    padding: 1em;
+    text-align: left;
+}
+
+.credits h3 {
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+.credits h4 {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+.credits-content {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.credits ul {
+    list-style-type: none;
+    padding-left: 0;
+    line-height: 1.8;
+}
+
+.credits ul li {
+    margin-bottom: 0.5em;
+}
+
+.credits a {
+    text-decoration: none;
+    color: var(--dialog-text-color, var(--text-color));
+}
+
+.credits a:hover {
     text-decoration: underline;
 }
