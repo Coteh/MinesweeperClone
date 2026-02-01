@@ -282,10 +282,10 @@ export function setupSettingsSubsystem(
             opt.innerText = gameConfig.theme[t].displayName || t;
             themeSelector.appendChild(opt);
         });
-        themeSelector.addEventListener('change', (e) => {
+        themeSelector.addEventListener('change', async (e) => {
             const themeValue = (e.target as HTMLSelectElement).value as Theme;
 
-            themeManager.switchTheme(themeValue);
+            await themeManager.switchTheme(themeValue);
             if (gameState.ended) {
                 if (gameState.won) {
                     backgroundManager.renderWin();
@@ -352,12 +352,6 @@ export function setupSettingsSubsystem(
     switchDifficulty(currDifficulty, {
         startNewGame: false,
     });
-
-    // Get stored theme
-    const storedTheme: Theme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
-
-    // Set up game theme based on current setting
-    themeManager.switchTheme(storedTheme);
 
     // Mobile-specific behavior
     const md = new MobileDetect(window.navigator.userAgent);

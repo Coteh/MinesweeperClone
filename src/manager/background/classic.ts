@@ -37,7 +37,7 @@ export class ClassicTheme implements BackgroundTheme {
         this.initialize();
     }
 
-    private initialize() {
+    initialize() {
         let tileImg = this.assetManager.getImage('img/Tiles.png');
         if (!tileImg) {
             throw new Error('Tile asset not loaded');

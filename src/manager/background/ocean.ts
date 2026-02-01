@@ -12,7 +12,7 @@ export class OceanTheme implements BackgroundTheme {
         this.initialize();
     }
 
-    private initialize() {
+    initialize() {
         const waveGraphics = new Graphics();
         waveGraphics.fill(0x3b82f6);
         waveGraphics.rect(0, 0, this.renderer.width, this.renderer.height);

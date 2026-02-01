@@ -17,7 +17,7 @@ export class BasicTheme implements BackgroundTheme {
         this.initialize();
     }
 
-    private initialize() {}
+    initialize() {}
 
     private hexToPixiColor(hex: string): number {
         return parseInt(hex.replace('#', '0x'), 16);
