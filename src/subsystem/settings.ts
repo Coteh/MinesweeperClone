@@ -139,6 +139,24 @@ export function setupSettingsSubsystem(
 
             initializeSettingsContent();
 
+            // Set up credits button
+            const creditsButton = settingsDialogContent.querySelector('.credits-link') as HTMLElement;
+            if (creditsButton) {
+                creditsButton.addEventListener('click', () => {
+                    audioManager.playSoundEffect(SoundEffect.Click);
+                    const creditsElem = createDialogContentFromTemplate('#credits-dialog-content');
+                    renderDialog(creditsElem, {
+                        fadeIn: true,
+                        effect: 'pop',
+                        style: {
+                            width: '75%',
+                            height: 'auto',
+                            maxWidth: '500px',
+                        },
+                    });
+                });
+            }
+
             const buttons = document.querySelectorAll('dialog button');
             buttons.forEach((button) => {
                 button.addEventListener('click', () => {
@@ -366,6 +384,13 @@ export function setupSettingsSubsystem(
                     audioManager.setSoundEffectsVolume(volume / 100);
                     savePreferenceValue(SOUND_VOLUME_PREFERENCE_NAME, volume.toString());
                     
+                    // Auto-enable sound effects when adjusting volume while muted
+                    if (!audioManager.isSoundEffectsEnabled() && volume > 0) {
+                        audioManager.toggleSoundEffects(true);
+                        savePreferenceValue(SOUND_PREFERENCE_NAME, SETTING_ENABLED);
+                        knob.classList.add('enabled');
+                    }
+                    
                     // Update icon based on volume level (only if sound is enabled)
                     if (audioManager.isSoundEffectsEnabled()) {
                         actionIconManager.changeIcon(
@@ -374,6 +399,16 @@ export function setupSettingsSubsystem(
                         );
                     }
                 });
+                
+                // Play click sound when releasing slider (works for both mouse and touch)
+                const playVolumePreviewSound = () => {
+                    if (audioManager.isSoundEffectsEnabled()) {
+                        audioManager.playSoundEffect(SoundEffect.Click);
+                    }
+                };
+                
+                volumeSlider.addEventListener('change', playVolumePreviewSound);
+                volumeSlider.addEventListener('touchend', playVolumePreviewSound);
             }
         }
     }
