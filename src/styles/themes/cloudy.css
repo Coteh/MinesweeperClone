@@ -1,0 +1,48 @@
+/* Cloudy theme styles */
+
+body.cloudy {
+    --icon-bar-icon-color: var(--theme-text-color, #000);
+}
+
+/* CSS Cloud that pans across the screen */
+body.cloudy::before {
+    content: '';
+    position: fixed;
+    top: 10%;
+    left: -200px;
+    width: 180px;
+    height: 80px;
+    background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 70%),
+                radial-gradient(circle at 70% 50%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 40%, transparent 70%),
+                radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 35%, transparent 60%);
+    border-radius: 50%;
+    z-index: 1000;
+    pointer-events: none;
+    animation: cloud-drift 60s linear infinite;
+}
+
+/* Additional decorative cloud */
+body.cloudy::after {
+    content: '';
+    position: fixed;
+    top: 60%;
+    left: -150px;
+    width: 150px;
+    height: 70px;
+    background: radial-gradient(circle at 40% 50%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 40%, transparent 70%),
+                radial-gradient(circle at 60% 40%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.7) 35%, transparent 60%);
+    border-radius: 50%;
+    z-index: 1000;
+    pointer-events: none;
+    animation: cloud-drift 80s linear infinite;
+    animation-delay: -20s; /* Offset start time */
+}
+
+@keyframes cloud-drift {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(calc(100vw + 200px));
+    }
+}

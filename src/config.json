@@ -141,6 +141,32 @@
             "tileBackground": "#808080",
             "tileBorder": "#666666",
             "dialogBackgroundColor": "#D3D3D3"
+        },
+        "cloudy": {
+            "displayName": "Cloudy",
+            "backgroundColor": "#87CEEB",
+            "winColor": "#FFD700",
+            "loseColor": "#778899",
+            "winStatusBarColor": "#FFD700",
+            "loseStatusBarColor": "#778899",
+            "standardBlockColor": "#B0C4DE",
+            "losingBlockColor": "#696969",
+            "blockRevealedColor": "#E0F6FF",
+            "mineText1": "#4169E1",
+            "mineText2": "#32CD32",
+            "mineText3": "#FF6347",
+            "mineText4": "#9370DB",
+            "mineText5": "#FF8C00",
+            "mineText6": "#20B2AA",
+            "mineText7": "#2F4F4F",
+            "mineText8": "#708090",
+            "highlightColor": "#FFFFE0",
+            "metaThemeColor": "#87CEEB",
+            "popupBackground": "#F0F8FF",
+            "textColor": "#000000",
+            "tileBackground": "#87CEEB",
+            "tileBorder": "#4682B4",
+            "dialogBackgroundColor": "#E6F3FF"
         }
     }
 }
