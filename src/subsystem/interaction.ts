@@ -266,8 +266,8 @@ export function setupInteractionSubsystem(
                 const offsetAdjustmentFactor = 1 - actualZoomFactor;
                 const deltaX = currentMidpoint.x - newBoardTransform.x;
                 const deltaY = currentMidpoint.y - newBoardTransform.y;
-                newBoardTransform.x = newBoardTransform.x + deltaX * offsetAdjustmentFactor;
-                newBoardTransform.y = newBoardTransform.y + deltaY * offsetAdjustmentFactor;
+                newBoardTransform.x += deltaX * offsetAdjustmentFactor;
+                newBoardTransform.y += deltaY * offsetAdjustmentFactor;
                 newBoardTransform.scale = newScale;
 
                 transformManager.boardTransform = newBoardTransform;
