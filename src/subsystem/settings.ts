@@ -19,6 +19,7 @@ import {
     BASIC_THEME,
     SOUND_SETTING_NAME,
     SOUND_PREFERENCE_NAME,
+    SOUND_VOLUME_PREFERENCE_NAME,
     THEME_SETTING_NAME,
 } from '../consts';
 import { BackgroundManager } from '../manager/background';
@@ -63,6 +64,7 @@ export function setupSettingsSubsystem(
     // Initialize settings based on stored preferences
     initPreferences(gameStorage, {
         [SOUND_PREFERENCE_NAME]: SETTING_ENABLED,
+        [SOUND_VOLUME_PREFERENCE_NAME]: '100',
     });
 
     // Get stored difficulty or default to easy
@@ -235,9 +237,21 @@ export function setupSettingsSubsystem(
                     } else {
                         knob.classList.remove('enabled');
                     }
+                    
+                    // Get current volume for icon selection
+                    const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
+                    const currentVolume = volumeSlider ? parseInt(volumeSlider.value) : 100;
+                    
+                    // Helper function to get the appropriate volume icon
+                    const getVolumeIcon = (enabled: boolean, volume: number): string => {
+                        if (!enabled) return 'volume-x';
+                        if (volume <= 33) return 'volume-1';
+                        return 'volume-2';
+                    };
+                    
                     actionIconManager.changeIcon(
                         knob,
-                        audioManager.isSoundEffectsEnabled() ? 'volume-2' : 'volume-x'
+                        getVolumeIcon(audioManager.isSoundEffectsEnabled(), currentVolume)
                     );
                 }
             });
@@ -327,13 +341,46 @@ export function setupSettingsSubsystem(
         if (soundEffectsSettingElem) {
             const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
             audioManager.toggleSoundEffects(soundsEnabled === SETTING_ENABLED);
+            
+            // Get stored volume or default to 100
+            const storedVolume = parseInt(getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100');
+            audioManager.setSoundEffectsVolume(storedVolume / 100);
+            
             const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
+            
+            // Helper function to get the appropriate volume icon
+            const getVolumeIcon = (enabled: boolean, volume: number): string => {
+                if (!enabled) return 'volume-x';
+                if (volume <= 33) return 'volume-1';
+                return 'volume-2';
+            };
+            
             actionIconManager.changeIcon(
                 knob,
-                audioManager.isSoundEffectsEnabled() ? 'volume-2' : 'volume-x'
+                getVolumeIcon(audioManager.isSoundEffectsEnabled(), storedVolume)
             );
             if (soundsEnabled === SETTING_ENABLED) {
                 knob.classList.add('enabled');
+            }
+            
+            // Set up volume slider
+            const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
+            if (volumeSlider) {
+                volumeSlider.value = storedVolume.toString();
+                
+                volumeSlider.addEventListener('input', (e) => {
+                    const volume = parseInt((e.target as HTMLInputElement).value);
+                    audioManager.setSoundEffectsVolume(volume / 100);
+                    savePreferenceValue(SOUND_VOLUME_PREFERENCE_NAME, volume.toString());
+                    
+                    // Update icon based on volume level (only if sound is enabled)
+                    if (audioManager.isSoundEffectsEnabled()) {
+                        actionIconManager.changeIcon(
+                            knob,
+                            getVolumeIcon(true, volume)
+                        );
+                    }
+                });
             }
         }
     }

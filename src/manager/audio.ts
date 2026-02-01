@@ -32,10 +32,12 @@ export class AudioManager {
     private assetManager: AssetManager;
 
     private soundEffectsEnabled: boolean;
+    private soundEffectsVolume: number;
 
     constructor(assetManager: AssetManager) {
         this.assetManager = assetManager;
         this.soundEffectsEnabled = true;
+        this.soundEffectsVolume = 1.0; // Default to full volume
     }
 
     isSoundEffectsEnabled() {
@@ -48,6 +50,15 @@ export class AudioManager {
             return;
         }
         this.soundEffectsEnabled = !this.soundEffectsEnabled;
+    }
+
+    getSoundEffectsVolume() {
+        return this.soundEffectsVolume;
+    }
+
+    setSoundEffectsVolume(volume: number) {
+        // Clamp volume between 0 and 1
+        this.soundEffectsVolume = Math.max(0, Math.min(1, volume));
     }
 
     playSoundEffect(soundEffect: SoundEffect, settings?: SoundSettings) {
@@ -72,8 +83,15 @@ export class AudioManager {
                 sound.seek(settings.seek);
             }
             if (typeof settings.volume !== 'undefined') {
-                sound.volume(settings.volume);
+                // Apply both the per-sound volume and the global volume
+                sound.volume(settings.volume * this.soundEffectsVolume);
+            } else {
+                // Apply only the global volume
+                sound.volume(this.soundEffectsVolume);
             }
+        } else {
+            // Apply only the global volume
+            sound.volume(this.soundEffectsVolume);
         }
         sound.play();
     }
