@@ -312,7 +312,7 @@ export function setupSettingsSubsystem(
                     
                     // Get current volume for icon selection
                     const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
-                    const currentVolume = volumeSlider ? parseInt(volumeSlider.value) : 100;
+                    const currentVolume = volumeSlider ? parseInt(volumeSlider.value, 10) : 100;
                     
                     actionIconManager.changeIcon(
                         knob,
@@ -408,7 +408,7 @@ export function setupSettingsSubsystem(
             audioManager.toggleSoundEffects(soundsEnabled === SETTING_ENABLED);
             
             // Get stored volume or default to 100
-            const storedVolume = parseInt(getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100');
+            const storedVolume = parseInt(getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100', 10);
             audioManager.setSoundEffectsVolume(storedVolume / 100);
             
             const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
@@ -427,7 +427,7 @@ export function setupSettingsSubsystem(
                 volumeSlider.value = storedVolume.toString();
                 
                 volumeSlider.addEventListener('input', (e) => {
-                    const volume = parseInt((e.target as HTMLInputElement).value);
+                    const volume = parseInt((e.target as HTMLInputElement).value, 10);
                     audioManager.setSoundEffectsVolume(volume / 100);
                     savePreferenceValue(SOUND_VOLUME_PREFERENCE_NAME, volume.toString());
                     
