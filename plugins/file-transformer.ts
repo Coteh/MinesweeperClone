@@ -21,6 +21,7 @@ export default function fileTransformerPlugin(options: FileTransformerOptions): 
         name: "file-transformer",
         async buildStart() {
             // Do not perform emit file operation in watch mode (ie. `vite dev`)
+            // In dev mode, we serve the transformed file dynamically via configureServer middleware
             if (this.meta.watchMode) return;
 
             // Read and process the file during the build start phase
