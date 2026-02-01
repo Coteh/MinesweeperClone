@@ -146,8 +146,9 @@ export class TransformManager {
         // Round transform values to prevent floating-point accumulation that can cause visual shifts
         const roundedX = Math.round(this._boardTransform.x * 100) / 100;
         const roundedY = Math.round(this._boardTransform.y * 100) / 100;
+        const roundedScale = Math.round(this._boardTransform.scale * 100) / 100;
         const translateRule = `translate(${roundedX}px, ${roundedY}px)`;
-        const scaleRule = `scale(${this._boardTransform.scale})`;
+        const scaleRule = `scale(${roundedScale})`;
         if (useTransition) this.boardElem.style.transition = 'transform 0.25s';
         this.boardElem.style.transform = `${translateRule} ${scaleRule}`;
         if (useTransition) {
