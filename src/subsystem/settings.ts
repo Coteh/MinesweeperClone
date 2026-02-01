@@ -401,7 +401,14 @@ export function setupSettingsSubsystem(
                 });
                 
                 // Play click sound when releasing slider (works for both mouse and touch)
+                // Use a timestamp to prevent duplicate playback on touch devices
+                let lastSoundPlayTime = 0;
                 const playVolumePreviewSound = () => {
+                    const now = Date.now();
+                    // Prevent duplicate sounds within 100ms
+                    if (now - lastSoundPlayTime < 100) return;
+                    lastSoundPlayTime = now;
+                    
                     if (audioManager.isSoundEffectsEnabled()) {
                         audioManager.playSoundEffect(SoundEffect.Click);
                     }
