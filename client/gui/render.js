@@ -455,20 +455,20 @@ var setupBoard = function (boardInfo) {
     }
 
     //Repositioning mine board
-    mineBoard.x = boardOffsetX;
-    mineBoard.y = boardOffsetY;
+    mineBoard.x = 0;
+    mineBoard.y = 0;
 
     //Repositioning smiley button (always on top of the board at the center)
     smileyButton.setPosition(boardInfo.width / 2, -1);
-    smileyButton.container.x += boardOffsetX - ((boardInfo.width / 2) % 2) * 16;
-    smileyButton.container.y += boardOffsetY;
+    smileyButton.container.x += -((boardInfo.width / 2) % 2) * 16;
+    smileyButton.container.y += 0;
 
     //Setting up mine digits display
-    mineDigitBoard.setPosition(boardOffsetX, boardOffsetY - 64);
+    mineDigitBoard.setPosition(0, -64);
     mineDigitBoard.setDisplayNumber(boardInfo.mineCount);
 
     //Setting up time digits display
-    timeDigitBoard.setPosition(boardOffsetX + boardInfo.width * 32 - 3 * 32, boardOffsetY - 64);
+    timeDigitBoard.setPosition(boardInfo.width * 32 - 3 * 32, -64);
 };
 
 var resetBlockSprites = function (block) {
