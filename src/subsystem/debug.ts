@@ -14,6 +14,8 @@ import {
     renderNotification,
     renderPromptDialog,
 } from '../render';
+import { dialogManager } from '../ui/dialog';
+import { createPromptContent, createTextContent } from '../ui/dialog/render';
 
 export type DebugSubsystem = {
     toggleDebugHud: (isVisible: boolean) => void;
@@ -95,6 +97,77 @@ export function setupDebugSubsystem(
                 renderNotification('This is a test notification', 2500);
             }
         );
+
+        // New dialog stack system tests
+        (document.querySelector('.button.test-stack-dialog') as HTMLElement)?.addEventListener(
+            'click',
+            (e) => {
+                e.preventDefault();
+                const content = createTextContent(
+                    'This is dialog A. Click the button to open dialog B.'
+                );
+                const container = document.createElement('div');
+                container.appendChild(content);
+
+                const openBButton = document.createElement('button');
+                openBButton.className = 'button';
+                openBButton.textContent = 'Open Dialog B';
+                container.appendChild(openBButton);
+
+                dialogManager.show(container, { closable: true, fadeIn: true });
+
+                // Add listener after rehydration
+                setTimeout(() => {
+                    const btn = document.querySelector('[data-dialog-id] button.button');
+                    btn?.addEventListener('click', () => {
+                        const contentB = createTextContent(
+                            'This is dialog B. Close to return to dialog A.'
+                        );
+                        dialogManager.show(contentB, { closable: true, fadeIn: true });
+                    });
+                }, 50);
+            }
+        );
+
+        (document.querySelector('.button.test-prompt-stack') as HTMLElement)?.addEventListener(
+            'click',
+            (e) => {
+                e.preventDefault();
+                const content = createPromptContent('Do you want to continue?');
+                dialogManager.show(content, { closable: true, fadeIn: true }, 'prompt', {
+                    onConfirm: () => {
+                        renderNotification('Confirmed!', 1500);
+                    },
+                    onCancel: () => {
+                        renderNotification('Cancelled!', 1500);
+                    },
+                });
+            }
+        );
+
+        (document.querySelector('.button.test-rehydrate') as HTMLElement)?.addEventListener(
+            'click',
+            (e) => {
+                e.preventDefault();
+                const content = document.createElement('div');
+                content.innerHTML =
+                    '<p>Click count: <span class="count">0</span></p><button class="increment-button button">Increment</button>';
+
+                dialogManager.show(content, { closable: true, fadeIn: true }, 'regular', {
+                    rehydrate: (root) => {
+                        let count = 0;
+                        const countSpan = root.querySelector('.count') as HTMLSpanElement;
+                        const button = root.querySelector('.increment-button') as HTMLButtonElement;
+
+                        button.addEventListener('click', () => {
+                            count++;
+                            countSpan.textContent = count.toString();
+                        });
+                    },
+                });
+            }
+        );
+
         debugButton.blur();
     });
 

@@ -1,0 +1,121 @@
+/**
+ * Dialog Stack System Styles
+ * 
+ * Styles for the LIFO stacked dialog system including:
+ * - Dialog container and content
+ * - Overlay/backdrop
+ * - Animations and transitions
+ * - Accessibility features
+ */
+
+/* Overlay backdrop */
+.overlay-back.visible {
+    display: block;
+    opacity: 1;
+}
+
+/* Dialog container */
+.dialog-stack-item {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 24px;
+    min-width: 300px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: auto;
+    z-index: 1000;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Dialog content area */
+.dialog-stack-item .dialog-content {
+    padding: 8px 0;
+}
+
+/* Close button */
+.dialog-stack-item .dialog-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+.dialog-stack-item .dialog-close:hover {
+    color: #000;
+}
+
+.dialog-stack-item .dialog-close:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+}
+
+/* Fade-in animation support */
+.dialog-stack-item[style*='opacity: 0'] {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+}
+
+/* Prompt dialog buttons */
+.dialog-stack-item .confirm,
+.dialog-stack-item .cancel {
+    margin: 8px 4px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.dialog-stack-item .confirm {
+    background-color: #0066cc;
+    color: white;
+}
+
+.dialog-stack-item .confirm:hover {
+    background-color: #0052a3;
+}
+
+.dialog-stack-item .cancel {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.dialog-stack-item .cancel:hover {
+    background-color: #d0d0d0;
+}
+
+/* Focus styles for accessibility */
+.dialog-stack-item:focus {
+    outline: none;
+}
+
+.dialog-stack-item button:focus {
+    outline: 2px solid #0066cc;
+    outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .dialog-stack-item {
+        min-width: 280px;
+        padding: 16px;
+    }
+
+    .dialog-stack-item .dialog-close {
+        top: 4px;
+        right: 4px;
+    }
+}

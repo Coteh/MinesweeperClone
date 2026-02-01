@@ -8,6 +8,9 @@
 @import url('./components/selector.css');
 @import url('./components/table.css');
 
+/* Dialog Stack System */
+@import url('../ui/dialog/dialog.css');
+
 @import url('./game/menu.css');
 @import url('./game/panes/index.css');
 @import url('./game/how-to-play.css');
