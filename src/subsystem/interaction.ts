@@ -263,8 +263,11 @@ export function setupInteractionSubsystem(
                 // Zoom towards the pinch midpoint by adjusting the translation
                 // The formula: new_offset = old_offset + (pinch_point - old_offset) * (1 - zoom_factor)
                 // This keeps the point under the pinch location stationary during zoom
-                newBoardTransform.x = newBoardTransform.x + (currentMidpoint.x - newBoardTransform.x) * (1 - actualZoomFactor);
-                newBoardTransform.y = newBoardTransform.y + (currentMidpoint.y - newBoardTransform.y) * (1 - actualZoomFactor);
+                const offsetAdjustmentFactor = 1 - actualZoomFactor;
+                const deltaX = currentMidpoint.x - newBoardTransform.x;
+                const deltaY = currentMidpoint.y - newBoardTransform.y;
+                newBoardTransform.x = newBoardTransform.x + deltaX * offsetAdjustmentFactor;
+                newBoardTransform.y = newBoardTransform.y + deltaY * offsetAdjustmentFactor;
                 newBoardTransform.scale = newScale;
 
                 transformManager.boardTransform = newBoardTransform;
