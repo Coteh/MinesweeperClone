@@ -241,4 +241,17 @@ describe('settings', () => {
         cy.get('label[for="theme-selector"]').realClick();
         cy.get('#theme-selector').should('be.focused');
     });
+
+    it('should be able to select the cloudy theme', () => {
+        cy.get('.settings-link').click();
+
+        cy.get('.settings-item.theme-switch').should('be.visible');
+        cy.selectTheme('cloudy');
+
+        // Verify cloudy theme is selected
+        cy.get('#theme-selector').should('have.value', 'cloudy');
+
+        // Verify body has cloudy class
+        cy.get('body').should('have.class', 'cloudy');
+    });
 });
