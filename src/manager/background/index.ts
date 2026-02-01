@@ -71,6 +71,13 @@ export class BackgroundManager {
     }
 
     reinitialize() {
+        if (!this.renderer || !this.background) {
+            throw new Error('Background not initialized');
+        }
+
+        this.background.removeChildren();
+        this.background.filters = [];
+
         if (this.currentTheme) {
             this.currentTheme.initialize();
         }

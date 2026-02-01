@@ -20,6 +20,7 @@ export class ClassicTheme implements BackgroundTheme {
     private pixelBackgroundFilters: Filter | Filter[];
     private assetManager: AssetManager;
     private tilingTile: TilingSprite;
+    private onReinit?: Function;
 
     constructor(
         renderer: Renderer<HTMLCanvasElement>,
@@ -38,6 +39,9 @@ export class ClassicTheme implements BackgroundTheme {
     }
 
     initialize() {
+        if (this.onReinit) {
+            this.onReinit();
+        }
         let tileImg = this.assetManager.getImage('img/Tiles.png');
         if (!tileImg) {
             throw new Error('Tile asset not loaded');
@@ -62,6 +66,12 @@ export class ClassicTheme implements BackgroundTheme {
         };
 
         const ticker = Ticker.shared;
+        // Prevent tiling background from animating twice as fast on reinitialization
+        // by removing the previous updateRenderer from the first initialization call on reinitialization
+        this.onReinit = () => {
+            ticker.remove(updateRenderer);
+        };
+        console.log('ticket', ticker);
         ticker.add(updateRenderer);
 
         // Background filter setup
