@@ -153,7 +153,7 @@ export function setupSettingsSubsystem(
                     if (!changelogFetchSuccess) {
                         try {
                             const res = await fetch('CHANGELOG.html');
-                            if (res.status !== 200) {
+                            if (!res.ok) {
                                 console.error('Could not fetch changelog:', res.statusText);
                                 changelogHTML = `<p class="changelog-error">Could not retrieve changelog.</p>`;
                             } else {
