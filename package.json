@@ -25,7 +25,7 @@
     "feather-icons": "^4.29.2",
     "pixi.js": "8.7.3",
     "vite": "^6.0.11",
-    "vite-plugin-node-polyfills": "^0.23.0"
+    "vite-plugin-node-polyfills": "^0.25.0"
   },
   "devDependencies": {
     "@types/canvas-confetti": "^1.9.0",
