@@ -5,6 +5,8 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import * as childProcess from 'child_process';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 import { removeCanonicalInDev } from './plugins/remove-canonical-in-dev';
+import fileTransformerPlugin from './plugins/file-transformer';
+import { marked } from 'marked';
 import { loadEnv } from 'vite';
 
 const commitHash = childProcess.execSync('git rev-parse --short HEAD').toString();
@@ -44,6 +46,11 @@ export default defineConfig(({ mode }) => {
                         dest: '.',
                     },
                 ],
+            }),
+            fileTransformerPlugin({
+                input: 'CHANGELOG.md',
+                transformer: (content) => marked.parse(content),
+                output: 'CHANGELOG.html',
             }),
         ],
     };

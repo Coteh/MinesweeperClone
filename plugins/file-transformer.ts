@@ -1,0 +1,64 @@
+import * as fs from "fs";
+import * as path from "path";
+import { Plugin } from "vite";
+
+interface FileTransformerOptions {
+    input: string;
+    transformer: (content: string) => Promise<string> | string;
+    output: string;
+}
+
+export default function fileTransformerPlugin(options: FileTransformerOptions): Plugin {
+    const { input, transformer, output } = options;
+
+    if (!input || !transformer || !output) {
+        throw new Error(
+            'fileTransformerPlugin requires "input", "transformer", and "output" options.',
+        );
+    }
+
+    return {
+        name: "file-transformer",
+        async buildStart() {
+            // Do not perform emit file operation in watch mode (ie. `vite dev`)
+            if (this.meta.watchMode) return;
+
+            // Read and process the file during the build start phase
+            const filePath = path.resolve(input);
+            let fileContent;
+
+            try {
+                fileContent = fs.readFileSync(filePath, "utf-8");
+            } catch (err) {
+                throw new Error(`Failed to read file: ${input} - ${(err as Error).message}`);
+            }
+
+            // Transform the content using the provided transformer function
+            const transformedContent = await transformer(fileContent);
+
+            // Emit the processed file as an asset
+            this.emitFile({
+                type: "asset",
+                fileName: output,
+                source: transformedContent,
+            });
+        },
+        configureServer(server) {
+            // Serve the transformed file during development
+            server.middlewares.use(async (req, res, next) => {
+                if (req.url === `/${output}`) {
+                    try {
+                        const content = fs.readFileSync(input, "utf-8");
+                        const transformed = await transformer(content);
+                        res.setHeader("Content-Type", "text/html");
+                        res.end(transformed);
+                    } catch (err) {
+                        next(err);
+                    }
+                } else {
+                    next();
+                }
+            });
+        },
+    };
+}
