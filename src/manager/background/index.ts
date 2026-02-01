@@ -4,6 +4,7 @@ import { ThemeConfig } from '../../config';
 import { OceanTheme } from './ocean';
 import { ClassicTheme } from './classic';
 import { BasicTheme } from './basic';
+import { CloudyTheme } from './cloudy';
 
 export interface BackgroundTheme {
     renderInitial(): void;
@@ -89,6 +90,9 @@ export class BackgroundManager {
                     this.background,
                     this.assetManager
                 );
+                break;
+            case 'cloudy':
+                this.currentTheme = new CloudyTheme(this.renderer, this.background, themeConfig);
                 break;
             default:
                 this.currentTheme = new BasicTheme(this.renderer, this.background, themeConfig);
