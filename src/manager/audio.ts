@@ -78,21 +78,20 @@ export class AudioManager {
             return;
         }
 
+        // Calculate final volume
+        let finalVolume = this.soundEffectsVolume;
+        
         if (typeof settings !== 'undefined') {
             if (typeof settings.seek !== 'undefined') {
                 sound.seek(settings.seek);
             }
             if (typeof settings.volume !== 'undefined') {
                 // Apply both the per-sound volume and the global volume
-                sound.volume(settings.volume * this.soundEffectsVolume);
-            } else {
-                // Apply only the global volume
-                sound.volume(this.soundEffectsVolume);
+                finalVolume = settings.volume * this.soundEffectsVolume;
             }
-        } else {
-            // Apply only the global volume
-            sound.volume(this.soundEffectsVolume);
         }
+        
+        sound.volume(finalVolume);
         sound.play();
     }
 }
