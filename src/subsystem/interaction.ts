@@ -182,7 +182,6 @@ export function setupInteractionSubsystem(
 
     const zoomable = document.getElementById('zoomable') as HTMLElement;
     let startDistance = 0;
-    let startMidpoint = { x: 0, y: 0 };
 
     function getDistance(touches: TouchList) {
         const [touch1, touch2] = touches;
@@ -216,7 +215,6 @@ export function setupInteractionSubsystem(
             console.log('touch start on zoomable', event.touches);
             if (event.touches.length === 2) {
                 startDistance = getDistance(event.touches);
-                startMidpoint = getMidpoint(event.touches);
                 event.preventDefault();
                 event.stopPropagation();
                 console.log('stopping propagation');
@@ -274,7 +272,6 @@ export function setupInteractionSubsystem(
 
                 // Update the start distance for smooth scaling
                 startDistance = currentDistance;
-                startMidpoint = currentMidpoint;
                 event.preventDefault();
                 // event.stopImmediatePropagation();
             } else if (!isPinching && event.touches.length === 1) {
