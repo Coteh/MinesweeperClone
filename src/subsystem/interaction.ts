@@ -250,17 +250,25 @@ export function setupInteractionSubsystem(
                 // Zoom factor based on distance ratio
                 const zoomFactor = currentDistance / startDistance;
 
-                // Translation based on midpoint movement
                 const newBoardTransform = transformManager.boardTransform;
-                newBoardTransform.x += currentMidpoint.x - startMidpoint.x;
-                newBoardTransform.y += currentMidpoint.y - startMidpoint.y;
+                const oldScale = newBoardTransform.scale;
 
-                // Apply the zoom and translation
-                newBoardTransform.scale *= zoomFactor;
-                newBoardTransform.scale = Math.max(
+                // Calculate new scale, clamped to min/max
+                const newScale = Math.max(
                     MIN_ZOOM,
-                    Math.min(MAX_ZOOM, newBoardTransform.scale)
-                ); // Limit scale between min and max
+                    Math.min(MAX_ZOOM, oldScale * zoomFactor)
+                );
+
+                // Calculate the actual zoom factor applied (accounting for clamping)
+                const actualZoomFactor = newScale / oldScale;
+
+                // Zoom towards the pinch midpoint by adjusting the translation
+                // The formula: new_offset = old_offset + (pinch_point - old_offset) * (1 - zoom_factor)
+                // This keeps the point under the pinch location stationary during zoom
+                newBoardTransform.x = newBoardTransform.x + (currentMidpoint.x - newBoardTransform.x) * (1 - actualZoomFactor);
+                newBoardTransform.y = newBoardTransform.y + (currentMidpoint.y - newBoardTransform.y) * (1 - actualZoomFactor);
+                newBoardTransform.scale = newScale;
+
                 transformManager.boardTransform = newBoardTransform;
                 transformManager.adjustBoardTransform(false);
 
