@@ -143,10 +143,13 @@ export class TransformManager {
             );
         }
 
-        const translateRule = `translate(${this._boardTransform.x}px, ${this._boardTransform.y}px)`;
+        // Round transform values to prevent floating-point accumulation that can cause visual shifts
+        const roundedX = Math.round(this._boardTransform.x * 100) / 100;
+        const roundedY = Math.round(this._boardTransform.y * 100) / 100;
+        const translateRule = `translate(${roundedX}px, ${roundedY}px)`;
         const scaleRule = `scale(${this._boardTransform.scale})`;
         if (useTransition) this.boardElem.style.transition = 'transform 0.25s';
-        this.boardElem.style.transform = `${translateRule}${scaleRule}`;
+        this.boardElem.style.transform = `${translateRule} ${scaleRule}`;
         if (useTransition) {
             setTimeout(() => {
                 this.boardElem.style.transition = '';
