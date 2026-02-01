@@ -175,8 +175,7 @@ body a > .commit-hash {
 }
 
 .credits-content {
-    max-height: 400px;
-    overflow-y: auto;
+    /* Removed max-height and overflow-y to let dialog handle scrolling */
 }
 
 .credits ul {
