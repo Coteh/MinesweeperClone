@@ -28,11 +28,18 @@ import './styles/global.css';
 import { SettingsSubsystem, setupSettingsSubsystem } from './subsystem/settings';
 import { DebugSubsystem, setupDebugSubsystem } from './subsystem/debug';
 import { AudioManager, SoundEffect } from './manager/audio';
-import { ThemeManager } from './manager/theme';
-import { SMILEY_NORMAL, SMILEY_PROUD, SMILEY_SAD } from './consts';
+import { Theme, ThemeManager } from './manager/theme';
+import {
+    BASIC_THEME,
+    SMILEY_NORMAL,
+    SMILEY_PROUD,
+    SMILEY_SAD,
+    THEME_PREFERENCE_NAME,
+} from './consts';
 
 import { loadConfig } from './config/index';
 import type { Config } from './config';
+import { getPreferenceValue } from './preferences';
 
 export type FrontendState = {
     gameOptions: GameOptions;
@@ -416,15 +423,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         await backgroundManager.initialize();
 
-        const loaderWrapper = document.querySelector('.loader-wrapper') as HTMLElement;
-        const loaderElem = loaderWrapper.querySelector('.loader') as HTMLElement;
-
-        loaderElem.style.display = 'none';
-        loaderWrapper.style.backgroundColor = 'rgba(0,0,0,0)';
-        setTimeout(() => {
-            loaderWrapper.style.display = 'none';
-        }, 1000);
-
         settingsSubsystem = setupSettingsSubsystem(
             gameConfig,
             gameStorage,
@@ -441,6 +439,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         debugSubsystem = setupDebugSubsystem(actionIconManager, transformManager, closeDialog);
 
         setDebugEnabled(import.meta.env.VITE_DEBUG_ENABLED);
+
+        // Get stored theme
+        const storedTheme: Theme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
+
+        // Set up game theme based on current setting
+        await themeManager.switchTheme(storedTheme);
+
+        const loaderWrapper = document.querySelector('.loader-wrapper') as HTMLElement;
+        const loaderElem = loaderWrapper.querySelector('.loader') as HTMLElement;
+
+        loaderElem.style.display = 'none';
+        loaderWrapper.style.backgroundColor = 'rgba(0,0,0,0)';
+        setTimeout(() => {
+            loaderWrapper.style.display = 'none';
+        }, 1000);
 
         await initGame(frontendState.gameOptions, eventHandler, gameStorage);
     } catch (e) {

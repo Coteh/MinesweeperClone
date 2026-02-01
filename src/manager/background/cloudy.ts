@@ -1,6 +1,16 @@
-import { Renderer, Container, Graphics, Ticker } from 'pixi.js';
+import {
+    Renderer,
+    Container,
+    Graphics,
+    Ticker,
+    Sprite,
+    ImageSource,
+    Texture,
+    ColorMatrixFilter,
+} from 'pixi.js';
 import { BackgroundTheme } from '.';
 import { ThemeConfig } from '../../config';
+import { AssetManager } from '../asset';
 
 interface Cloud {
     graphics: Graphics;
@@ -15,33 +25,62 @@ interface Cloud {
 export class CloudyTheme implements BackgroundTheme {
     private renderer: Renderer<HTMLCanvasElement>;
     private background: Container;
+    private cloudsContainer: Container;
     private themeConfig: ThemeConfig;
+    private assetManager: AssetManager;
     private clouds: Cloud[] = [];
+    private backgroundSprite: Sprite;
 
     constructor(
         renderer: Renderer<HTMLCanvasElement>,
         background: Container,
-        themeConfig: ThemeConfig
+        themeConfig: ThemeConfig,
+        assetManager: AssetManager
     ) {
         this.renderer = renderer;
         this.background = background;
         this.themeConfig = themeConfig;
+        this.assetManager = assetManager;
+        this.backgroundSprite = new Sprite();
+        this.cloudsContainer = new Container();
 
         this.initialize();
     }
 
-    private initialize() {
+    initialize() {
+        // Load and add background image
+        const bgImg = this.assetManager.getImage('Background.png');
+        if (bgImg) {
+            const bgTexSource = new ImageSource({
+                resource: bgImg,
+            });
+            const bgTex = new Texture({
+                source: bgTexSource,
+            });
+            this.backgroundSprite = new Sprite({
+                texture: bgTex,
+            });
+
+            // Scale to cover viewport while maintaining aspect ratio
+            this.scaleBackgroundSprite();
+            this.background.addChildAt(this.backgroundSprite, 0);
+        }
+
         // Create multiple clouds with different sizes and speeds
         const cloudCount = 5;
+        this.background.addChild(this.cloudsContainer);
 
         for (let i = 0; i < cloudCount; i++) {
             const cloud = this.createCloud();
             this.clouds.push(cloud);
-            this.background.addChild(cloud.graphics);
+            this.cloudsContainer.addChild(cloud.graphics);
         }
 
         // Animate clouds
         Ticker.shared.add(this.animateClouds.bind(this));
+
+        // Set initial filter state
+        this.renderInitial();
     }
 
     private createCloud(): Cloud {
@@ -70,6 +109,33 @@ export class CloudyTheme implements BackgroundTheme {
             width,
             height,
         };
+    }
+
+    private scaleBackgroundSprite() {
+        if (!this.backgroundSprite.texture) return;
+
+        const imageWidth = this.backgroundSprite.texture.width;
+        const imageHeight = this.backgroundSprite.texture.height;
+        const viewportWidth = this.renderer.width;
+        const viewportHeight = this.renderer.height;
+
+        const imageAspect = imageWidth / imageHeight;
+        const viewportAspect = viewportWidth / viewportHeight;
+
+        let scale = 1;
+        if (imageAspect > viewportAspect) {
+            // Image is wider than viewport, scale by height
+            scale = viewportHeight / imageHeight;
+        } else {
+            // Image is taller than viewport, scale by width
+            scale = viewportWidth / imageWidth;
+        }
+
+        this.backgroundSprite.scale.set(scale);
+
+        // Center the sprite
+        this.backgroundSprite.x = (viewportWidth - imageWidth * scale) / 2;
+        this.backgroundSprite.y = (viewportHeight - imageHeight * scale) / 2;
     }
 
     private drawCloudShape(graphics: Graphics, width: number, height: number) {
@@ -137,25 +203,47 @@ export class CloudyTheme implements BackgroundTheme {
             ? this.hexToPixiColor(this.themeConfig.backgroundColor)
             : defaultColor;
         this.renderer.background.color = color;
+        this.background.filters = [];
+
+        // Reset CSS variable
+        document.documentElement.style.setProperty(
+            '--cloud-overlay-color',
+            'rgba(255, 255, 255, 0)'
+        );
     }
 
     renderWin() {
-        const defaultColor = 0x32cd32; // Lime green
-        const color = this.themeConfig.winColor
-            ? this.hexToPixiColor(this.themeConfig.winColor)
-            : defaultColor;
-        this.renderer.background.color = color;
+        const winFilter = new ColorMatrixFilter();
+        winFilter.tint(0x32cd32, false); // Lime green
+        winFilter.brightness(1.2, true);
+        this.background.filters = [winFilter];
+
+        // Update CSS variable for CSS clouds
+        document.documentElement.style.setProperty(
+            '--cloud-overlay-color',
+            'rgba(50, 205, 50, 0.3)'
+        );
     }
 
     renderLose() {
-        const defaultColor = 0xdc143c; // Crimson red
-        const color = this.themeConfig.loseColor
-            ? this.hexToPixiColor(this.themeConfig.loseColor)
-            : defaultColor;
-        this.renderer.background.color = color;
+        const loseFilter = new ColorMatrixFilter();
+        loseFilter.tint(0xdc143c, false); // Crimson red
+        loseFilter.brightness(0.8, true);
+        this.background.filters = [loseFilter];
+
+        // Update CSS variable for CSS clouds
+        document.documentElement.style.setProperty(
+            '--cloud-overlay-color',
+            'rgba(220, 20, 60, 0.4)'
+        );
     }
 
     onResize(): void {
+        // Rescale background sprite to maintain aspect ratio
+        if (this.backgroundSprite && this.backgroundSprite.texture) {
+            this.scaleBackgroundSprite();
+        }
+
         // Reposition clouds if they're outside the new viewport
         for (const cloud of this.clouds) {
             if (cloud.y > this.renderer.height) {

@@ -477,39 +477,46 @@ export class ThemeManager {
         }
     }
 
-    switchTheme(theme: Theme) {
-        // Validate incoming theme and fallback to default
-        if (!theme || !this.getSelectableThemes().includes(theme)) {
-            theme = BASIC_THEME;
-        }
-
-        document.body.classList.remove(this.currentTheme);
-        document.body.classList.add(theme);
-
-        this.currentTheme = theme;
-
-        // Update theme color based on current state (dimmed/normal, win/lose/normal)
-        this.applyCurrentThemeColor();
-
-        const cfg = this.getThemeConfig(theme);
-        this.backgroundManager.switchTheme(theme, cfg);
-
-        // Reload theme assets asynchronously (non-blocking)
-        (async () => {
-            try {
-                const mod = await import('./theme-assets');
-                const { getThemeAssets } = mod;
-                const assetsMap = getThemeAssets(theme);
-                await this.assetManager.registerAssets(assetsMap);
-
-                // Re-apply assets to all data-asset elements
-                this.assetManager.applyDataAssets();
-
-                // Update CSS custom properties for theme-specific assets and colors
-                this.updateThemeVariables(cfg);
-            } catch (e) {
-                console.error('Failed to reload theme assets', e);
+    switchTheme(theme: Theme): Promise<void> {
+        return new Promise((resolve, reject) => {
+            // Validate incoming theme and fallback to default
+            if (!theme || !this.getSelectableThemes().includes(theme)) {
+                theme = BASIC_THEME;
             }
-        })();
+
+            document.body.classList.remove(this.currentTheme);
+            document.body.classList.add(theme);
+
+            this.currentTheme = theme;
+
+            // Update theme color based on current state (dimmed/normal, win/lose/normal)
+            this.applyCurrentThemeColor();
+
+            const cfg = this.getThemeConfig(theme);
+            this.backgroundManager.switchTheme(theme, cfg);
+
+            // Reload theme assets asynchronously (non-blocking)
+            (async () => {
+                try {
+                    const mod = await import('./theme-assets');
+                    const { getThemeAssets } = mod;
+                    const assetsMap = getThemeAssets(theme);
+                    await this.assetManager.registerAssets(assetsMap);
+
+                    // Re-apply assets to all data-asset elements
+                    this.assetManager.applyDataAssets();
+
+                    // Update CSS custom properties for theme-specific assets and colors
+                    this.updateThemeVariables(cfg);
+
+                    this.backgroundManager.reinitialize();
+
+                    resolve();
+                } catch (e) {
+                    console.error('Failed to reload theme assets', e);
+                    reject(e);
+                }
+            })();
+        });
     }
 }

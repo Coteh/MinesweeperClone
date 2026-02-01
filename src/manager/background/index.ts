@@ -7,6 +7,7 @@ import { BasicTheme } from './basic';
 import { CloudyTheme } from './cloudy';
 
 export interface BackgroundTheme {
+    initialize(): void;
     renderInitial(): void;
     renderWin(): void;
     renderLose(): void;
@@ -69,6 +70,12 @@ export class BackgroundManager {
         resizeGame();
     }
 
+    reinitialize() {
+        if (this.currentTheme) {
+            this.currentTheme.initialize();
+        }
+    }
+
     switchTheme(theme: string, themeConfig: ThemeConfig) {
         if (!this.renderer || !this.background) {
             throw new Error('Background not initialized');
@@ -92,7 +99,12 @@ export class BackgroundManager {
                 );
                 break;
             case 'cloudy':
-                this.currentTheme = new CloudyTheme(this.renderer, this.background, themeConfig);
+                this.currentTheme = new CloudyTheme(
+                    this.renderer,
+                    this.background,
+                    themeConfig,
+                    this.assetManager
+                );
                 break;
             default:
                 this.currentTheme = new BasicTheme(this.renderer, this.background, themeConfig);
