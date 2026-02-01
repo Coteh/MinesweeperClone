@@ -1,5 +1,8 @@
 /// <reference types="cypress" />
 
+// Time to wait for zoom animation/update to complete
+const ZOOM_UPDATE_DELAY = 300;
+
 context('zoom', () => {
     beforeEach(() => {
         cy.viewport(1024, 768);
@@ -21,7 +24,7 @@ context('zoom', () => {
                 cy.get('#zoom-in').click();
 
                 // Wait for zoom to update
-                cy.wait(300);
+                cy.wait(ZOOM_UPDATE_DELAY);
 
                 // Verify zoom level increased
                 cy.get('#zoom')
@@ -38,9 +41,9 @@ context('zoom', () => {
         // Click zoom in button multiple times to reach max zoom (MAX_ZOOM = 2)
         // Starting from 1, need to click twice (1 -> 1.5 -> 2)
         cy.get('#zoom-in').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
         cy.get('#zoom-in').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Verify zoom level is at maximum (2)
         cy.get('#zoom')
@@ -56,7 +59,7 @@ context('zoom', () => {
     it('zooms out when zoom out button is clicked', () => {
         // First zoom in to have room to zoom out
         cy.get('#zoom-in').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Get current zoom level
         cy.get('#zoom')
@@ -68,7 +71,7 @@ context('zoom', () => {
                 cy.get('#zoom-out').click();
 
                 // Wait for zoom to update
-                cy.wait(300);
+                cy.wait(ZOOM_UPDATE_DELAY);
 
                 // Verify zoom level decreased
                 cy.get('#zoom')
@@ -85,7 +88,7 @@ context('zoom', () => {
         // Click zoom out button to reach min zoom (MIN_ZOOM = 0.5)
         // Starting from 1, need to click once (1 -> 0.5)
         cy.get('#zoom-out').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Verify zoom level is at minimum (0.5)
         cy.get('#zoom')
@@ -101,7 +104,7 @@ context('zoom', () => {
     it('resets zoom when reset zoom button is clicked', () => {
         // Zoom in first
         cy.get('#zoom-in').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Verify zoom is not at default (1)
         cy.get('#zoom')
@@ -112,7 +115,7 @@ context('zoom', () => {
 
         // Click reset zoom button
         cy.get('#zoom-reset').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Verify zoom is back to default (1)
         cy.get('#zoom')
@@ -137,16 +140,16 @@ context('zoom', () => {
     it('resets state of zoom in button when zoom is reset', () => {
         // Zoom in to max to disable zoom in button
         cy.get('#zoom-in').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
         cy.get('#zoom-in').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Verify zoom in button is disabled
         cy.get('#zoom-in').should('have.class', 'disabled');
 
         // Reset zoom
         cy.get('#zoom-reset').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Verify zoom in button is no longer disabled
         cy.get('#zoom-in').should('not.have.class', 'disabled');
@@ -155,14 +158,14 @@ context('zoom', () => {
     it('resets state of zoom out button when zoom is reset', () => {
         // Zoom out to min to disable zoom out button
         cy.get('#zoom-out').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Verify zoom out button is disabled
         cy.get('#zoom-out').should('have.class', 'disabled');
 
         // Reset zoom
         cy.get('#zoom-reset').click();
-        cy.wait(300);
+        cy.wait(ZOOM_UPDATE_DELAY);
 
         // Verify zoom out button is no longer disabled
         cy.get('#zoom-out').should('not.have.class', 'disabled');

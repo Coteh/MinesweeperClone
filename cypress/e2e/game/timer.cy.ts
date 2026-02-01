@@ -85,7 +85,7 @@ describe('timer', () => {
         cy.get('#time-board')
             .find('img')
             .should('have.length', 3)
-            .each(($img, index) => {
+            .each(($img) => {
                 // All digits should be 0 initially
                 cy.wrap($img).should('have.attr', 'src').and('include', 'digits/0.png');
             });
@@ -93,10 +93,11 @@ describe('timer', () => {
         // Click a block to start the timer
         cy.get('.box').first().click();
 
-        // Wait for at least 1 second
-        cy.wait(1100);
+        // Wait for at least 1 second (1000ms + 100ms buffer for timing precision)
+        const TIMER_TICK_WITH_BUFFER = 1100;
+        cy.wait(TIMER_TICK_WITH_BUFFER);
 
-        // Check that at least one digit has changed (time should be >= 1)
+        // Check that time is at least 1 second (rightmost digit should be at least 1)
         cy.get('#time-board')
             .find('img')
             .last()
@@ -106,11 +107,24 @@ describe('timer', () => {
         // Wait for another second
         cy.wait(1000);
 
-        // Check that time has increased further (time should be >= 2)
+        // Check that time is at least 2 seconds
+        // Since timer could show values like "002", we check if last digit is >= 2
+        // or if it wrapped around (e.g., "010" means 10 seconds)
         cy.get('#time-board')
             .find('img')
-            .last()
-            .should('have.attr', 'src')
-            .and('match', /digits\/[2-9].png/);
+            .then(($imgs) => {
+                // Get all three digit image sources
+                const digits = $imgs.toArray().map((img) => {
+                    const src = img.getAttribute('src') || '';
+                    const match = src.match(/digits\/(\d+|-)\.png/);
+                    return match ? match[1] : '0';
+                });
+                
+                // Parse the full time value
+                const timeValue = parseInt(digits.join(''), 10);
+                
+                // Verify time is at least 2 seconds
+                expect(timeValue).to.be.gte(2);
+            });
     });
 });
