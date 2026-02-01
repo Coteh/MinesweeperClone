@@ -19,11 +19,13 @@ export class DustFieldTheme implements BackgroundTheme {
     private dustGraphics: Graphics;
     private lastSpawnTime: number = 0;
     private spawnInterval: number = 800; // milliseconds
+    private updateParticlesBound: () => void;
 
     constructor(renderer: Renderer<HTMLCanvasElement>, background: Container) {
         this.renderer = renderer;
         this.background = background;
         this.dustGraphics = new Graphics();
+        this.updateParticlesBound = this.updateParticles.bind(this);
 
         this.initialize();
     }
@@ -36,7 +38,7 @@ export class DustFieldTheme implements BackgroundTheme {
             this.createParticle(Math.random() * this.renderer.width);
         }
 
-        Ticker.shared.add(this.updateParticles.bind(this));
+        Ticker.shared.add(this.updateParticlesBound);
     }
 
     private createParticle(x?: number) {
@@ -88,7 +90,6 @@ export class DustFieldTheme implements BackgroundTheme {
             // Draw particle as a soft ellipse
             this.dustGraphics.fill({ color: 0xd2b48c, alpha: p.alpha });
             this.dustGraphics.ellipse(p.x, p.y, p.size * 1.5, p.size);
-            this.dustGraphics.fill();
         }
     }
 
