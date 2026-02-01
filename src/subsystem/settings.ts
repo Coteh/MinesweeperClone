@@ -188,6 +188,7 @@ export function setupSettingsSubsystem(
         // Helper function to get the appropriate volume icon
         const getVolumeIcon = (enabled: boolean, volume: number): string => {
             if (!enabled) return 'volume-x';
+            if (volume === 0) return 'volume';
             if (volume <= 33) return 'volume-1';
             return 'volume-2';
         };
