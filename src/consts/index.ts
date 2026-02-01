@@ -11,6 +11,7 @@ export const DEBUG_HUD_VISIBLE_PREFERENCE_NAME = 'debugHudVisible';
 export const FULLSCREEN_PREFERENCE_NAME = 'fullscreen';
 export const MUSIC_PREFERENCE_NAME = 'music';
 export const SOUND_PREFERENCE_NAME = 'sound';
+export const SOUND_VOLUME_PREFERENCE_NAME = 'soundVolume';
 
 export const THEME_SETTING_NAME = 'theme-switch';
 export const DIFFICULTY_SETTING_NAME = 'difficulty';
