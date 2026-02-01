@@ -5,6 +5,7 @@ import { OceanTheme } from './ocean';
 import { ClassicTheme } from './classic';
 import { BasicTheme } from './basic';
 import { CloudyTheme } from './cloudy';
+import { DustFieldTheme } from './dustfield';
 
 export interface BackgroundTheme {
     initialize(): void;
@@ -112,6 +113,9 @@ export class BackgroundManager {
                     themeConfig,
                     this.assetManager
                 );
+                break;
+            case 'dustfield':
+                this.currentTheme = new DustFieldTheme(this.renderer, this.background);
                 break;
             default:
                 this.currentTheme = new BasicTheme(this.renderer, this.background, themeConfig);
