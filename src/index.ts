@@ -64,7 +64,7 @@ const formatTime = (timeMS: number): string => {
 const setSmileyImage = (
     imageElement: HTMLImageElement,
     smileyPath: string,
-    assetManager: AssetManager,
+    assetManager: AssetManager
 ) => {
     const pre = assetManager.getImage(smileyPath);
     imageElement.src = pre ? pre.src : smileyPath;
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         settingsSubsystem.toggleSettings,
                         debugSubsystem.toggleDebugHud,
                         closeDialog,
-                        frontendState,
+                        frontendState
                     );
                 }
                 settingsSubsystem.setGameState(gameState);
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     gameState.board.reduce(
                         (acc, row) =>
                             acc + row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
-                        0,
+                        0
                     );
                 renderDigits(mineCountBoard, unflaggedCount, assetManager);
                 break;
@@ -212,13 +212,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (gameState.achievedHighscore) {
                         setTimeout(() => {
                             const dialogElem = createDialogContentFromTemplate(
-                                '#high-score-dialog-content',
+                                '#high-score-dialog-content'
                             );
                             const timeFormatted = formatTime(gameState.elapsedTimeMS);
 
-                            (
-                                dialogElem.querySelector('.high-score-time') as HTMLElement
-                            ).innerText = timeFormatted;
+                            (dialogElem.querySelector(
+                                '.high-score-time'
+                            ) as HTMLElement).innerText = timeFormatted;
 
                             renderDialog(dialogElem, {
                                 fadeIn: true,
@@ -435,7 +435,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             actionIconManager,
             transformManager,
             frontendState,
-            closeDialog,
+            closeDialog
         );
         // Debug subsystem needs settings subsystem to be set up first to ensure that preferences are loaded
         debugSubsystem = setupDebugSubsystem(actionIconManager, transformManager, closeDialog);
