@@ -373,6 +373,66 @@ export function setupSettingsSubsystem(
         promptFullscreen();
     }
 
+    // State variables for changelog
+    let changelogFetchSuccess = false;
+    let changelogHTML: string;
+
+    // Changelog link click handler
+    const changelogLink = document.querySelector('#changelog-link') as HTMLAnchorElement;
+    if (changelogLink) {
+        changelogLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            audioManager.playSoundEffect(SoundEffect.Click);
+
+            // Fetch changelog (or use cached version if already fetched)
+            if (!changelogFetchSuccess) {
+                try {
+                    const res = await fetch('CHANGELOG.html');
+                    if (res.status !== 200) {
+                        console.error('Could not fetch changelog:', res.statusText);
+                        changelogHTML = `<p class="changelog-error">Could not retrieve changelog.</p>`;
+                    } else {
+                        changelogHTML = await res.text();
+                        changelogFetchSuccess = true;
+                    }
+                } catch (e) {
+                    console.error('Could not fetch changelog:', e);
+                    changelogHTML = `<p class="changelog-error">Could not retrieve changelog.</p>`;
+                }
+            }
+
+            // Create dialog content from template
+            const dialogElem = createDialogContentFromTemplate('#changelog-content');
+            const changelogElem = dialogElem.querySelector('#changelog-text') as HTMLElement;
+            changelogElem.innerHTML = changelogHTML;
+
+            if (changelogFetchSuccess) {
+                // Capitalize title
+                (changelogElem.children.item(0) as HTMLElement).style.textTransform = 'uppercase';
+
+                // Remove "Keep a Changelog" preamble and "Unreleased" sections (optional cleanup)
+                changelogElem.children.item(1)?.remove();
+                changelogElem.children.item(1)?.remove();
+                changelogElem.children.item(1)?.remove();
+
+                // All links in this section should open a new tab
+                changelogElem.querySelectorAll('a').forEach((elem) => (elem.target = '_blank'));
+            }
+
+            // Render the dialog
+            renderDialog(dialogElem, {
+                fadeIn: true,
+                closable: true,
+                style: {
+                    width: '75%',
+                    height: '75%',
+                    maxWidth: '600px',
+                },
+            });
+        });
+    }
+
     // Return helper functions needed by other subsystems
     return {
         toggleSettings,

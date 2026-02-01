@@ -322,7 +322,7 @@
                 <div class="settings-item-group">
                     <div class="settings-item">
                         <div class="settings-item-column">
-                            <a href="https://github.com/Coteh/MinesweeperClone/releases" target="_blank">
+                            <a href="#" id="changelog-link">
                                 <span class="version-number">v0.0.0</span>
                             </a>
                             <a href="https://github.com/Coteh/MinesweeperClone/commit/" target="_blank">
@@ -481,6 +481,9 @@
             <button class="button prompt-dialog"><span>Prompt Dialog</span></button>
             <button class="button non-closable-dialog"><span>Non-Closable Dialog</span></button>
             <button class="button show-notification"><span>Show Notification</span></button>
+        </template>
+        <template id="changelog-content">
+            <div id="changelog-text" class="dialog-text"></div>
         </template>
         <script src="src/index.ts" type="module"></script>
         <!-- <script src="vendor/snow.js" defer></script> -->
