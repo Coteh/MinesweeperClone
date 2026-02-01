@@ -13,7 +13,7 @@ export enum SoundEffect {
 
 export type SoundSettings = {
     volume?: number;
-    seconds?: number;
+    seek?: number;
 };
 
 const soundEffectsMap: Record<SoundEffect, string> = {
@@ -68,8 +68,8 @@ export class AudioManager {
         }
 
         if (typeof settings !== 'undefined') {
-            if (typeof settings.seconds !== 'undefined') {
-                sound.seek(settings.seconds);
+            if (typeof settings.seek !== 'undefined') {
+                sound.seek(settings.seek);
             }
             if (typeof settings.volume !== 'undefined') {
                 sound.volume(settings.volume);
