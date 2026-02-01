@@ -232,6 +232,13 @@ export function setupSettingsSubsystem(
     }
 
     function initializeSettingsContent() {
+        // Helper function to get the appropriate volume icon
+        const getVolumeIcon = (enabled: boolean, volume: number): string => {
+            if (!enabled) return 'volume-x';
+            if (volume <= 33) return 'volume-1';
+            return 'volume-2';
+        };
+
         // Initialize the difficulty UI element
         const difficultySelector = document.getElementById(
             'difficulty-selector'
@@ -306,13 +313,6 @@ export function setupSettingsSubsystem(
                     // Get current volume for icon selection
                     const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
                     const currentVolume = volumeSlider ? parseInt(volumeSlider.value) : 100;
-                    
-                    // Helper function to get the appropriate volume icon
-                    const getVolumeIcon = (enabled: boolean, volume: number): string => {
-                        if (!enabled) return 'volume-x';
-                        if (volume <= 33) return 'volume-1';
-                        return 'volume-2';
-                    };
                     
                     actionIconManager.changeIcon(
                         knob,
@@ -412,13 +412,6 @@ export function setupSettingsSubsystem(
             audioManager.setSoundEffectsVolume(storedVolume / 100);
             
             const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
-            
-            // Helper function to get the appropriate volume icon
-            const getVolumeIcon = (enabled: boolean, volume: number): string => {
-                if (!enabled) return 'volume-x';
-                if (volume <= 33) return 'volume-1';
-                return 'volume-2';
-            };
             
             actionIconManager.changeIcon(
                 knob,
