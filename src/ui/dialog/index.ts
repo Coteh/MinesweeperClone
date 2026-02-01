@@ -1,6 +1,6 @@
 /**
  * Dialog Stack System - Main Export
- * 
+ *
  * A LIFO stacked modal/dialog system for TypeScript applications
  */
 
@@ -11,9 +11,4 @@ export {
     createTextContent,
     createPromptContent,
 } from './render';
-export type {
-    DialogType,
-    DialogOptions,
-    DialogCallbacks,
-    DialogItem,
-} from './types';
+export type { DialogType, DialogOptions, DialogCallbacks, DialogItem } from './types';

@@ -1,6 +1,6 @@
 /**
  * DialogManager - LIFO (Last In, First Out) stacked modal/dialog system
- * 
+ *
  * Manages a stack of dialogs where the most recently opened dialog is active.
  * When closed, it restores and re-renders the previous dialog with callbacks and focus intact.
  */
@@ -35,7 +35,7 @@ export class DialogManager {
 
     /**
      * Show a new dialog
-     * 
+     *
      * @param content - Content to display in the dialog (DocumentFragment or HTMLElement)
      * @param options - Dialog display options (closable, fadeIn)
      * @param type - Dialog type ('regular' or 'prompt')
@@ -166,7 +166,7 @@ export class DialogManager {
 
     /**
      * Render the current dialog (internal helper)
-     * 
+     *
      * This method:
      * 1. Clones the dialog template
      * 2. Injects the dialog content
@@ -278,7 +278,7 @@ export class DialogManager {
 
     /**
      * Bind confirm/cancel buttons for prompt dialogs
-     * 
+     *
      * For prompt type dialogs, this attaches handlers that:
      * 1. Close the dialog first
      * 2. Then call the user's callback
