@@ -140,7 +140,9 @@ export function setupSettingsSubsystem(
             initializeSettingsContent();
 
             // Set up credits button
-            const creditsButton = settingsDialogContent.querySelector('.credits-link') as HTMLElement;
+            const creditsButton = settingsDialogContent.querySelector(
+                '.credits-link'
+            ) as HTMLElement;
             if (creditsButton) {
                 creditsButton.addEventListener('click', () => {
                     audioManager.playSoundEffect(SoundEffect.Click);
@@ -150,7 +152,7 @@ export function setupSettingsSubsystem(
                         effect: 'pop',
                         style: {
                             width: '75%',
-                            height: 'auto',
+                            height: '60vh',
                             maxWidth: '500px',
                         },
                     });
@@ -263,11 +265,13 @@ export function setupSettingsSubsystem(
                     } else {
                         knob.classList.remove('enabled');
                     }
-                    
+
                     // Get current volume for icon selection
-                    const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
+                    const volumeSlider = document.getElementById(
+                        'volume-slider'
+                    ) as HTMLInputElement;
                     const currentVolume = volumeSlider ? parseInt(volumeSlider.value, 10) : 100;
-                    
+
                     actionIconManager.changeIcon(
                         knob,
                         getVolumeIcon(audioManager.isSoundEffectsEnabled(), currentVolume)
@@ -360,13 +364,16 @@ export function setupSettingsSubsystem(
         if (soundEffectsSettingElem) {
             const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
             audioManager.toggleSoundEffects(soundsEnabled === SETTING_ENABLED);
-            
+
             // Get stored volume or default to 100
-            const storedVolume = parseInt(getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100', 10);
+            const storedVolume = parseInt(
+                getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100',
+                10
+            );
             audioManager.setSoundEffectsVolume(storedVolume / 100);
-            
+
             const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
-            
+
             actionIconManager.changeIcon(
                 knob,
                 getVolumeIcon(audioManager.isSoundEffectsEnabled(), storedVolume)
@@ -374,33 +381,30 @@ export function setupSettingsSubsystem(
             if (soundsEnabled === SETTING_ENABLED) {
                 knob.classList.add('enabled');
             }
-            
+
             // Set up volume slider
             const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
             if (volumeSlider) {
                 volumeSlider.value = storedVolume.toString();
-                
+
                 volumeSlider.addEventListener('input', (e) => {
                     const volume = parseInt((e.target as HTMLInputElement).value, 10);
                     audioManager.setSoundEffectsVolume(volume / 100);
                     savePreferenceValue(SOUND_VOLUME_PREFERENCE_NAME, volume.toString());
-                    
+
                     // Auto-enable sound effects when adjusting volume while muted
                     if (!audioManager.isSoundEffectsEnabled() && volume > 0) {
                         audioManager.toggleSoundEffects(true);
                         savePreferenceValue(SOUND_PREFERENCE_NAME, SETTING_ENABLED);
                         knob.classList.add('enabled');
                     }
-                    
+
                     // Update icon based on volume level (only if sound is enabled)
                     if (audioManager.isSoundEffectsEnabled()) {
-                        actionIconManager.changeIcon(
-                            knob,
-                            getVolumeIcon(true, volume)
-                        );
+                        actionIconManager.changeIcon(knob, getVolumeIcon(true, volume));
                     }
                 });
-                
+
                 // Play click sound when releasing slider
                 // The 'change' event fires on both mouse and touch interactions when the value changes
                 volumeSlider.addEventListener('change', () => {
