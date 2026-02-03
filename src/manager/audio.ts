@@ -1,4 +1,5 @@
 import { AssetManager } from './asset';
+import { Howler } from 'howler';
 
 export enum SoundEffect {
     Click = 'click',
@@ -38,6 +39,7 @@ export class AudioManager {
         this.assetManager = assetManager;
         this.soundEffectsEnabled = true;
         this.soundEffectsVolume = 1.0; // Default to full volume
+        this.setupAudioContextResumeHandlers();
     }
 
     isSoundEffectsEnabled() {
@@ -59,6 +61,42 @@ export class AudioManager {
     setSoundEffectsVolume(volume: number) {
         // Clamp volume between 0 and 1
         this.soundEffectsVolume = Math.max(0, Math.min(1, volume));
+    }
+
+    /**
+     * Sets up event listeners to resume AudioContext when the page becomes visible again.
+     * This is necessary for iOS PWAs where the AudioContext gets suspended when the app
+     * goes to background and needs to be manually resumed.
+     */
+    private setupAudioContextResumeHandlers() {
+        // Handle visibility change (works for most cases)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                this.resumeAudioContext();
+            }
+        });
+
+        // Handle pageshow event (works for back/forward navigation and iOS PWA foreground)
+        window.addEventListener('pageshow', () => {
+            this.resumeAudioContext();
+        });
+
+        // Handle focus event as additional fallback
+        window.addEventListener('focus', () => {
+            this.resumeAudioContext();
+        });
+    }
+
+    /**
+     * Attempts to resume the AudioContext if it's suspended.
+     * This is safe to call multiple times and only does work if the context is actually suspended.
+     */
+    private resumeAudioContext() {
+        if (Howler.ctx && Howler.ctx.state === 'suspended') {
+            Howler.ctx.resume().catch((err) => {
+                console.warn('Failed to resume audio context:', err);
+            });
+        }
     }
 
     playSoundEffect(soundEffect: SoundEffect, settings?: SoundSettings) {

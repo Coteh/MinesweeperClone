@@ -1,6 +1,27 @@
 import { jest } from '@jest/globals';
 import { AudioManager, SoundEffect } from '../src/manager/audio';
 import { AssetManager } from '../src/manager/asset';
+import { Howler } from 'howler';
+
+// Mock Howler
+jest.mock('howler', () => ({
+    Howler: {
+        ctx: null,
+    },
+}));
+
+// Mock global document and window for node environment
+const mockDocument = {
+    addEventListener: jest.fn(),
+    hidden: false,
+};
+
+const mockWindow = {
+    addEventListener: jest.fn(),
+};
+
+global.document = mockDocument as any;
+global.window = mockWindow as any;
 
 // Mock Howl instances
 class MockHowl {
@@ -32,6 +53,13 @@ describe('AudioManager', () => {
     let mockSound: MockHowl;
 
     beforeEach(() => {
+        // Clear all mocks
+        jest.clearAllMocks();
+
+        // Reset mock functions
+        mockDocument.addEventListener = jest.fn();
+        mockWindow.addEventListener = jest.fn();
+
         // Create a mock sound
         mockSound = new MockHowl();
 
@@ -138,6 +166,101 @@ describe('AudioManager', () => {
 
             expect(consoleErrorSpy).toHaveBeenCalledWith('Sound not loaded:', 'click');
             consoleErrorSpy.mockRestore();
+        });
+    });
+
+    describe('AudioContext resume handlers', () => {
+        it('should set up event listeners for visibility change, pageshow, and focus', () => {
+            // These should have been called in the constructor
+            expect(mockDocument.addEventListener).toHaveBeenCalledWith(
+                'visibilitychange',
+                expect.any(Function)
+            );
+            expect(mockWindow.addEventListener).toHaveBeenCalledWith(
+                'pageshow',
+                expect.any(Function)
+            );
+            expect(mockWindow.addEventListener).toHaveBeenCalledWith('focus', expect.any(Function));
+        });
+
+        it('should resume audio context when it is suspended on visibility change', () => {
+            const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+            (Howler as any).ctx = {
+                state: 'suspended',
+                resume: mockResume,
+            };
+
+            // Simulate visibility change
+            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock).mock
+                .calls.find((call: any[]) => call[0] === 'visibilitychange')?.[1] as () => void;
+
+            // Mock document.hidden
+            mockDocument.hidden = false;
+
+            visibilityChangeHandler();
+
+            expect(mockResume).toHaveBeenCalled();
+        });
+
+        it('should not resume audio context when it is already running', () => {
+            const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+            (Howler as any).ctx = {
+                state: 'running',
+                resume: mockResume,
+            };
+
+            // Simulate pageshow event
+            const pageshowHandler = (mockWindow.addEventListener as jest.Mock).mock.calls.find(
+                (call: any[]) => call[0] === 'pageshow'
+            )?.[1] as () => void;
+
+            pageshowHandler();
+
+            expect(mockResume).not.toHaveBeenCalled();
+        });
+
+        it('should not resume audio context when Howler.ctx is null', () => {
+            (Howler as any).ctx = null;
+
+            // Simulate focus event
+            const focusHandler = (mockWindow.addEventListener as jest.Mock).mock.calls.find(
+                (call: any[]) => call[0] === 'focus'
+            )?.[1] as () => void;
+
+            // This should not throw
+            expect(() => {
+                focusHandler();
+            }).not.toThrow();
+        });
+
+        it('should handle resume errors gracefully', () => {
+            const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+            const mockError = new Error('Resume failed');
+            const mockResume = jest.fn<() => Promise<void>>().mockRejectedValue(mockError);
+
+            (Howler as any).ctx = {
+                state: 'suspended',
+                resume: mockResume,
+            };
+
+            // Simulate pageshow event
+            const pageshowHandler = (mockWindow.addEventListener as jest.Mock).mock.calls.find(
+                (call: any[]) => call[0] === 'pageshow'
+            )?.[1] as () => void;
+
+            pageshowHandler();
+
+            // Wait for promise to reject
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    expect(consoleWarnSpy).toHaveBeenCalledWith(
+                        'Failed to resume audio context:',
+                        mockError
+                    );
+                    consoleWarnSpy.mockRestore();
+                    resolve(undefined);
+                }, 0);
+            });
         });
     });
 });
