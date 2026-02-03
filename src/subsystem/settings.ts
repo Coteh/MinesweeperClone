@@ -71,10 +71,7 @@ export function setupSettingsSubsystem(
     const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
     audioManager.toggleSoundEffects(soundsEnabled === SETTING_ENABLED);
 
-    const storedVolume = parseInt(
-        getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100',
-        10
-    );
+    const storedVolume = parseInt(getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100', 10);
     audioManager.setSoundEffectsVolume(storedVolume / 100);
 
     // Get stored difficulty or default to easy
@@ -448,7 +445,6 @@ export function setupSettingsSubsystem(
                 getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100',
                 10
             );
-            audioManager.setSoundEffectsVolume(storedVolume / 100);
 
             const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
 
