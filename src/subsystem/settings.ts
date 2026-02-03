@@ -438,7 +438,6 @@ export function setupSettingsSubsystem(
         const soundEffectsSettingElem = document.querySelector(`.setting.${SOUND_SETTING_NAME}`);
         if (soundEffectsSettingElem) {
             const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
-            audioManager.toggleSoundEffects(soundsEnabled === SETTING_ENABLED);
 
             // Get stored volume or default to 100
             const storedVolume = parseInt(
