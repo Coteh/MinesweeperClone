@@ -296,6 +296,79 @@ describe('Theme Selector', () => {
     });
 });
 
+describe('Nav Layout', () => {
+    it('should place controls in nav bar for default (basic) theme', () => {
+        cy.visit('/');
+        cy.waitForGameReady();
+
+        cy.get('.nav-game-controls #mine-count-board').should('exist');
+        cy.get('.nav-game-controls #new-game').should('exist');
+        cy.get('.nav-game-controls #time-board').should('exist');
+    });
+
+    it('should place controls in game-top for classic theme', () => {
+        cy.visit('/');
+        cy.waitForGameReady();
+
+        cy.get('.settings-link').click();
+        cy.selectTheme('classic');
+
+        cy.get('.game-top #mine-count-board').should('exist');
+        cy.get('.game-top #new-game').should('exist');
+        cy.get('.game-top #time-board').should('exist');
+    });
+
+    it('should move controls back to nav when switching from classic to non-classic', () => {
+        cy.visit('/');
+        cy.waitForGameReady();
+
+        cy.get('.settings-link').click();
+        cy.selectTheme('classic');
+
+        cy.get('.game-top #mine-count-board').should('exist');
+        cy.get('.game-top #new-game').should('exist');
+        cy.get('.game-top #time-board').should('exist');
+
+        cy.selectTheme('ocean');
+
+        cy.get('.nav-game-controls #mine-count-board').should('exist');
+        cy.get('.nav-game-controls #new-game').should('exist');
+        cy.get('.nav-game-controls #time-board').should('exist');
+    });
+
+    it('should place controls in nav on initial load with stored non-classic theme', () => {
+        cy.visit('/', {
+            onBeforeLoad: (win) => {
+                const preferences = {
+                    theme: 'ocean',
+                };
+                win.localStorage.setItem('preferences', JSON.stringify(preferences));
+            },
+        });
+        cy.waitForGameReady();
+
+        cy.get('.nav-game-controls #mine-count-board').should('exist');
+        cy.get('.nav-game-controls #new-game').should('exist');
+        cy.get('.nav-game-controls #time-board').should('exist');
+    });
+
+    it('should place controls in game-top on initial load with stored classic theme', () => {
+        cy.visit('/', {
+            onBeforeLoad: (win) => {
+                const preferences = {
+                    theme: 'classic',
+                };
+                win.localStorage.setItem('preferences', JSON.stringify(preferences));
+            },
+        });
+        cy.waitForGameReady();
+
+        cy.get('.game-top #mine-count-board').should('exist');
+        cy.get('.game-top #new-game').should('exist');
+        cy.get('.game-top #time-board').should('exist');
+    });
+});
+
 describe('Win/Lose Status Bar Colors', () => {
     it('should handle win status bar colors: normal, dimmed on dialog open, and restored on dialog close', () => {
         cy.clearBrowserCache();

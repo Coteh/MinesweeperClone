@@ -80,7 +80,7 @@ export class AudioManager {
 
         // Calculate final volume
         let finalVolume = this.soundEffectsVolume;
-        
+
         if (typeof settings !== 'undefined') {
             if (typeof settings.seek !== 'undefined') {
                 sound.seek(settings.seek);
@@ -90,7 +90,7 @@ export class AudioManager {
                 finalVolume = settings.volume * this.soundEffectsVolume;
             }
         }
-        
+
         sound.volume(finalVolume);
         sound.play();
     }

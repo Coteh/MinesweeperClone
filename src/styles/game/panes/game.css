@@ -10,6 +10,11 @@
     gap: 36px;
 }
 
+body:not(.classic) .game-space > .game-top {
+    height: 8px;
+    gap: 0;
+}
+
 .game-space > .game-board {
     width: 100%;
     display: flex;

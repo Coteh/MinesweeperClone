@@ -131,11 +131,11 @@ describe('AudioManager', () => {
         it('should handle missing sound gracefully', () => {
             const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
             (assetManager.getSoundEffect as any) = jest.fn().mockReturnValue(null);
-            
+
             expect(() => {
                 audioManager.playSoundEffect(SoundEffect.Click);
             }).not.toThrow();
-            
+
             expect(consoleErrorSpy).toHaveBeenCalledWith('Sound not loaded:', 'click');
             consoleErrorSpy.mockRestore();
         });

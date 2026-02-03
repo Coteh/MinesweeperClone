@@ -23,6 +23,10 @@
     transform-origin: top;
 }
 
+body:not(.classic) .pane {
+    height: calc(100% - 80px);
+}
+
 .pane h1,
 h2,
 h3,

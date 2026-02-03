@@ -16,7 +16,6 @@ import {
     SETTING_DISABLED,
     FULLSCREEN_PREFERENCE_NAME,
     THEME_PREFERENCE_NAME,
-    BASIC_THEME,
     SOUND_SETTING_NAME,
     SOUND_PREFERENCE_NAME,
     SOUND_VOLUME_PREFERENCE_NAME,
@@ -48,7 +47,8 @@ export function setupSettingsSubsystem(
     actionIconManager: ActionIconManager,
     transformManager: import('../manager/transform').TransformManager,
     frontendState: FrontendState,
-    closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void
+    closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
+    onThemeSwitch?: (theme: string) => void
 ): SettingsSubsystem {
     let gameState: GameState;
 
@@ -170,7 +170,9 @@ export function setupSettingsSubsystem(
 
                     // Create dialog content from template
                     const dialogElem = createDialogContentFromTemplate('#changelog-content');
-                    const changelogElem = dialogElem.querySelector('#changelog-text') as HTMLElement;
+                    const changelogElem = dialogElem.querySelector(
+                        '#changelog-text'
+                    ) as HTMLElement;
                     changelogElem.innerHTML = changelogHTML;
 
                     if (changelogFetchSuccess) {
@@ -388,6 +390,7 @@ export function setupSettingsSubsystem(
             const themeValue = (e.target as HTMLSelectElement).value as Theme;
 
             await themeManager.switchTheme(themeValue);
+            onThemeSwitch?.(themeValue);
             if (gameState.ended) {
                 if (gameState.won) {
                     backgroundManager.renderWin();

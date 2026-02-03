@@ -40,6 +40,7 @@ import {
 import { loadConfig } from './config/index';
 import type { Config } from './config';
 import { getPreferenceValue } from './preferences';
+import { updateNavLayout } from './nav-layout';
 
 export type FrontendState = {
     gameOptions: GameOptions;
@@ -436,7 +437,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             actionIconManager,
             transformManager,
             frontendState,
-            closeDialog
+            closeDialog,
+            updateNavLayout
         );
         // Debug subsystem needs settings subsystem to be set up first to ensure that preferences are loaded
         debugSubsystem = setupDebugSubsystem(actionIconManager, transformManager, closeDialog);
@@ -448,6 +450,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Set up game theme based on current setting
         await themeManager.switchTheme(storedTheme);
+        updateNavLayout(storedTheme);
 
         const loaderWrapper = document.querySelector('.loader-wrapper') as HTMLElement;
         const loaderElem = loaderWrapper.querySelector('.loader') as HTMLElement;

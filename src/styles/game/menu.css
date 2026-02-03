@@ -65,3 +65,45 @@
 .score-box {
     position: relative;
 }
+
+/* New container for game controls in nav */
+.nav-game-controls {
+    display: none;
+}
+.nav-game-controls:has(> *) {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Non-classic: shorter nav, shrink logo, restore smiley border */
+body:not(.classic) .top-menu {
+    height: 80px;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+body:not(.classic) .top-menu .classic-logo {
+    height: 100%;
+    object-fit: contain;
+}
+
+body:not(.classic) button.button.new-game {
+    border-bottom: 1px solid var(--box-border-color);
+}
+
+@media (max-width: 480px) {
+    body:not(.classic) .nav-game-controls .digit-board img {
+        height: 30px;
+        width: auto;
+    }
+
+    body:not(.classic) .nav-game-controls button.button.new-game img {
+        height: 30px;
+        width: auto;
+    }
+
+    body:not(.classic) .nav-game-controls {
+        gap: 8px;
+    }
+}
