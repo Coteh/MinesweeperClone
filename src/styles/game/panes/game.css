@@ -11,7 +11,7 @@
 }
 
 body:not(.classic) .game-space > .game-top {
-    height: 8px;
+    height: 0;
     gap: 0;
 }
 
