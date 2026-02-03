@@ -1,4 +1,5 @@
 import { AssetManager } from './asset';
+import { Howler } from 'howler';
 
 export enum SoundEffect {
     Click = 'click',
@@ -38,6 +39,29 @@ export class AudioManager {
         this.assetManager = assetManager;
         this.soundEffectsEnabled = true;
         this.soundEffectsVolume = 1.0; // Default to full volume
+
+        // Listen for visibility changes to resume audio context on iOS PWA
+        this.setupVisibilityChangeListener();
+    }
+
+    /**
+     * Set up listener for page visibility changes.
+     * This is crucial for iOS PWAs where audio context gets suspended when backgrounded.
+     */
+    private setupVisibilityChangeListener() {
+        // Only set up the listener if running in a browser environment
+        if (typeof document !== 'undefined') {
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden && Howler.ctx) {
+                    // Resume the audio context when the page becomes visible
+                    // This is specifically needed for iOS PWAs where the audio context
+                    // remains suspended after returning from background
+                    if (Howler.ctx.state === 'suspended') {
+                        Howler.ctx.resume();
+                    }
+                }
+            });
+        }
     }
 
     isSoundEffectsEnabled() {
