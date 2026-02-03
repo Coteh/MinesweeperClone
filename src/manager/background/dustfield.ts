@@ -49,7 +49,7 @@ export class DustFieldTheme implements BackgroundTheme {
             vy: (Math.random() - 0.5) * 0.2,
             size: 30 + Math.random() * 60,
             alpha: 0,
-            targetAlpha: 0.15 + Math.random() * 0.25,
+            targetAlpha: 0.25 + Math.random() * 0.35,
             fadeSpeed: 0.001 + Math.random() * 0.002,
         };
         this.particles.push(particle);
@@ -87,14 +87,14 @@ export class DustFieldTheme implements BackgroundTheme {
                 continue;
             }
 
-            // Draw particle as a soft ellipse
-            this.dustGraphics.fill({ color: 0xd2b48c, alpha: p.alpha });
+            // Draw particle as a soft ellipse with darker tan/brown color
+            this.dustGraphics.fill({ color: 0xa68860, alpha: p.alpha });
             this.dustGraphics.ellipse(p.x, p.y, p.size * 1.5, p.size);
         }
     }
 
     renderInitial() {
-        this.renderer.background.color = 0xc8a882;
+        this.renderer.background.color = 0xb8956a;
     }
 
     renderWin() {
