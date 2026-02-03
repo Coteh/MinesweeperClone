@@ -34,6 +34,7 @@ export class AudioManager {
 
     private soundEffectsEnabled: boolean;
     private soundEffectsVolume: number;
+    private visibilityChangeListener: (() => void) | null = null;
 
     constructor(assetManager: AssetManager) {
         this.assetManager = assetManager;
@@ -51,7 +52,7 @@ export class AudioManager {
     private setupVisibilityChangeListener() {
         // Only set up the listener if running in a browser environment
         if (typeof document !== 'undefined') {
-            document.addEventListener('visibilitychange', () => {
+            this.visibilityChangeListener = () => {
                 if (!document.hidden && Howler.ctx) {
                     // Resume the audio context when the page becomes visible
                     // This is specifically needed for iOS PWAs where the audio context
@@ -60,7 +61,19 @@ export class AudioManager {
                         Howler.ctx.resume();
                     }
                 }
-            });
+            };
+            document.addEventListener('visibilitychange', this.visibilityChangeListener);
+        }
+    }
+
+    /**
+     * Clean up resources and remove event listeners.
+     * Call this when the AudioManager is no longer needed to prevent memory leaks.
+     */
+    destroy() {
+        if (this.visibilityChangeListener && typeof document !== 'undefined') {
+            document.removeEventListener('visibilitychange', this.visibilityChangeListener);
+            this.visibilityChangeListener = null;
         }
     }
 
