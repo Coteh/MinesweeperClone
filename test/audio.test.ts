@@ -233,7 +233,7 @@ describe('AudioManager', () => {
             }).not.toThrow();
         });
 
-        it('should handle resume errors gracefully', () => {
+        it('should handle resume errors gracefully', async () => {
             const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
             const mockError = new Error('Resume failed');
             const mockResume = jest.fn<() => Promise<void>>().mockRejectedValue(mockError);
@@ -251,16 +251,14 @@ describe('AudioManager', () => {
             pageshowHandler();
 
             // Wait for promise to reject
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    expect(consoleWarnSpy).toHaveBeenCalledWith(
-                        'Failed to resume audio context:',
-                        mockError
-                    );
-                    consoleWarnSpy.mockRestore();
-                    resolve(undefined);
-                }, 0);
-            });
+            await Promise.resolve();
+            await Promise.resolve();
+
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                'Failed to resume audio context:',
+                mockError
+            );
+            consoleWarnSpy.mockRestore();
         });
     });
 });
