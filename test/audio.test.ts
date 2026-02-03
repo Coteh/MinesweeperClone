@@ -191,8 +191,9 @@ describe('AudioManager', () => {
             };
 
             // Simulate visibility change
-            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock).mock
-                .calls.find((call: any[]) => call[0] === 'visibilitychange')?.[1] as () => void;
+            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock).mock.calls.find(
+                (call: any[]) => call[0] === 'visibilitychange'
+            )?.[1] as () => void;
 
             // Mock document.hidden
             mockDocument.hidden = false;
