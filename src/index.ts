@@ -35,14 +35,11 @@ import {
     SMILEY_PROUD,
     SMILEY_SAD,
     THEME_PREFERENCE_NAME,
-    SOUND_PREFERENCE_NAME,
-    SOUND_VOLUME_PREFERENCE_NAME,
-    SETTING_ENABLED,
 } from './consts';
 
 import { loadConfig } from './config/index';
 import type { Config } from './config';
-import { getPreferenceValue, initPreferences } from './preferences';
+import { getPreferenceValue } from './preferences';
 import { updateNavLayout } from './nav-layout';
 
 export type FrontendState = {
@@ -105,19 +102,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let transformManager = new TransformManager(middleElem);
     let themeManager = new ThemeManager(backgroundManager, assetManager, gameConfig);
     let audioManager = new AudioManager(assetManager);
-
-    // Initialize preferences early so we can apply audio settings on page load
-    initPreferences(gameStorage, {
-        [SOUND_PREFERENCE_NAME]: SETTING_ENABLED,
-        [SOUND_VOLUME_PREFERENCE_NAME]: '100',
-    });
-
-    // Apply stored audio preferences on page load
-    const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
-    audioManager.toggleSoundEffects(soundsEnabled === SETTING_ENABLED);
-
-    const storedVolume = parseInt(getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100', 10);
-    audioManager.setSoundEffectsVolume(storedVolume / 100);
 
     // Set the theme manager reference for dialog dimming
     setThemeManager(themeManager);
