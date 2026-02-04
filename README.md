@@ -16,27 +16,29 @@ Simple clone of the well-known Minesweeper game. Created using JavaScript, Node.
 ![In-Game](screenshots/game.png "In-Game")
 
 ## Installation
+First, [pnpm](https://pnpm.io/) will need to be installed.
+
 To run the game locally, follow these steps:
 
 1. **Install Dependencies**
 
    Run the following command to install the necessary dependencies:
    ```sh
-   npm install
+   pnpm install
    ```
 
 2. **Build the Game**
 
     Use the following command to build the game:
     ```sh
-    npm run build
+    pnpm run build
     ```
 
 3. **Serve the Game Locally**
 
     Run a local server to serve the contents of the build directory and open the game in your browser:
     ```sh
-    npm run serve
+    pnpm run serve
     ```
 
     Then open http://localhost:4173 to play the game locally.
@@ -45,7 +47,7 @@ To run the game locally, follow these steps:
 
     To run the game in development mode, use the following command:
     ```sh
-    npm run dev
+    pnpm run dev
     ```
 
     Then open http://localhost:5173 to play the game locally in development mode. The game will reload on changes in the source.
