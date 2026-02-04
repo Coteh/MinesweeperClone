@@ -78,8 +78,8 @@ export class AudioManager {
     }
 
     /**
-     * Attempts to resume the AudioContext if it's suspended.
-     * This is safe to call multiple times and only does work if the context is actually suspended.
+     * Attempts to resume the AudioContext if it's not running.
+     * If the AudioContext is already running, this is a no-op.
      */
     private resumeAudioContext() {
         if (Howler.ctx && Howler.ctx.state !== 'running') {
