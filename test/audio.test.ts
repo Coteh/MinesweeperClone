@@ -16,12 +16,7 @@ const mockDocument = {
     visibilityState: 'visible',
 };
 
-const mockWindow = {
-    addEventListener: jest.fn(),
-};
-
 global.document = mockDocument as any;
-global.window = mockWindow as any;
 
 // Mock Howl instances
 class MockHowl {
@@ -58,7 +53,6 @@ describe('AudioManager', () => {
 
         // Reset mock functions
         mockDocument.addEventListener = jest.fn();
-        mockWindow.addEventListener = jest.fn();
 
         // Create a mock sound
         mockSound = new MockHowl();
