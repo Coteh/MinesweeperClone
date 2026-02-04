@@ -26,7 +26,7 @@ const getAdjacentTileElements = (
     x: number,
     y: number,
     gameState: GameState,
-    parentElem: HTMLElement
+    parentElem: HTMLElement,
 ): HTMLElement[] => {
     const adjacentElements: HTMLElement[] = [];
     const board = gameState.board;
@@ -83,7 +83,7 @@ const clearAllPreviews = () => {
 export const renderBoard = (
     parentElem: HTMLElement,
     gameState: GameState,
-    assetManager: AssetManager
+    assetManager: AssetManager,
 ) => {
     parentElem.innerHTML = '';
     // console.log('rendering', gameState.board.length);
@@ -151,6 +151,7 @@ export const renderBoard = (
 
             const applyPreviewState = () => {
                 if (!gameState.board[i][j].isRevealed) return;
+                if (gameState.ended) return; // Don't show surprised face if game has ended
 
                 // Get adjacent non-revealed, non-flagged tiles
                 const previewTiles = getAdjacentTileElements(j, i, gameState, parentElem);
@@ -314,7 +315,7 @@ export const renderBoard = (
 export const renderDigits = (
     parentElem: HTMLElement,
     digits: number,
-    assetManager: AssetManager
+    assetManager: AssetManager,
 ) => {
     let digitStr;
     if (digits < 0) {
@@ -539,7 +540,7 @@ export const renderNotification = (msg: string, timeoutMS: number = 1000) => {
 
     // The original reference is a DocumentFragment, need to find the notification element in the DOM tree to continue using it
     const notificationList = notificationArea.querySelectorAll(
-        '.notification-area > .notification'
+        '.notification-area > .notification',
     ) as NodeListOf<HTMLElement>;
     const notification = notificationList[notificationList.length - 1];
 
