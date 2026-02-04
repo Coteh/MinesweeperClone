@@ -66,24 +66,14 @@ export class AudioManager {
     /**
      * Sets up event listeners to resume AudioContext when the page becomes visible again.
      * This is necessary for iOS PWAs where the AudioContext gets suspended when the app
-     * goes to background and needs to be manually resumed.
+     * goes to background and needs to be explicitly resumed.
+     * NOTE: Might not need this anymore after https://github.com/goldfire/howler.js/pull/1770 is merged.
      */
     private setupAudioContextResumeHandlers() {
-        // Handle visibility change (works for most cases)
         document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
+            if (document.visibilityState === 'visible') {
                 this.resumeAudioContext();
             }
-        });
-
-        // Handle pageshow event (works for back/forward navigation and iOS PWA foreground)
-        window.addEventListener('pageshow', () => {
-            this.resumeAudioContext();
-        });
-
-        // Handle focus event as additional fallback
-        window.addEventListener('focus', () => {
-            this.resumeAudioContext();
         });
     }
 
@@ -92,7 +82,7 @@ export class AudioManager {
      * This is safe to call multiple times and only does work if the context is actually suspended.
      */
     private resumeAudioContext() {
-        if (Howler.ctx && Howler.ctx.state === 'suspended') {
+        if (Howler.ctx && Howler.ctx.state !== 'running') {
             Howler.ctx.resume().catch((err) => {
                 console.warn('Failed to resume audio context:', err);
             });
