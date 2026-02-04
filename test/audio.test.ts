@@ -10,7 +10,7 @@ jest.mock('howler', () => ({
     },
 }));
 
-// Mock global document and window for node environment
+// Mock global document for node environment
 const mockDocument = {
     addEventListener: jest.fn(),
     visibilityState: 'visible',
@@ -258,7 +258,7 @@ describe('AudioManager', () => {
 
             visibilityChangeHandler();
 
-            // Wait for promise to reject
+            // Flush the microtask queue so that the rejected resume's .catch() handler can run.
             await Promise.resolve();
 
             expect(consoleWarnSpy).toHaveBeenCalledWith(
