@@ -200,7 +200,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.log('Player loses!');
                 setSmileyImage(newGameImage, SMILEY_SAD, assetManager);
                 clearInterval(timeBoardInterval);
-                transformManager.resetZoom(true);
+                // Zoom out to fit entire board on screen
+                transformManager.zoomToFitBoard(
+                    gameState.gameOptions.boardWidth,
+                    gameState.gameOptions.boardHeight
+                );
                 backgroundManager.renderLose();
                 themeManager.applyLoseThemeColor();
                 if (!data.onInitialization) {
@@ -211,7 +215,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             case 'win': {
                 console.log('Player wins!');
                 setSmileyImage(newGameImage, SMILEY_PROUD, assetManager);
-                transformManager.resetZoom(true);
+                // Zoom out to fit entire board on screen
+                transformManager.zoomToFitBoard(
+                    gameState.gameOptions.boardWidth,
+                    gameState.gameOptions.boardHeight
+                );
                 backgroundManager.renderWin();
                 themeManager.applyWinThemeColor();
                 if (!data.onInitialization) {
