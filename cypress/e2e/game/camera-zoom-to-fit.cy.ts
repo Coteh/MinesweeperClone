@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
 
 import { GameState, GamePersistentState, MineBlock } from '../../../src/game';
-import { ZOOM_ANIMATION_DURATION } from '../../../src/manager/transform';
+import { ZOOM_ANIMATION_DURATION, CELL_SIZE } from '../../../src/manager/transform';
 
 const standardMineBlock: (
     x: number,
@@ -82,8 +82,7 @@ const getBoardTransform = (): { x: number; y: number; scale: number } => {
 };
 
 const getCornerPositions = (boardWidth: number, boardHeight: number, scale: number) => {
-    const cellSize = 30;
-    const scaledCellSize = cellSize * scale;
+    const scaledCellSize = CELL_SIZE * scale;
     const boardPixelWidth = boardWidth * scaledCellSize;
     const boardPixelHeight = boardHeight * scaledCellSize;
     

@@ -10,6 +10,8 @@ export type TransformEventFunction = () => void;
 export const MIN_ZOOM = 0.5;
 export const MAX_ZOOM = 2;
 export const ZOOM_ANIMATION_DURATION = 250; // milliseconds
+export const CELL_SIZE = 30; // pixels, must match CSS .box dimensions
+export const ZOOM_TO_FIT_PADDING = 40; // pixels
 
 import type { Bounds } from '../config';
 
@@ -88,15 +90,13 @@ export class TransformManager {
         const viewportWidth = window.innerWidth;
         const viewportHeight = window.innerHeight;
 
-        // Calculate board pixel dimensions (30px per cell from CSS)
-        const cellSize = 30;
-        const boardPixelWidth = boardWidth * cellSize;
-        const boardPixelHeight = boardHeight * cellSize;
+        // Calculate board pixel dimensions (CELL_SIZE per cell from CSS)
+        const boardPixelWidth = boardWidth * CELL_SIZE;
+        const boardPixelHeight = boardHeight * CELL_SIZE;
 
-        // Calculate optimal zoom with padding (40px on each side)
-        const padding = 40;
-        const availableWidth = viewportWidth - padding * 2;
-        const availableHeight = viewportHeight - padding * 2;
+        // Calculate optimal zoom with padding
+        const availableWidth = viewportWidth - ZOOM_TO_FIT_PADDING * 2;
+        const availableHeight = viewportHeight - ZOOM_TO_FIT_PADDING * 2;
 
         const scaleX = availableWidth / boardPixelWidth;
         const scaleY = availableHeight / boardPixelHeight;
