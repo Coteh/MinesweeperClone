@@ -9,6 +9,9 @@ export type TransformEventFunction = () => void;
 
 export const MIN_ZOOM = 0.5;
 export const MAX_ZOOM = 2;
+export const ZOOM_ANIMATION_DURATION = 250; // milliseconds
+export const CELL_SIZE = 30; // pixels, must match CSS .box dimensions
+export const ZOOM_TO_FIT_PADDING = 40; // pixels
 
 import type { Bounds } from '../config';
 
@@ -57,6 +60,12 @@ export class TransformManager {
     zoomOut() {
         console.log('zoom out clicked', this._boardTransform.scale);
 
+        // Don't allow zooming out if already below MIN_ZOOM
+        if (this._boardTransform.scale <= MIN_ZOOM) {
+            console.log('Already at or below MIN_ZOOM, cannot zoom out further');
+            return;
+        }
+
         const zoomFactor = -0.5;
         const currentDistance = this._boardTransform.scale + zoomFactor;
 
@@ -71,6 +80,36 @@ export class TransformManager {
         this._boardTransform.scale = clampZoomOut ? Math.min(1, this._boardTransform.scale) : 1;
         this._boardTransform.x = 0;
         this._boardTransform.y = 0;
+        this.adjustBoardTransform(true);
+    }
+
+    zoomToFitBoard(boardWidth: number, boardHeight: number) {
+        console.log('zoom to fit board', boardWidth, boardHeight);
+
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Calculate board pixel dimensions (CELL_SIZE per cell from CSS)
+        const boardPixelWidth = boardWidth * CELL_SIZE;
+        const boardPixelHeight = boardHeight * CELL_SIZE;
+
+        // Calculate optimal zoom with padding
+        const availableWidth = viewportWidth - ZOOM_TO_FIT_PADDING * 2;
+        const availableHeight = viewportHeight - ZOOM_TO_FIT_PADDING * 2;
+
+        const scaleX = availableWidth / boardPixelWidth;
+        const scaleY = availableHeight / boardPixelHeight;
+
+        // Use the smaller scale to ensure the entire board fits
+        // Clamp to MAX_ZOOM (1.0) but allow going below MIN_ZOOM for large boards
+        const optimalScale = Math.min(scaleX, scaleY, MAX_ZOOM);
+
+        // Set the new transform - center at (0, 0) and apply optimal scale
+        this._boardTransform.scale = optimalScale;
+        this._boardTransform.x = 0;
+        this._boardTransform.y = 0;
+
         this.adjustBoardTransform(true);
     }
 
