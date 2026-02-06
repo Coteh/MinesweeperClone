@@ -105,7 +105,7 @@ export class TransformManager {
             // Use the smaller scale to ensure board fits in both dimensions
             const targetScale = Math.min(scaleX, scaleY);
             
-            // Clamp scale to allowed zoom range and don't zoom in beyond 1x
+            // Clamp scale to allowed zoom range (MIN_ZOOM to 1x)
             this._boardTransform.scale = Math.max(MIN_ZOOM, Math.min(1, targetScale));
             
             // Center the board

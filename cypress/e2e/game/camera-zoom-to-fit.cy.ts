@@ -2,6 +2,9 @@
 
 import { GameState, GamePersistentState, MineBlock } from '../../../src/game';
 
+// Animation duration for camera zoom transitions
+const ZOOM_ANIMATION_DURATION = 300;
+
 const standardMineBlock: (
     x: number,
     y: number,
@@ -103,7 +106,7 @@ describe('camera zoom to fit on game end', () => {
                 });
 
             // Wait for zoom animation
-            cy.wait(300);
+            cy.wait(ZOOM_ANIMATION_DURATION);
 
             // Verify the losing mine is highlighted
             cy.get('.game-board > .row')
@@ -156,7 +159,7 @@ describe('camera zoom to fit on game end', () => {
                 });
 
             // Wait for zoom animation
-            cy.wait(300);
+            cy.wait(ZOOM_ANIMATION_DURATION);
 
             // Verify zoom is at or below 1
             cy.get('#zoom')
@@ -250,7 +253,7 @@ describe('camera zoom to fit on game end', () => {
                 });
 
             // Wait for zoom animation
-            cy.wait(300);
+            cy.wait(ZOOM_ANIMATION_DURATION);
 
             // For a 30x16 board, zoom should be significantly less than 1
             cy.get('#zoom')
@@ -346,7 +349,7 @@ describe('camera zoom to fit on game end', () => {
                 });
 
             // Wait for zoom animation
-            cy.wait(300);
+            cy.wait(ZOOM_ANIMATION_DURATION);
 
             // Verify zoom is at or below 1
             cy.get('#zoom')
