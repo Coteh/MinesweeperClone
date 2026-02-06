@@ -181,20 +181,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     newGameImage.src = pre ? pre.src : 'img/Smiley_sad.png';
                 }
                 clearInterval(timeBoardInterval);
-                transformManager.resetZoom(true);
-                
-                // After resetting zoom, check if losing mine is in view and pan minimally if needed
-                let losingSpotFound = false;
-                for (let y = 0; y < gameState.board.length && !losingSpotFound; y++) {
-                    for (let x = 0; x < gameState.board[y].length; x++) {
-                        if (gameState.board[y][x].isLosingSpot) {
-                            transformManager.panToShowTile(x, y);
-                            losingSpotFound = true;
-                            break;
-                        }
-                    }
-                }
-                
+                // Zoom out to fit entire board on screen
+                transformManager.zoomToFitBoard(
+                    gameState.gameOptions.boardWidth,
+                    gameState.gameOptions.boardHeight
+                );
                 backgroundManager.renderLose();
                 if (!data.onInitialization) {
                     audioManager.playSoundEffect(SoundEffect.Explode);
@@ -207,7 +198,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const pre = assetManager.getImage('img/Smiley_proud.png');
                     newGameImage.src = pre ? pre.src : 'img/Smiley_proud.png';
                 }
-                transformManager.resetZoom(true);
+                // Zoom out to fit entire board on screen
+                transformManager.zoomToFitBoard(
+                    gameState.gameOptions.boardWidth,
+                    gameState.gameOptions.boardHeight
+                );
                 backgroundManager.renderWin();
                 if (!data.onInitialization) {
                     audioManager.playSoundEffect(SoundEffect.Win, {

@@ -75,73 +75,48 @@ export class TransformManager {
         this.adjustBoardTransform(true);
     }
 
-    panToShowTile(tileX: number, tileY: number) {
-        // Pan the minimum amount needed to bring a tile into view if it's not already visible
+    zoomToFitBoard(boardWidth: number, boardHeight: number) {
+        // Zoom out to fit the entire board on screen
         try {
             const cellElem = document.querySelector('.box') as HTMLElement | null;
             if (!cellElem) {
-                return; // Can't determine tile position
+                // Fallback to reset if we can't determine cell size
+                this.resetZoom(true);
+                return;
             }
 
             const cellRect = cellElem.getBoundingClientRect();
             const cellW = cellRect.width || DEFAULT_CELL_SIZE;
             const cellH = cellRect.height || DEFAULT_CELL_SIZE;
 
-            // Calculate the tile's bounding box in screen coordinates
-            const boardElem = document.querySelector('#board') as HTMLElement | null;
-            if (!boardElem) {
-                return;
-            }
+            // Calculate board dimensions in pixels (at scale 1)
+            const boardPixelWidth = boardWidth * cellW;
+            const boardPixelHeight = boardHeight * cellH;
 
-            const boardRect = boardElem.getBoundingClientRect();
-            
-            // Calculate tile position relative to board
-            const tileLocalX = tileX * cellW;
-            const tileLocalY = tileY * cellH;
-            
-            // Calculate tile position in screen coordinates
-            const tileScreenLeft = boardRect.left + tileLocalX * this._boardTransform.scale;
-            const tileScreenTop = boardRect.top + tileLocalY * this._boardTransform.scale;
-            const tileScreenRight = tileScreenLeft + cellW * this._boardTransform.scale;
-            const tileScreenBottom = tileScreenTop + cellH * this._boardTransform.scale;
-
-            // Check if tile is already in viewport
+            // Get viewport dimensions with some padding
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
+            const padding = 40; // Leave some padding around the board
+
+            // Calculate scale needed to fit board in viewport
+            const scaleX = (viewportWidth - padding * 2) / boardPixelWidth;
+            const scaleY = (viewportHeight - padding * 2) / boardPixelHeight;
             
-            const isInViewport = 
-                tileScreenLeft >= 0 &&
-                tileScreenTop >= 0 &&
-                tileScreenRight <= viewportWidth &&
-                tileScreenBottom <= viewportHeight;
-
-            if (isInViewport) {
-                return; // Tile is already visible, no need to pan
-            }
-
-            // Calculate minimum pan needed to bring tile into view
-            let panX = 0;
-            let panY = 0;
-
-            if (tileScreenLeft < 0) {
-                panX = -tileScreenLeft;
-            } else if (tileScreenRight > viewportWidth) {
-                panX = viewportWidth - tileScreenRight;
-            }
-
-            if (tileScreenTop < 0) {
-                panY = -tileScreenTop;
-            } else if (tileScreenBottom > viewportHeight) {
-                panY = viewportHeight - tileScreenBottom;
-            }
-
-            // Apply the minimal pan
-            this._boardTransform.x += panX;
-            this._boardTransform.y += panY;
+            // Use the smaller scale to ensure board fits in both dimensions
+            const targetScale = Math.min(scaleX, scaleY);
+            
+            // Clamp scale to allowed zoom range and don't zoom in beyond 1x
+            this._boardTransform.scale = Math.max(MIN_ZOOM, Math.min(1, targetScale));
+            
+            // Center the board
+            this._boardTransform.x = 0;
+            this._boardTransform.y = 0;
 
             this.adjustBoardTransform(true);
         } catch (e) {
-            console.error('Error calculating tile visibility', e);
+            console.error('Error calculating zoom to fit board', e);
+            // Fallback to reset
+            this.resetZoom(true);
         }
     }
 
