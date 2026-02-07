@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { Bounds } from '../../../src/config';
+import type { Bounds } from '../../../src/config';
 
 context('translation bounds', () => {
     beforeEach(() => {

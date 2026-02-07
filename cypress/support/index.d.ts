@@ -6,8 +6,7 @@ interface VerifyBoardOptions {
 
 declare global {
     namespace Cypress {
-        // @ts-expect-error TODO: Fix "All declarations of 'Chainable' must have identical type parameters."
-        interface Chainable<Subject = unknown> {
+        interface Chainable<Subject> {
             clearBrowserCache(): Chainable<Subject>;
             grantClipboardPermission(): Chainable<Subject>;
             shouldNotBeActionable(done: Mocha.Done): Chainable<Element>;
