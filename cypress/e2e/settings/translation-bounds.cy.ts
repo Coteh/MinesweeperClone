@@ -1,5 +1,7 @@
 /// <reference types="cypress" />
 
+import { Bounds } from '../../../src/config';
+
 context('translation bounds', () => {
     beforeEach(() => {
         cy.viewport(1024, 768);
@@ -15,7 +17,8 @@ context('translation bounds', () => {
         cy.changeDifficulty('easy');
 
         cy.fixture('config.json').then((settings) => {
-            const bounds = (settings as any).difficulty.easy.bounds;
+            const bounds = (settings as { difficulty: Record<string, { bounds: Bounds }> })
+                .difficulty.easy.bounds;
             const maxX = bounds.maxX; // positive
             const minX = bounds.minX; // negative
             const maxY = bounds.maxY; // positive
@@ -75,7 +78,8 @@ context('translation bounds', () => {
         cy.changeDifficulty('easy');
 
         cy.fixture('config.json').then((settings) => {
-            const bounds = (settings as any).difficulty.easy.bounds;
+            const bounds = (settings as { difficulty: Record<string, { bounds: Bounds }> })
+                .difficulty.easy.bounds;
             const maxX = bounds.maxX; // positive
             const minX = bounds.minX; // negative
             const maxY = bounds.maxY; // positive

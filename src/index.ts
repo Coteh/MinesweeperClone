@@ -5,6 +5,7 @@ import {
     GameOptions,
     setDebugEnabled,
     GamePersistentState,
+    EventHandler,
 } from './game';
 import { BrowserGameStorage } from './storage/browser';
 import {
@@ -89,19 +90,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let gameState: GameState;
     let persistentState: GamePersistentState;
-    let gameStorage = new BrowserGameStorage();
-    let fullscreenManager = new FullscreenManager();
-    let assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
-    let actionIconManager = new ActionIconManager();
-    let backgroundManager = new BackgroundManager(assetManager);
+    const gameStorage = new BrowserGameStorage();
+    const fullscreenManager = new FullscreenManager();
+    const assetManager = new AssetManager(document.querySelector('.loader-wrapper') as HTMLElement);
+    const actionIconManager = new ActionIconManager();
+    const backgroundManager = new BackgroundManager(assetManager);
 
     // Load config (public/config.json)
     const gameConfig: Config = await loadConfig();
 
     // Create transformManager early so we can set bounds immediately after loading config
-    let transformManager = new TransformManager(middleElem);
-    let themeManager = new ThemeManager(backgroundManager, assetManager, gameConfig);
-    let audioManager = new AudioManager(assetManager);
+    const transformManager = new TransformManager(middleElem);
+    const themeManager = new ThemeManager(backgroundManager, assetManager, gameConfig);
+    const audioManager = new AudioManager(assetManager);
 
     // Set the theme manager reference for dialog dimming
     setThemeManager(themeManager);
@@ -142,11 +143,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     let interactionSubsystem: InteractionSubsystem;
     let debugSubsystem: DebugSubsystem;
 
-    const eventHandler = (event: string, data: any) => {
-        switch (event) {
-            case 'init':
-                gameState = data.gameState;
-                persistentState = data.persistentState;
+    const eventHandler: EventHandler = (event) => {
+        switch (event.type) {
+            case 'init': {
+                gameState = event.data.gameState;
+                persistentState = event.data.persistentState;
                 setSmileyImage(newGameImage, SMILEY_NORMAL, assetManager);
                 clearInterval(timeBoardInterval);
                 timeBoardInterval = setInterval(() => {
@@ -170,9 +171,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
                 settingsSubsystem.setGameState(gameState);
                 break;
-            case 'draw':
+            }
+            case 'draw': {
                 renderBoard(gameBoard, gameState, assetManager);
-                let unflaggedCount =
+                const unflaggedCount =
                     gameState.gameOptions.numberOfMines -
                     gameState.board.reduce(
                         (acc, row) =>
@@ -181,6 +183,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     );
                 renderDigits(mineCountBoard, unflaggedCount, assetManager);
                 break;
+            }
             case 'reveal':
                 if (!gameState.ended) {
                     audioManager.playSoundEffect(SoundEffect.Reveal);
@@ -203,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 transformManager.resetZoom(true);
                 backgroundManager.renderLose();
                 themeManager.applyLoseThemeColor();
-                if (!data.onInitialization) {
+                if (!event.data.onInitialization) {
                     audioManager.playSoundEffect(SoundEffect.Explode);
                 }
                 break;
@@ -214,7 +217,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 transformManager.resetZoom(true);
                 backgroundManager.renderWin();
                 themeManager.applyWinThemeColor();
-                if (!data.onInitialization) {
+                if (!event.data.onInitialization) {
                     audioManager.playSoundEffect(SoundEffect.Win, {
                         seek: 0.3,
                     });
@@ -326,7 +329,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
-    overlayBackElem.addEventListener('click', (_e) => {
+    overlayBackElem.addEventListener('click', () => {
         // Do not allow player to close the dialog if they're presented with a prompt dialog asking for Yes/No
         if (frontendState.isPrompted) {
             return;

@@ -209,7 +209,7 @@ describe('Theme Selector', () => {
                     dimmedRgb.r < normalRgb.r ||
                     dimmedRgb.g < normalRgb.g ||
                     dimmedRgb.b < normalRgb.b;
-                expect(isDarker).to.be.true;
+                expect(isDarker).to.equal(true);
             }
         });
     });

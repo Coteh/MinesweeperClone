@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-import { GamePersistentState, GameState } from '../../../src/game';
+import { GamePersistentState } from '../../../src/game';
 import { Preferences } from '../../../src/preferences';
 
 describe('misc', () => {
@@ -10,7 +10,7 @@ describe('misc', () => {
             // TODO: Use a pre-generated game board by setting local storage game state
             onBeforeLoad: () => {
                 const persistentState: GamePersistentState = {
-                    highscore: 0,
+                    highscore: {},
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
