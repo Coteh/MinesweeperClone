@@ -1,6 +1,13 @@
 /// <reference types="cypress" />
 
+import type { Options as ConfettiOptions } from 'canvas-confetti';
 import { GameState, GamePersistentState, MineBlock } from '../../../src/game';
+
+declare global {
+    interface Window {
+        confetti(options?: ConfettiOptions | undefined): Promise<undefined> | null;
+    }
+}
 
 const standardMineBlock: (
     x: number,
@@ -839,7 +846,6 @@ describe('high score system', () => {
 
             // Spy on window.confetti after the page loads
             cy.window().then((win) => {
-                // @ts-expect-error NOTE: Would need to extend Window type to include a field for the confetti method
                 cy.spy(win, 'confetti').as('confettiSpy');
             });
 
@@ -915,7 +921,6 @@ describe('high score system', () => {
 
             // Spy on window.confetti after the page loads
             cy.window().then((win) => {
-                // @ts-expect-error NOTE: Would need to extend Window type to include a field for the confetti method
                 cy.spy(win, 'confetti').as('confettiSpy');
             });
 
