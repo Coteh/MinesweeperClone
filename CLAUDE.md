@@ -4,13 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
+Use pnpm for dependency installation and running scripts in this project.
+
 ```bash
-npm run dev          # Start dev server (localhost:5173)
-npm run build        # Production build (output: /build)
-npm run serve        # Preview production build (localhost:4173)
-npm run format       # Prettier formatting
-npm test             # Run Jest unit tests
-npm run cypress      # Run Cypress E2E tests (requires dev server running)
+pnpm install         # Install dependencies
+pnpm run dev         # Start dev server (localhost:5173)
+pnpm run build       # Production build (output: /build)
+pnpm run serve       # Preview production build (localhost:4173)
+pnpm run format      # Prettier formatting
+pnpm test            # Run Jest unit tests
+pnpm run cypress     # Run Cypress E2E tests (requires dev server running)
 ```
 
 To run a single Jest test:
