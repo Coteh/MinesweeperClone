@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
-import { GamePersistentState } from '../../../src/game';
+import type { CyHttpMessages } from 'cypress/types/net-stubbing';
+import type { GamePersistentState } from '../../../src/game';
 
 describe('misc', () => {
     beforeEach(() => {
@@ -60,7 +61,7 @@ describe('misc', () => {
         });
 
         it('should only make one request to the changelog', () => {
-            const interceptedRequests = [];
+            const interceptedRequests: CyHttpMessages.IncomingHttpRequest[] = [];
 
             cy.intercept('GET', '/CHANGELOG.html', (req) => {
                 interceptedRequests.push(req);

@@ -63,6 +63,7 @@ describe('question mark input mode', () => {
                         boardHeight: 2,
                         numberOfMines: 1,
                         revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
                     },
                     elapsedTimeMS: 0,
                     spareMineSpot: { x: 0, y: 0 },

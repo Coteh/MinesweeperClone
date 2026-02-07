@@ -82,6 +82,10 @@ Cypress.Commands.add('shouldBeInViewport', { prevSubject: true }, (subject) => {
     const window = Cypress.$(cy.state('window'));
     const bottom = window.height();
     const right = window.width();
+
+    if (bottom === undefined || right === undefined) {
+        throw new Error('Expected window dimensions to be available.');
+    }
     const rect = subject[0].getBoundingClientRect();
 
     expect(rect.top).not.to.be.greaterThan(bottom).and.not.to.be.lessThan(0);
@@ -95,9 +99,13 @@ Cypress.Commands.add('shouldNotBeInViewport', { prevSubject: true }, (subject) =
     const window = Cypress.$(cy.state('window'));
     const bottom = window.height();
     const right = window.width();
+
+    if (bottom === undefined || right === undefined) {
+        throw new Error('Expected window dimensions to be available.');
+    }
     const rect = subject[0].getBoundingClientRect();
 
-    expect(rect).to.satisfy((rect) => {
+    expect(rect).to.satisfy((rect: DOMRect) => {
         return (
             ((rect.top > bottom || rect.top < 0) && (rect.bottom > bottom || rect.bottom < 0)) ||
             ((rect.left > right || rect.left < 0) && (rect.right > right || rect.right < 0))
