@@ -68,14 +68,14 @@ export function setupSettingsSubsystem(
     });
 
     // Apply stored audio preferences on page load
-    const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
+    const soundsEnabled = getPreferenceValue<string>(SOUND_PREFERENCE_NAME);
     audioManager.toggleSoundEffects(soundsEnabled === SETTING_ENABLED);
 
     const storedVolume = parseInt(getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100', 10);
     audioManager.setSoundEffectsVolume(storedVolume / 100);
 
     // Get stored difficulty or default to easy
-    let currDifficulty = getPreferenceValue(DIFFICULTY_PREFERENCE_NAME) || DIFFICULTY_EASY;
+    let currDifficulty = getPreferenceValue<string>(DIFFICULTY_PREFERENCE_NAME) || DIFFICULTY_EASY;
 
     // Helper to update game options based on difficulty
     function switchDifficulty(difficulty: string, options: SwitchDifficultyOptions) {
