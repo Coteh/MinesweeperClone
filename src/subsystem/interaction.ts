@@ -13,7 +13,7 @@ const DIRECTION_RIGHT = 'right';
 const DIRECTION_UP = 'up';
 const DIRECTION_DOWN = 'down';
 
-export type InteractionSubsystem = {};
+export type InteractionSubsystem = Record<string, never>;
 
 export function setupInteractionSubsystem(
     transformManager: TransformManager,
@@ -22,7 +22,7 @@ export function setupInteractionSubsystem(
     gameState: GameState,
     promptNewGame: (onNewGameStarted?: () => void) => void,
     toggleSettings: (enabled: boolean) => void,
-    toggleDebugHud: Function,
+    toggleDebugHud: (isVisible: boolean) => void,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
     frontendState: FrontendState
 ): InteractionSubsystem {
@@ -96,14 +96,15 @@ export function setupInteractionSubsystem(
                 console.log('going up');
                 directionsPressed[DIRECTION_UP] = true;
                 break;
-            case 'd':
+            case 'd': {
                 // Only toggle the debug HUD if debug HUD is enabled
-                let isDebugHudEnabled =
+                const isDebugHudEnabled =
                     getPreferenceValue(DEBUG_HUD_ENABLED_PREFERENCE_NAME) === SETTING_ENABLED;
                 if (isDebugHudEnabled) {
                     toggleDebugHud(debugOverlay.style.display !== 'none');
                 }
                 break;
+            }
         }
     };
 
@@ -214,7 +215,7 @@ export function setupInteractionSubsystem(
     let startTouchY = 0;
     let touchVelocityX = 0;
     let touchVelocityY = 0;
-    let touchFriction = 0.75;
+    const touchFriction = 0.75;
 
     zoomable.addEventListener(
         'touchstart',

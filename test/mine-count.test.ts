@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { jest, expect } from '@jest/globals';
 import { initGame, selectSpot, flagSpot, getGameState, GameOptions, GameState } from '../src/game';
 import { Mock } from 'jest-mock';
 import { NonexistentMockGameStorage } from './util';
@@ -41,7 +41,7 @@ describe('mine count with flags on loss', function () {
         });
 
         // Find the two mines
-        let minePositions: { x: number; y: number }[] = [];
+        const minePositions: { x: number; y: number }[] = [];
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 if (gameState.board[i][j].isMine) {
@@ -106,7 +106,7 @@ describe('mine count with flags on loss', function () {
         });
 
         // Find the two mines
-        let minePositions: { x: number; y: number }[] = [];
+        const minePositions: { x: number; y: number }[] = [];
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 if (gameState.board[i][j].isMine) {
@@ -166,7 +166,7 @@ describe('mine count with flags on loss', function () {
         });
 
         // Find all mines
-        let minePositions: { x: number; y: number }[] = [];
+        const minePositions: { x: number; y: number }[] = [];
         for (let i = 0; i < 5; i++) {
             for (let j = 0; j < 5; j++) {
                 if (gameState.board[i][j].isMine) {

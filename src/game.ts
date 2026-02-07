@@ -53,7 +53,40 @@ export type GamePersistentState = {
     hasPlayedBefore: boolean;
 };
 
-export type EventHandler = (eventID: string, data?: any) => void;
+export type GameEventDataMap = {
+    init: { gameState: GameState; persistentState: GamePersistentState };
+    draw: { gameState: GameState; persistentState: GamePersistentState };
+    win: { gameState: GameState; persistentState: GamePersistentState; onInitialization?: boolean };
+    lose: {
+        gameState: GameState;
+        persistentState: GamePersistentState;
+        onInitialization?: boolean;
+    };
+    reveal: { x: number; y: number };
+    flag: { gameState: GameState };
+    question_mark: { gameState: GameState; persistentState: GamePersistentState };
+    first_block_click: { gameState: GameState; persistentState: GamePersistentState };
+    error: { message?: string };
+};
+
+export type GameEvent =
+    | { type: 'init'; data: GameEventDataMap['init'] }
+    | { type: 'draw'; data: GameEventDataMap['draw'] }
+    | { type: 'win'; data: GameEventDataMap['win'] }
+    | { type: 'lose'; data: GameEventDataMap['lose'] }
+    | { type: 'reveal'; data: GameEventDataMap['reveal'] }
+    | { type: 'flag'; data: GameEventDataMap['flag'] }
+    | { type: 'question_mark'; data: GameEventDataMap['question_mark'] }
+    | { type: 'first_block_click'; data: GameEventDataMap['first_block_click'] }
+    | { type: 'error'; data: GameEventDataMap['error'] };
+
+export type EventHandler = (event: GameEvent) => void;
+
+type SpotRevealCallback = (
+    isMine: boolean,
+    amountOfAdjMines: number,
+    adjacentSpots: MineBlock[] | null
+) => void;
 
 let gameState: GameState = {} as GameState;
 let persistentState: GamePersistentState = {} as GamePersistentState;
@@ -119,12 +152,12 @@ export const initGame = async (
         gameState = gameStorage.loadGame();
         initPersistentState();
 
-        eventHandler('init', { gameState, persistentState });
+        eventHandler({ type: 'init', data: { gameState, persistentState } });
 
         if (debugEnabled) console.log(gameState);
 
         // TODO: Should game state be passed into the draw?
-        eventHandler('draw', { gameState, persistentState });
+        eventHandler({ type: 'draw', data: { gameState, persistentState } });
 
         if (gameState.firstBlockClicked) {
             // TODO: Setup a more accurate game timer that can count by the MS
@@ -137,12 +170,14 @@ export const initGame = async (
 
     if (gameState.ended) {
         if (gameState.won) {
-            eventHandler('win', {
-                onInitialization: true,
+            eventHandler({
+                type: 'win',
+                data: { gameState, persistentState, onInitialization: true },
             });
         } else {
-            eventHandler('lose', {
-                onInitialization: true,
+            eventHandler({
+                type: 'lose',
+                data: { gameState, persistentState, onInitialization: true },
             });
         }
         clearInterval(gameTimer);
@@ -157,7 +192,7 @@ export const newGame = (gameOptions: GameOptions, debugState?: GameState) => {
     }
     initPersistentState();
 
-    eventHandler('init', { gameState, persistentState });
+    eventHandler({ type: 'init', data: { gameState, persistentState } });
 
     if (debugEnabled) console.log(gameState);
 
@@ -175,9 +210,9 @@ export const newGame = (gameOptions: GameOptions, debugState?: GameState) => {
         y: Math.floor(mineSpots[mineSpots.length - 1] / gameOptions.boardWidth),
     };
     //Spot 1 is at [0,0], Spot (boardWidth * boardHeight) is at [boardWidth - 1, boardHeight - 1]
-    for (var k = 0; k < mineSpotsToUse.length; k++) {
-        var yCoord = Math.floor(mineSpotsToUse[k] / gameOptions.boardWidth);
-        var xCoord = mineSpotsToUse[k] % gameOptions.boardWidth;
+    for (let k = 0; k < mineSpotsToUse.length; k++) {
+        const yCoord = Math.floor(mineSpotsToUse[k] / gameOptions.boardWidth);
+        const xCoord = mineSpotsToUse[k] % gameOptions.boardWidth;
         gameState.board[yCoord][xCoord].isMine = true;
         if (debugEnabled) console.log('coords of spot', mineSpotsToUse[k], 'are:', xCoord, yCoord);
     }
@@ -190,25 +225,21 @@ export const newGame = (gameOptions: GameOptions, debugState?: GameState) => {
             gameState.spareMineSpot.y
         );
 
-    // @ts-ignore TODO: Fix gameTimer used before assigned
     clearInterval(gameTimer);
 
     // TODO: Should game state be passed into the draw?
-    eventHandler('draw', {
-        gameState,
-        persistentState,
-    });
+    eventHandler({ type: 'draw', data: { gameState, persistentState } });
 };
 
 const determineMineSpots = (amountOfBoardPieces: number, amountOfMines: number) => {
-    var mineSpots = new Array<number>();
+    const mineSpots = new Array<number>();
 
     if (amountOfMines < amountOfBoardPieces) {
-        var i = 0;
+        let i = 0;
         while (i < amountOfMines + 1) {
-            var randomSelection = Math.floor(Math.random() * (amountOfBoardPieces - 1)); //from 0 to amountOfBoardPieces - 1
-            var isAlreadyThere = false;
-            for (var j = 0; j < mineSpots.length; j++) {
+            const randomSelection = Math.floor(Math.random() * (amountOfBoardPieces - 1)); //from 0 to amountOfBoardPieces - 1
+            let isAlreadyThere = false;
+            for (let j = 0; j < mineSpots.length; j++) {
                 if (randomSelection == mineSpots[j]) {
                     isAlreadyThere = true; //already have a mine at this location, generate a new number
                     break;
@@ -267,7 +298,7 @@ export const selectSpot = function (x: number, y: number) {
             gameState.elapsedTimeMS = Math.min(gameState.elapsedTimeMS + 1000, 999 * 1000);
             gameStorage.saveGame(gameState);
         }, 1000);
-        eventHandler('first_block_click', { gameState, persistentState });
+        eventHandler({ type: 'first_block_click', data: { gameState, persistentState } });
     }
     gameState.firstBlockClicked = true;
     // Unflag the block if a flag has been placed on it
@@ -277,10 +308,10 @@ export const selectSpot = function (x: number, y: number) {
         gameState.board[y][x].isLosingSpot = true;
         gameState.ended = true;
         clearInterval(gameTimer);
-        eventHandler('lose', { gameState, persistentState });
+        eventHandler({ type: 'lose', data: { gameState, persistentState } });
         gameStorage.saveGame(gameState);
         // TODO: Should game state be passed into the draw?
-        eventHandler('draw', { gameState, persistentState });
+        eventHandler({ type: 'draw', data: { gameState, persistentState } });
         return { hitInfo: 'mine', win: false };
     }
     const won = checkForWin();
@@ -289,11 +320,11 @@ export const selectSpot = function (x: number, y: number) {
         gameState.ended = true;
         clearInterval(gameTimer);
         checkForHighscore();
-        eventHandler('win', { gameState, persistentState });
+        eventHandler({ type: 'win', data: { gameState, persistentState } });
     }
-    eventHandler('reveal', { x, y });
+    eventHandler({ type: 'reveal', data: { x, y } });
     // TODO: Should game state be passed into the draw?
-    eventHandler('draw', { gameState, persistentState });
+    eventHandler({ type: 'draw', data: { gameState, persistentState } });
     gameStorage.saveGame(gameState);
     return { hitInfo: 'land', win: won };
 };
@@ -302,15 +333,15 @@ export const selectAdjacentSpots = function (x: number, y: number) {
     if (gameState.ended) {
         return { hitInfo: 'game_ended', win: gameState.won };
     }
-    var doesMineExist = false;
+    let doesMineExist = false;
     //Only selects adjacent spots if there are exactly as many flags in adjacent spots as there are mines
-    var adjacentSpots = getAdjacentSpots(x, y);
-    var amountOfAdjMines = calculateAdjacentMines(adjacentSpots);
-    var amountOfAdjFlags = calculateAdjacentFlags(adjacentSpots);
+    const adjacentSpots = getAdjacentSpots(x, y);
+    const amountOfAdjMines = calculateAdjacentMines(adjacentSpots);
+    const amountOfAdjFlags = calculateAdjacentFlags(adjacentSpots);
     if (amountOfAdjMines > 0 && amountOfAdjMines == amountOfAdjFlags) {
         //Remove spots that have been flagged from the list
         //Also check to see if any of the remaining adjacent spots are mines
-        for (var i = 0; i < adjacentSpots.length; i++) {
+        for (let i = 0; i < adjacentSpots.length; i++) {
             if (adjacentSpots[i].isFlagged) {
                 adjacentSpots.splice(i, 1);
                 i--;
@@ -325,7 +356,7 @@ export const selectAdjacentSpots = function (x: number, y: number) {
         revealMultiple(adjacentSpots).then((res) => {
             if (res) {
                 console.log('At least one block was revealed here');
-                eventHandler('reveal', { x, y });
+                eventHandler({ type: 'reveal', data: { x, y } });
             } else {
                 console.log('No new blocks were revealed');
             }
@@ -334,10 +365,10 @@ export const selectAdjacentSpots = function (x: number, y: number) {
     if (doesMineExist) {
         gameState.ended = true;
         clearInterval(gameTimer);
-        eventHandler('lose', { gameState, persistentState });
+        eventHandler({ type: 'lose', data: { gameState, persistentState } });
         gameStorage.saveGame(gameState);
         // TODO: Should game state be passed into the draw?
-        eventHandler('draw', { gameState, persistentState });
+        eventHandler({ type: 'draw', data: { gameState, persistentState } });
         return { hitInfo: 'mine', win: false };
     }
     const won = checkForWin();
@@ -346,15 +377,15 @@ export const selectAdjacentSpots = function (x: number, y: number) {
         gameState.ended = true;
         clearInterval(gameTimer);
         checkForHighscore();
-        eventHandler('win', { gameState, persistentState });
+        eventHandler({ type: 'win', data: { gameState, persistentState } });
     }
     // TODO: Should game state be passed into the draw?
-    eventHandler('draw', { gameState, persistentState });
+    eventHandler({ type: 'draw', data: { gameState, persistentState } });
     gameStorage.saveGame(gameState);
     return { hitInfo: 'land', win: won };
 };
 
-const performSpotReveal = function (x: number, y: number, callback?: Function) {
+const performSpotReveal = function (x: number, y: number, callback?: SpotRevealCallback) {
     gameState.board[y][x].isRevealed = true;
     // Clear any question mark when revealing
     gameState.board[y][x].isQuestionMark = false;
@@ -382,16 +413,16 @@ const revealSpot: (x: number, y: number) => Promise<boolean> = function (x: numb
         performSpotReveal(x, y, function (
             isMine: boolean,
             amountOfAdjMines: number,
-            adjacentSpots: MineBlock[]
+            adjacentSpots: Array<MineBlock> | null
         ) {
             if (!isMine) {
                 // If mine count is 0, then recursively call revealSpot on all adjacent spots that are not flagged
                 if (amountOfAdjMines <= 0) {
-                    revealMultiple(adjacentSpots.filter((spot) => !spot.isFlagged));
+                    revealMultiple(adjacentSpots?.filter((spot) => !spot.isFlagged) ?? []);
                 }
             } else {
-                for (var a = 0; a < gameState.gameOptions.boardWidth; a++) {
-                    for (var b = 0; b < gameState.gameOptions.boardHeight; b++) {
+                for (let a = 0; a < gameState.gameOptions.boardWidth; a++) {
+                    for (let b = 0; b < gameState.gameOptions.boardHeight; b++) {
                         if (
                             gameState.gameOptions.revealBoardOnLoss ||
                             gameState.board[b][a].isMine
@@ -409,7 +440,7 @@ const revealSpot: (x: number, y: number) => Promise<boolean> = function (x: numb
 const revealMultiple: (spotArr: MineBlock[]) => Promise<boolean> = function (spotArr: MineBlock[]) {
     return new Promise((resolve) => {
         const revealPromises = [];
-        for (var i = 0; i < spotArr.length; i++) {
+        for (let i = 0; i < spotArr.length; i++) {
             revealPromises.push(revealSpot(spotArr[i].x, spotArr[i].y));
         }
         Promise.allSettled(revealPromises).then((results) => {
@@ -423,7 +454,7 @@ const revealMultiple: (spotArr: MineBlock[]) => Promise<boolean> = function (spo
 };
 
 const getAdjacentSpots = function (x: number, y: number) {
-    var adjacentList: Array<MineBlock> = [];
+    const adjacentList: Array<MineBlock> = [];
     //1 2 3
     //4 X 5
     //6 7 8
@@ -437,10 +468,10 @@ const getAdjacentSpots = function (x: number, y: number) {
     // if x is greater than 0 AND y is less than board height - 1, add 6 spot
     // if x is less than board widht - 1 AND y is less than board height - 1, add 8 spot
 
-    var pastLeftEdge = x > 0;
-    var pastRightEdge = x < gameState.gameOptions.boardWidth - 1;
-    var pastTopEdge = y > 0;
-    var pastBottomEdge = y < gameState.gameOptions.boardHeight - 1;
+    const pastLeftEdge = x > 0;
+    const pastRightEdge = x < gameState.gameOptions.boardWidth - 1;
+    const pastTopEdge = y > 0;
+    const pastBottomEdge = y < gameState.gameOptions.boardHeight - 1;
 
     if (pastLeftEdge) {
         adjacentList.push(gameState.board[y][x - 1]); //4
@@ -471,9 +502,9 @@ const getAdjacentSpots = function (x: number, y: number) {
 };
 
 const calculateAdjacentMines = function (adjacentSpots: MineBlock[]) {
-    var amountOfAdjMines = 0;
+    let amountOfAdjMines = 0;
 
-    for (var i = 0; i < adjacentSpots.length; i++) {
+    for (let i = 0; i < adjacentSpots.length; i++) {
         if (adjacentSpots[i].isMine) {
             amountOfAdjMines++;
         }
@@ -483,9 +514,9 @@ const calculateAdjacentMines = function (adjacentSpots: MineBlock[]) {
 };
 
 const calculateAdjacentFlags = function (adjacentSpots: MineBlock[]) {
-    var amountOfAdjFlags = 0;
+    let amountOfAdjFlags = 0;
 
-    for (var i = 0; i < adjacentSpots.length; i++) {
+    for (let i = 0; i < adjacentSpots.length; i++) {
         if (adjacentSpots[i].isFlagged) {
             amountOfAdjFlags++;
         }
@@ -523,10 +554,10 @@ export const questionMarkSpot = function (x: number, y: number) {
     gameState.board[y][x].isQuestionMark = !gameState.board[y][x].isQuestionMark;
 
     // Notify event for question mark action
-    eventHandler('question_mark', { gameState, persistentState });
+    eventHandler({ type: 'question_mark', data: { gameState, persistentState } });
 
     // Notify and persist
-    eventHandler('draw', { gameState, persistentState });
+    eventHandler({ type: 'draw', data: { gameState, persistentState } });
     gameStorage.saveGame(gameState);
 
     return { qmInfo: gameState.board[y][x].isQuestionMark ? 'questioned' : 'unquestioned' };
@@ -561,9 +592,9 @@ export const flagSpot = function (x: number, y: number, expression?: boolean) {
     }
 
     gameState.board[y][x].isFlagged = expression; //spot at x, y is flagged/unflagged
-    eventHandler('flag', { gameState });
+    eventHandler({ type: 'flag', data: { gameState } });
     // TODO: Should game state be passed into the draw?
-    eventHandler('draw', { gameState, persistentState });
+    eventHandler({ type: 'draw', data: { gameState, persistentState } });
     gameStorage.saveGame(gameState);
     return { flagInfo: gameState.board[y][x].isFlagged ? 'flagged' : 'unflagged' };
 };

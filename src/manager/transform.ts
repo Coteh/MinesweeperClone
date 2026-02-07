@@ -125,7 +125,7 @@ export class TransformManager {
                 maxXAllowed = Math.min(this.bounds.maxX, allowedExtentX);
                 minYAllowed = Math.max(this.bounds.minY, -allowedExtentY);
                 maxYAllowed = Math.min(this.bounds.maxY, allowedExtentY);
-            } catch (e) {
+            } catch (_e) {
                 // If measurement fails, fall back to using bounds only
                 minXAllowed = this.bounds.minX;
                 maxXAllowed = this.bounds.maxX;
@@ -180,7 +180,7 @@ export class TransformManager {
         if (!events || event.length === 0) {
             return;
         }
-        for (let event of events) {
+        for (const event of events) {
             event();
         }
     }

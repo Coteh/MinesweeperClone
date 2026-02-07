@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { jest, expect } from '@jest/globals';
 import { initGame, selectSpot, flagSpot, getGameState, GameOptions, GameState } from '../src/game';
 import { Mock } from 'jest-mock';
 import { NonexistentMockGameStorage } from './util';
@@ -77,7 +77,7 @@ describe('flagging tiles', function () {
         });
 
         expect(gameState.board[2][2].isFlagged).toBe(false);
-        let result = flagSpot(2, 2);
+        const result = flagSpot(2, 2);
         expect(result).not.toBe(undefined);
         if (result) {
             expect(result.flagInfo).toBe('flagged');

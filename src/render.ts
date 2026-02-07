@@ -438,8 +438,8 @@ export type PromptDialogOptions = {
     fadeIn?: boolean;
     effect?: DialogEffect;
     style?: CSS.Properties;
-    onConfirm?: Function;
-    onCancel?: Function;
+    onConfirm?: () => void;
+    onCancel?: () => void;
 };
 
 export const renderPromptDialog = (content: HTMLElement, options?: PromptDialogOptions) => {

@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { jest, expect } from '@jest/globals';
 import {
     GameState,
     initGame,
@@ -28,7 +28,7 @@ describe('board setup', function () {
     });
 
     it('should initialize a game 10 wide, 10 high, with 10 mines', async function () {
-        var gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = await setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 10,
             boardHeight: 10,
             numberOfMines: 10,
@@ -37,9 +37,9 @@ describe('board setup', function () {
         });
         expect(gameState.board[0].length).toBe(10);
         expect(gameState.board.length).toBe(10);
-        var mineCount = 0;
-        for (var i = 0; i < gameState.board.length; i++) {
-            for (var j = 0; j < gameState.board[i].length; j++) {
+        let mineCount = 0;
+        for (let i = 0; i < gameState.board.length; i++) {
+            for (let j = 0; j < gameState.board[i].length; j++) {
                 if (gameState.board[j][i].isMine) {
                     mineCount++;
                 }
@@ -115,7 +115,7 @@ describe('first click', () => {
 
     it('should never be a mine', async () => {
         for (let i = 0; i < 10000; i++) {
-            let gameState = await setupGame(new NonexistentMockGameStorage(), {
+            const gameState = await setupGame(new NonexistentMockGameStorage(), {
                 boardWidth: 10,
                 boardHeight: 10,
                 numberOfMines: 10,
@@ -129,7 +129,7 @@ describe('first click', () => {
     });
 
     it('should not generate an automatic win if mine is clicked first', async () => {
-        let gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = await setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 10,
             boardHeight: 10,
             numberOfMines: 10,
@@ -147,7 +147,7 @@ describe('first click', () => {
                 }
             }
         }
-        let result = selectSpot(x, y);
+        const result = selectSpot(x, y);
         expect(result.hitInfo).not.toEqual('mine');
         expect(gameState.board[y][x].isMine).toBeFalsy();
         expect(gameState.won).toBeFalsy();

@@ -56,11 +56,11 @@ export class BackgroundManager {
             this.renderer.render(this.stage);
         };
 
-        var ticker = new Ticker();
+        const ticker = new Ticker();
         ticker.add(render);
         ticker.start();
 
-        var resizeGame = () => {
+        const resizeGame = () => {
             if (!this.renderer) {
                 return;
             }

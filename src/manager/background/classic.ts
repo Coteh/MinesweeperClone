@@ -20,7 +20,7 @@ export class ClassicTheme implements BackgroundTheme {
     private pixelBackgroundFilters: Filter | Filter[];
     private assetManager: AssetManager;
     private tilingTile: TilingSprite;
-    private onReinit?: Function;
+    private onReinit?: () => void;
 
     constructor(
         renderer: Renderer<HTMLCanvasElement>,
@@ -42,7 +42,7 @@ export class ClassicTheme implements BackgroundTheme {
         if (this.onReinit) {
             this.onReinit();
         }
-        let tileImg = this.assetManager.getImage('img/Tiles.png');
+        const tileImg = this.assetManager.getImage('img/Tiles.png');
         if (!tileImg) {
             throw new Error('Tile asset not loaded');
         }

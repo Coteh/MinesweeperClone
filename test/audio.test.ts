@@ -1,7 +1,13 @@
-import { jest } from '@jest/globals';
+import { jest, expect } from '@jest/globals';
 import { AudioManager, SoundEffect } from '../src/manager/audio';
 import { AssetManager } from '../src/manager/asset';
 import { Howler } from 'howler';
+
+type DocumentAddEventListener = <K extends keyof DocumentEventMap>(
+    type: K,
+    listener: (this: Document, ev: DocumentEventMap[K]) => unknown,
+    options?: boolean | AddEventListenerOptions
+) => void;
 
 // Mock Howler
 jest.mock('howler', () => ({
@@ -11,12 +17,12 @@ jest.mock('howler', () => ({
 }));
 
 // Mock global document for node environment
-const mockDocument = {
+const mockDocument: Pick<Document, 'addEventListener' | 'visibilityState'> = {
     addEventListener: jest.fn(),
     visibilityState: 'visible',
 };
 
-global.document = mockDocument as any;
+global.document = mockDocument as Document;
 
 // Mock Howl instances
 class MockHowl {
@@ -59,8 +65,10 @@ describe('AudioManager', () => {
 
         // Create a mock asset manager
         assetManager = {
-            getSoundEffect: jest.fn().mockReturnValue(mockSound),
-        } as any;
+            getSoundEffect: jest.fn().mockReturnValue(mockSound) as (
+                url: string
+            ) => Howl | undefined,
+        } as AssetManager;
 
         audioManager = new AudioManager(assetManager);
     });
@@ -152,7 +160,7 @@ describe('AudioManager', () => {
 
         it('should handle missing sound gracefully', () => {
             const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-            (assetManager.getSoundEffect as any) = jest.fn().mockReturnValue(null);
+            (assetManager.getSoundEffect as jest.Mock).mockReturnValue(null);
 
             expect(() => {
                 audioManager.playSoundEffect(SoundEffect.Click);
@@ -174,15 +182,17 @@ describe('AudioManager', () => {
 
         it('should resume audio context when it is not running on visibility change', () => {
             const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
-            (Howler as any).ctx = {
+            (Howler as {
+                ctx: { state: string; resume: () => Promise<void> } | null;
+            }).ctx = {
                 state: 'suspended',
                 resume: mockResume,
             };
 
             // Simulate visibility change
-            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock).mock.calls.find(
-                (call: any[]) => call[0] === 'visibilitychange'
-            )?.[1] as () => void;
+            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock<
+                DocumentAddEventListener
+            >).mock.calls.find((call) => call[0] === 'visibilitychange')?.[1] as () => void;
 
             // Mock document.visibilityState
             Object.defineProperty(mockDocument, 'visibilityState', {
@@ -197,15 +207,17 @@ describe('AudioManager', () => {
 
         it('should not resume audio context when it is already running', () => {
             const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
-            (Howler as any).ctx = {
+            (Howler as {
+                ctx: { state: string; resume: () => Promise<void> } | null;
+            }).ctx = {
                 state: 'running',
                 resume: mockResume,
             };
 
             // Simulate visibility change
-            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock).mock.calls.find(
-                (call: any[]) => call[0] === 'visibilitychange'
-            )?.[1] as () => void;
+            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock<
+                DocumentAddEventListener
+            >).mock.calls.find((call) => call[0] === 'visibilitychange')?.[1] as () => void;
 
             Object.defineProperty(mockDocument, 'visibilityState', {
                 value: 'visible',
@@ -218,12 +230,14 @@ describe('AudioManager', () => {
         });
 
         it('should not resume audio context when Howler.ctx is null', () => {
-            (Howler as any).ctx = null;
+            (Howler as {
+                ctx: { state: string; resume: () => Promise<void> } | null;
+            }).ctx = null;
 
             // Simulate visibility change
-            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock).mock.calls.find(
-                (call: any[]) => call[0] === 'visibilitychange'
-            )?.[1] as () => void;
+            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock<
+                DocumentAddEventListener
+            >).mock.calls.find((call) => call[0] === 'visibilitychange')?.[1] as () => void;
 
             Object.defineProperty(mockDocument, 'visibilityState', {
                 value: 'visible',
@@ -241,15 +255,17 @@ describe('AudioManager', () => {
             const mockError = new Error('Resume failed');
             const mockResume = jest.fn<() => Promise<void>>().mockRejectedValue(mockError);
 
-            (Howler as any).ctx = {
+            (Howler as {
+                ctx: { state: string; resume: () => Promise<void> } | null;
+            }).ctx = {
                 state: 'suspended',
                 resume: mockResume,
             };
 
             // Simulate visibility change
-            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock).mock.calls.find(
-                (call: any[]) => call[0] === 'visibilitychange'
-            )?.[1] as () => void;
+            const visibilityChangeHandler = (mockDocument.addEventListener as jest.Mock<
+                DocumentAddEventListener
+            >).mock.calls.find((call) => call[0] === 'visibilitychange')?.[1] as () => void;
 
             Object.defineProperty(mockDocument, 'visibilityState', {
                 value: 'visible',

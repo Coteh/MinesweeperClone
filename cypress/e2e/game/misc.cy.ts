@@ -1,13 +1,13 @@
 /// <reference types="cypress" />
 
-import { GamePersistentState, GameState } from '../../../src/game';
+import { GamePersistentState } from '../../../src/game';
 
 describe('misc', () => {
     beforeEach(() => {
         cy.visit('/', {
             onBeforeLoad: () => {
                 const persistentState: GamePersistentState = {
-                    highscore: 0,
+                    highscore: {},
                     unlockables: {},
                     hasPlayedBefore: true,
                 };

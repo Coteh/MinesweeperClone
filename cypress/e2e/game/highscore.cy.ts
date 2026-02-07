@@ -839,7 +839,7 @@ describe('high score system', () => {
 
             // Spy on window.confetti after the page loads
             cy.window().then((win) => {
-                // @ts-ignore NOTE: Would need to extend Window type to include a field for the confetti method
+                // @ts-expect-error NOTE: Would need to extend Window type to include a field for the confetti method
                 cy.spy(win, 'confetti').as('confettiSpy');
             });
 
@@ -915,7 +915,7 @@ describe('high score system', () => {
 
             // Spy on window.confetti after the page loads
             cy.window().then((win) => {
-                // @ts-ignore NOTE: Would need to extend Window type to include a field for the confetti method
+                // @ts-expect-error NOTE: Would need to extend Window type to include a field for the confetti method
                 cy.spy(win, 'confetti').as('confettiSpy');
             });
 
