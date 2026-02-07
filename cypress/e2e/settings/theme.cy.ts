@@ -71,14 +71,12 @@ describe('Theme Selector', () => {
     it('should change the theme when a new theme is selected', () => {
         cy.get('.settings-link').click();
 
-        cy.selectTheme('ocean');
-        cy.get('body').should('have.class', 'ocean');
-
-        cy.selectTheme('classic');
-        cy.get('body').should('have.attr', 'class', 'classic');
-
-        cy.selectTheme('basic');
-        cy.get('body').should('have.class', 'basic');
+        // Test all available themes
+        const themes = ['ocean', 'desert', 'cloudy', 'dustfield', 'classic', 'basic'];
+        themes.forEach((theme) => {
+            cy.selectTheme(theme);
+            cy.get('body').should('have.class', theme);
+        });
     });
 
     it('should load the stored theme upon game load', () => {
@@ -186,8 +184,8 @@ describe('Theme Selector', () => {
     });
 
     it('should verify color blending calculation accuracy', () => {
-        // Test the dimming calculation for different theme colors
-        const themes = ['basic', 'ocean', 'classic'];
+        // Test the dimming calculation for all theme colors
+        const themes = ['basic', 'ocean', 'desert', 'cloudy', 'dustfield', 'classic'];
 
         themes.forEach((themeName) => {
             const themeConfig = config.theme[themeName];
