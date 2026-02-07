@@ -11,7 +11,7 @@
     "serve": "vite preview",
     "lint": "eslint .",
     "format": "prettier --config ./.prettierrc --write .",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit && cd cypress && tsc --noEmit",
     "test": "node --experimental-vm-modules ./node_modules/jest-cli/bin/jest.js",
     "test-ci": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --ci",
     "cypress": "cypress",

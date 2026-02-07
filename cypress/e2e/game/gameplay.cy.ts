@@ -222,20 +222,23 @@ describe('gameplay', () => {
         cy.get('.game-board > .row')
             .eq(0)
             .within((elem) => {
+                const offset = elem.offset();
+
+                if (!offset) {
+                    throw new Error('Expected element to have a valid offset.');
+                }
                 // NOTE: Calling realTouch will flag the tile instead of revealing it, but in real
                 //       gameplay it won't do that unless the player holds it down for 0.25 seconds.
                 // cy.get('.box').eq(0).realTouch();
                 cy.get('.box')
                     .eq(0)
                     .trigger('touchstart', {
-                        touches: [{ clientX: elem.offset().left, clientY: elem.offset().top }],
+                        touches: [{ clientX: offset.left, clientY: offset.top }],
                     });
                 cy.get('.box')
                     .eq(0)
                     .trigger('touchend', {
-                        changedTouches: [
-                            { clientX: elem.offset().left, clientY: elem.offset().top },
-                        ],
+                        changedTouches: [{ clientX: offset.left, clientY: offset.top }],
                     });
             });
         cy.verifyBoardMatches([
@@ -268,20 +271,23 @@ describe('gameplay', () => {
         cy.get('.game-board > .row')
             .eq(0)
             .within((elem) => {
+                const offset = elem.offset();
+
+                if (!offset) {
+                    throw new Error('Expected element to have a valid offset.');
+                }
                 // NOTE: Calling realTouch will flag the tile instead of revealing it, but in real
                 //       gameplay it won't do that unless the player holds it down for 0.25 seconds.
                 // cy.get('.box').eq(0).realTouch();
                 cy.get('.box')
                     .eq(0)
                     .trigger('touchstart', {
-                        touches: [{ clientX: elem.offset().left, clientY: elem.offset().top }],
+                        touches: [{ clientX: offset.left, clientY: offset.top }],
                     });
                 cy.get('.box')
                     .eq(0)
                     .trigger('touchend', {
-                        changedTouches: [
-                            { clientX: elem.offset().left, clientY: elem.offset().top },
-                        ],
+                        changedTouches: [{ clientX: offset.left, clientY: offset.top }],
                     });
             });
         cy.verifyBoardMatches([
@@ -433,18 +439,21 @@ describe('gameplay', () => {
         cy.get('.game-board > .row')
             .eq(0)
             .within((elem) => {
+                const offset = elem.offset();
+
+                if (!offset) {
+                    throw new Error('Expected element to have a valid offset.');
+                }
                 cy.get('.box')
                     .eq(0)
                     .trigger('touchstart', {
-                        touches: [{ clientX: elem.offset().left, clientY: elem.offset().top }],
+                        touches: [{ clientX: offset.left, clientY: offset.top }],
                     });
                 cy.wait(250); // Hold for 0.25 seconds
                 cy.get('.box')
                     .eq(0)
                     .trigger('touchend', {
-                        changedTouches: [
-                            { clientX: elem.offset().left, clientY: elem.offset().top },
-                        ],
+                        changedTouches: [{ clientX: offset.left, clientY: offset.top }],
                     });
             });
         cy.verifyBoardMatches([
@@ -476,18 +485,21 @@ describe('gameplay', () => {
         cy.get('.game-board > .row')
             .eq(0)
             .within((elem) => {
+                const offset = elem.offset();
+
+                if (!offset) {
+                    throw new Error('Expected element to have a valid offset.');
+                }
                 cy.get('.box')
                     .eq(0)
                     .trigger('touchstart', {
-                        touches: [{ clientX: elem.offset().left, clientY: elem.offset().top }],
+                        touches: [{ clientX: offset.left, clientY: offset.top }],
                     });
                 cy.wait(250); // Hold for 0.25 seconds
                 cy.get('.box')
                     .eq(0)
                     .trigger('touchend', {
-                        changedTouches: [
-                            { clientX: elem.offset().left, clientY: elem.offset().top },
-                        ],
+                        changedTouches: [{ clientX: offset.left, clientY: offset.top }],
                     });
             });
         cy.verifyBoardMatches([
@@ -803,6 +815,10 @@ describe('gameplay', () => {
                     .eq(1)
                     .then(($el) => {
                         const win = $el[0].ownerDocument.defaultView;
+
+                        if (!win) {
+                            throw new Error('Expected element to have a valid window.');
+                        }
                         const before = win.getComputedStyle($el[0], '::before');
                         const background = before.getPropertyValue('background');
                         expect(background).to.not.contain(
@@ -855,6 +871,10 @@ describe('gameplay', () => {
                     .eq(1)
                     .then(($el) => {
                         const win = $el[0].ownerDocument.defaultView;
+
+                        if (!win) {
+                            throw new Error('Expected element to have a valid window.');
+                        }
                         const before = win.getComputedStyle($el[0], '::before');
                         const background = before.getPropertyValue('background');
                         expect(background).to.contain(
@@ -1348,6 +1368,10 @@ describe('gameplay', () => {
                     .eq(3)
                     .then(($el) => {
                         const win = $el[0].ownerDocument.defaultView;
+
+                        if (!win) {
+                            throw new Error('Expected element to have a valid window.');
+                        }
                         const before = win.getComputedStyle($el[0], '::before');
                         const background = before.getPropertyValue('background');
                         expect(background).to.contain(
@@ -1373,6 +1397,10 @@ describe('gameplay', () => {
                     .eq(3)
                     .then(($el) => {
                         const win = $el[0].ownerDocument.defaultView;
+
+                        if (!win) {
+                            throw new Error('Expected element to have a valid window.');
+                        }
                         const before = win.getComputedStyle($el[0], '::before');
                         const background = before.getPropertyValue('background');
                         expect(background).to.contain(

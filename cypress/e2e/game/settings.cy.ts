@@ -65,12 +65,13 @@ describe('settings', () => {
                         boardHeight: 4,
                         numberOfMines: 2,
                         revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
                     },
                     elapsedTimeMS: 0,
                     spareMineSpot: { x: 0, y: 0 },
                 };
                 const persistentState: GamePersistentState = {
-                    highscore: 0,
+                    highscore: {},
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
@@ -182,7 +183,13 @@ describe('settings', () => {
         cy.window().then((win) => {
             // The invalid value should be replaced with the default value,
             // which will be set to debug hud options in dev mode
-            expect(JSON.parse(win.localStorage.getItem('preferences'))).to.deep.equal({
+            const preferences = win.localStorage.getItem('preferences');
+
+            if (!preferences) {
+                throw new Error('Expected preferences to exist in localStorage.');
+            }
+
+            expect(JSON.parse(preferences)).to.deep.equal({
                 debugHudEnabled: 'enabled',
                 debugHudVisible: 'enabled',
             });
@@ -199,7 +206,13 @@ describe('settings', () => {
 
         cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');
         cy.window().then((win) => {
-            expect(JSON.parse(win.localStorage.getItem('preferences'))).to.deep.equal({
+            const preferences = win.localStorage.getItem('preferences');
+
+            if (!preferences) {
+                throw new Error('Expected preferences to exist in localStorage.');
+            }
+
+            expect(JSON.parse(preferences)).to.deep.equal({
                 highlight: 'enabled',
                 debugHudEnabled: 'enabled',
                 debugHudVisible: 'enabled',
@@ -210,7 +223,13 @@ describe('settings', () => {
 
         cy.get('.settings-item.highlight .knob').should('not.have.class', 'enabled');
         cy.window().then((win) => {
-            expect(JSON.parse(win.localStorage.getItem('preferences'))).to.deep.equal({
+            const preferences = win.localStorage.getItem('preferences');
+
+            if (!preferences) {
+                throw new Error('Expected preferences to exist in localStorage.');
+            }
+
+            expect(JSON.parse(preferences)).to.deep.equal({
                 highlight: 'disabled',
                 debugHudEnabled: 'enabled',
                 debugHudVisible: 'enabled',

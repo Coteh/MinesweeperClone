@@ -71,12 +71,13 @@ describe('fullscreen', () => {
                         boardHeight: 4,
                         numberOfMines: 2,
                         revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
                     },
                     elapsedTimeMS: 0,
                     spareMineSpot: { x: 0, y: 0 },
                 };
                 const persistentState: GamePersistentState = {
-                    highscore: 0,
+                    highscore: {},
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
