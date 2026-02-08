@@ -28,4 +28,4 @@ $CYPRESS run --spec cypress/e2e/misc/screenshot.cy.ts
 # TODO: Add video screenshot
 # ffmpeg -y -ss 5 -i cypress/videos/screenshot.cy.ts.mp4 -filter:v "crop=$WIDTH:$HEIGHT:$X:$Y,fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" -loop 0 $OUTPUT_FILE
 
-$MAGICK cypress/screenshots/screenshot.cy.ts/readme/screenshot.png -resize 50% screenshots/game.png
+$MAGICK cypress/screenshots/screenshot.cy.ts/readme/screenshot.png screenshots/game.png
