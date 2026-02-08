@@ -9,6 +9,10 @@ import { ThemeManager } from './manager/theme';
 // Module-level reference to the ThemeManager
 let themeManagerRef: ThemeManager | null = null;
 
+// Track app foreground/background state to prevent stale input timing
+let lastResumeTime = 0;
+const RESUME_INPUT_GRACE_PERIOD_MS = 1000; // Ignore timing checks for 1 second after resume
+
 /**
  * Set the ThemeManager reference for dialog color dimming
  * Must be called during initialization
@@ -19,6 +23,19 @@ export const setThemeManager = (themeManager: ThemeManager) => {
         return;
     }
     themeManagerRef = themeManager;
+};
+
+/**
+ * Initialize visibility change listener to track app resume state
+ * This prevents stale input timing from causing incorrect flag actions
+ */
+export const initializeVisibilityTracking = () => {
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            lastResumeTime = Date.now();
+            console.log('App resumed at', lastResumeTime);
+        }
+    });
 };
 
 // Helper function to get adjacent non-revealed, non-flagged tile elements
@@ -239,8 +256,12 @@ export const renderBoard = (
                 clearPreviewState();
 
                 const holdDuration = Date.now() - pressStartTime;
+                const timeSinceResume = Date.now() - lastResumeTime;
+                const isWithinResumeGracePeriod = timeSinceResume < RESUME_INPUT_GRACE_PERIOD_MS;
 
-                if (holdDuration > 250 && !gameState.board[i][j].isRevealed) {
+                // Only trigger flag action if hold duration exceeds threshold AND
+                // we're not within the grace period after app resume
+                if (holdDuration > 250 && !gameState.board[i][j].isRevealed && !isWithinResumeGracePeriod) {
                     flagSpot(j, i);
                     blockPressed = false;
                     return;

@@ -15,6 +15,7 @@ import {
     renderDigits,
     renderPromptDialog,
     setThemeManager,
+    initializeVisibilityTracking,
 } from './render';
 import * as feather from 'feather-icons';
 import confetti from 'canvas-confetti';
@@ -106,6 +107,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set the theme manager reference for dialog dimming
     setThemeManager(themeManager);
+
+    // Initialize visibility tracking to prevent stale input timing issues after app resume
+    initializeVisibilityTracking();
 
     // Initialize frontend state from the first difficulty in the config, fallback to hardcoded values
     const difficultyKeys = Object.keys(gameConfig.difficulty);
