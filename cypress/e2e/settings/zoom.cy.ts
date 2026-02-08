@@ -101,16 +101,49 @@ context('zoom', () => {
         cy.get('#zoom-out').should('have.class', 'disabled');
     });
 
-    it('resets zoom when reset zoom button is clicked', () => {
-        // Zoom in first
+    it('resets zoom, position, and button states when zoom reset is clicked', () => {
+        // Zoom in to max, then zoom out to min
         cy.get('#zoom-in').click();
         cy.wait(ZOOM_UPDATE_DELAY);
+        cy.get('#zoom-in').click();
+        cy.wait(ZOOM_UPDATE_DELAY);
+        cy.get('#zoom-in').should('have.class', 'disabled');
+
+        cy.get('#zoom-out').click();
+        cy.wait(ZOOM_UPDATE_DELAY);
+        cy.get('#zoom-in').should('not.have.class', 'disabled');
 
         // Verify zoom is not at default (1)
         cy.get('#zoom')
             .invoke('text')
             .then((zoom) => {
                 expect(parseFloat(zoom)).to.not.equal(1);
+            });
+
+        // Verify position is set to (0, 0)
+        cy.get('#x')
+            .invoke('text')
+            .then((x) => {
+                expect(parseFloat(x)).to.equal(0);
+            });
+        cy.get('#y')
+            .invoke('text')
+            .then((y) => {
+                expect(parseFloat(y)).to.equal(0);
+            });
+
+        cy.realPress('ArrowLeft');
+
+        // Verify position is not at default
+        cy.get('#x')
+            .invoke('text')
+            .then((x) => {
+                expect(parseFloat(x)).to.not.equal(0);
+            });
+        cy.get('#y')
+            .invoke('text')
+            .then((y) => {
+                expect(parseFloat(y)).to.equal(0);
             });
 
         // Click reset zoom button
@@ -135,39 +168,9 @@ context('zoom', () => {
             .then((y) => {
                 expect(parseFloat(y)).to.equal(0);
             });
-    });
 
-    it('resets state of zoom in button when zoom is reset', () => {
-        // Zoom in to max to disable zoom in button
-        cy.get('#zoom-in').click();
-        cy.wait(ZOOM_UPDATE_DELAY);
-        cy.get('#zoom-in').click();
-        cy.wait(ZOOM_UPDATE_DELAY);
-
-        // Verify zoom in button is disabled
-        cy.get('#zoom-in').should('have.class', 'disabled');
-
-        // Reset zoom
-        cy.get('#zoom-reset').click();
-        cy.wait(ZOOM_UPDATE_DELAY);
-
-        // Verify zoom in button is no longer disabled
+        // Verify zoom buttons are enabled again
         cy.get('#zoom-in').should('not.have.class', 'disabled');
-    });
-
-    it('resets state of zoom out button when zoom is reset', () => {
-        // Zoom out to min to disable zoom out button
-        cy.get('#zoom-out').click();
-        cy.wait(ZOOM_UPDATE_DELAY);
-
-        // Verify zoom out button is disabled
-        cy.get('#zoom-out').should('have.class', 'disabled');
-
-        // Reset zoom
-        cy.get('#zoom-reset').click();
-        cy.wait(ZOOM_UPDATE_DELAY);
-
-        // Verify zoom out button is no longer disabled
         cy.get('#zoom-out').should('not.have.class', 'disabled');
     });
 });

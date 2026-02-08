@@ -1568,4 +1568,66 @@ describe('gameplay', () => {
             });
         });
     });
+
+    describe('impossible scenarios', () => {
+        it('should win instantly on first click when no mines exist', () => {
+            cy.clearBrowserCache();
+            cy.visit('/', {
+                onBeforeLoad: () => {
+                    const gameState: GameState = {
+                        board: [
+                            [
+                                standardMineBlock(0, 0, false, 0, false, false, false, false),
+                                standardMineBlock(1, 0, false, 0, false, false, false, false),
+                            ],
+                            [
+                                standardMineBlock(0, 1, false, 0, false, false, false, false),
+                                standardMineBlock(1, 1, false, 0, false, false, false, false),
+                            ],
+                        ],
+                        ended: false,
+                        won: false,
+                        firstBlockClicked: false,
+                        score: 0,
+                        didUndo: false,
+                        achievedHighscore: false,
+                        gameOptions: {
+                            boardWidth: 2,
+                            boardHeight: 2,
+                            numberOfMines: 0,
+                            revealBoardOnLoss: true,
+                            difficultyKey: 'easy',
+                        },
+                        elapsedTimeMS: 0,
+                        spareMineSpot: { x: 0, y: 0 },
+                    };
+                    const persistentState: GamePersistentState = {
+                        highscore: {},
+                        unlockables: {},
+                        hasPlayedBefore: true,
+                    };
+
+                    window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    window.localStorage.setItem(
+                        'persistent-state',
+                        JSON.stringify(persistentState)
+                    );
+                },
+            });
+
+            cy.waitForGameReady();
+
+            cy.get('.box').first().click();
+
+            cy.get('#new-game img').should('have.attr', 'data-asset', 'img/Smiley_proud.png');
+
+            cy.window().then((win) => {
+                const storedState = win.localStorage.getItem('game-state');
+                expect(storedState).to.not.equal(null);
+                const gameState = JSON.parse(storedState as string) as GameState;
+                expect(gameState.won).to.equal(true);
+                expect(gameState.ended).to.equal(true);
+            });
+        });
+    });
 });
