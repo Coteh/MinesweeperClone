@@ -25,6 +25,7 @@ import { BackgroundManager } from '../manager/background';
 import { AudioManager, SoundEffect } from '../manager/audio';
 import { Theme, ThemeManager } from '../manager/theme';
 import { ActionIconManager } from '../manager/action-icon';
+import type { DebugSubsystem } from './debug';
 
 export type SwitchDifficultyOptions = {
     startNewGame: boolean;
@@ -33,7 +34,7 @@ export type SwitchDifficultyOptions = {
 export type SettingsSubsystem = {
     toggleSettings: (enabled: boolean) => void;
     setGameState: (gameState: GameState) => void;
-    setDebugSubsystem: (debugSubsystem: import('./debug').DebugSubsystem) => void;
+    setDebugSubsystem: (debugSubsystem: DebugSubsystem) => void;
 };
 
 import type { Config } from '../config';
@@ -52,13 +53,13 @@ export function setupSettingsSubsystem(
     onThemeSwitch?: (theme: string) => void,
 ): SettingsSubsystem {
     let gameState: GameState;
-    let _debugSubsystem: import('./debug').DebugSubsystem | null = null;
+    let _debugSubsystem: DebugSubsystem | null = null;
 
     const setGameState = (_gameState: GameState) => {
         gameState = _gameState;
     };
 
-    const setDebugSubsystem = (debugSubsystem: import('./debug').DebugSubsystem) => {
+    const setDebugSubsystem = (debugSubsystem: DebugSubsystem) => {
         _debugSubsystem = debugSubsystem;
     };
 
