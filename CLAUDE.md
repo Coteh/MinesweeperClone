@@ -11,9 +11,22 @@ pnpm install         # Install dependencies
 pnpm run dev         # Start dev server (localhost:5173)
 pnpm run build       # Production build (output: /build)
 pnpm run serve       # Preview production build (localhost:4173)
+pnpm run lint        # ESLint
 pnpm run format      # Prettier formatting
+pnpm run format:check # Prettier formatting check
+pnpm run type-check  # TypeScript type check
 pnpm test            # Run Jest unit tests
 pnpm run cypress     # Run Cypress E2E tests (requires dev server running)
+```
+
+## Quality Gates
+
+Before completing any work, run lint, type check, and format checks and ensure they all pass:
+
+```bash
+pnpm run lint
+pnpm run type-check
+pnpm run format:check
 ```
 
 To run a single Jest test:
