@@ -9,7 +9,7 @@ describe('auto-flag mines on win', function () {
 
     async function setupGame(
         gameStorage: IGameStorage,
-        gameOptions: GameOptions
+        gameOptions: GameOptions,
     ): Promise<GameState> {
         await initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
@@ -18,7 +18,7 @@ describe('auto-flag mines on win', function () {
     function calculateFlaggedCount(gameState: GameState): number {
         return gameState.board.reduce(
             (acc, row) => acc + row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
-            0
+            0,
         );
     }
 
