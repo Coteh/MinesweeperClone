@@ -4,16 +4,14 @@
 [![release | v2.0.0](https://img.shields.io/badge/release-v2.0.0-00b2ff.svg)](https://github.com/Coteh/MinesweeperClone/releases/tag/v2.0.0)
 [![Play here](https://img.shields.io/badge/play-here-yellow.svg)](http://coteh.github.io/MinesweeperClone/)
 
-Simple clone of the well-known Minesweeper game. Created using JavaScript, Node.js, and PixiJS.
+Simple clone of the well-known Minesweeper game. Created using vanilla JavaScript, CSS, HTML, and PixiJS.
+
+![In-Game](screenshots/game.png "In-Game")
 
 ## Features
 - Simple and familiar Minesweeper gameplay
 - Ability to initialize a Minesweeper instance with specified height and width of board, and number of mines
 - Game rendering with PixiJS
-
-## Screenshots
-![Title Screen](screenshots/title.png "Title Screen")
-![In-Game](screenshots/game.png "In-Game")
 
 ## Installation
 First, [pnpm](https://pnpm.io/) will need to be installed.
