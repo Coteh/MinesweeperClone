@@ -1,3 +1,8 @@
+publicHoistPattern:
+  - '*eslint*'
+  - '*prettier*'
+  - '*jest*'
+
 onlyBuiltDependencies:
   - core-js
   - cypress
