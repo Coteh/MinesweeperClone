@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             actionIconManager,
             transformManager,
             audioManager,
-            closeDialog
+            closeDialog,
         );
 
         // Pass debug subsystem to settings so it can set up the debug button
