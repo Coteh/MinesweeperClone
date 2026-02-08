@@ -1,7 +1,6 @@
 publicHoistPattern:
-  - '*eslint*'
-  - '*prettier*'
-  - '*jest*'
+  - '@jest/globals'
+  - 'jest-mock'
 
 onlyBuiltDependencies:
   - core-js
