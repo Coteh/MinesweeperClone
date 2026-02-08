@@ -30,8 +30,6 @@ export function setupDebugSubsystem(
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;
     const debugHudButton = document.querySelector('.link-icon#debug-hud') as HTMLElement;
 
-    let debugButtonSetup = false;
-
     const setupDebugButton = () => {
         const debugButton = document.querySelector('#debug') as HTMLElement;
         if (!debugButton) {
@@ -42,12 +40,6 @@ export function setupDebugSubsystem(
         if (import.meta.env.DEV && !import.meta.env.VITE_DEBUG_OFF) {
             debugButton.style.display = '';
         }
-
-        // Only set up the event listener once to avoid duplicates
-        if (debugButtonSetup) {
-            return;
-        }
-        debugButtonSetup = true;
 
         debugButton.addEventListener('click', (e) => {
             e.preventDefault();
