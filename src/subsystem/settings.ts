@@ -33,6 +33,7 @@ export type SwitchDifficultyOptions = {
 export type SettingsSubsystem = {
     toggleSettings: (enabled: boolean) => void;
     setGameState: (gameState: GameState) => void;
+    setDebugSubsystem: (debugSubsystem: import('./debug').DebugSubsystem) => void;
 };
 
 import type { Config } from '../config';
@@ -51,9 +52,14 @@ export function setupSettingsSubsystem(
     onThemeSwitch?: (theme: string) => void,
 ): SettingsSubsystem {
     let gameState: GameState;
+    let _debugSubsystem: import('./debug').DebugSubsystem | null = null;
 
     const setGameState = (_gameState: GameState) => {
         gameState = _gameState;
+    };
+
+    const setDebugSubsystem = (debugSubsystem: import('./debug').DebugSubsystem) => {
+        _debugSubsystem = debugSubsystem;
     };
 
     const selectableDifficulties = Object.keys(gameConfig.difficulty);
@@ -231,6 +237,11 @@ export function setupSettingsSubsystem(
                         },
                     });
                 });
+            }
+
+            // Set up debug button (if debug subsystem is available)
+            if (_debugSubsystem) {
+                _debugSubsystem.setupDebugButton();
             }
 
             const buttons = document.querySelectorAll('dialog button');
@@ -522,5 +533,6 @@ export function setupSettingsSubsystem(
     return {
         toggleSettings,
         setGameState,
+        setDebugSubsystem,
     };
 }

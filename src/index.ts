@@ -444,7 +444,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             updateNavLayout,
         );
         // Debug subsystem needs settings subsystem to be set up first to ensure that preferences are loaded
-        debugSubsystem = setupDebugSubsystem(actionIconManager, transformManager, closeDialog);
+        debugSubsystem = setupDebugSubsystem(
+            actionIconManager,
+            transformManager,
+            audioManager,
+            closeDialog
+        );
+
+        // Pass debug subsystem to settings so it can set up the debug button
+        settingsSubsystem.setDebugSubsystem(debugSubsystem);
 
         setDebugEnabled(import.meta.env.VITE_DEBUG_ENABLED);
 
