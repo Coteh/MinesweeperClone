@@ -21,3 +21,4 @@ cypress/screenshots/*
 
 # Test report output
 results/*.xml
+package-lock.json
