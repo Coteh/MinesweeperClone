@@ -33,7 +33,6 @@ export const initializeVisibilityTracking = () => {
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
             lastResumeTime = Date.now();
-            console.log('App resumed at', lastResumeTime);
         }
     });
 };
