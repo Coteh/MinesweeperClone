@@ -133,6 +133,7 @@ context('zoom', () => {
             });
 
         cy.realPress('ArrowLeft');
+        cy.realPress('ArrowUp');
 
         // Verify position is not at default
         cy.get('#x')
@@ -143,7 +144,7 @@ context('zoom', () => {
         cy.get('#y')
             .invoke('text')
             .then((y) => {
-                expect(parseFloat(y)).to.equal(0);
+                expect(parseFloat(y)).to.not.equal(0);
             });
 
         // Click reset zoom button
