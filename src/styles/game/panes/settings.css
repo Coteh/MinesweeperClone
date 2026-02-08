@@ -150,7 +150,8 @@ body a > .commit-hash {
     text-decoration: underline;
 }
 
-.footer .credits-link {
+.footer .credits-link,
+.footer .debug-link {
     margin-top: 1em;
     padding: 0.5em 1em;
     font-size: 0.9em;
