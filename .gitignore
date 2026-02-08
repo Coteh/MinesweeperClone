@@ -21,4 +21,6 @@ cypress/screenshots/*
 
 # Test report output
 results/*.xml
+
+# NPM package lockfile
 package-lock.json
