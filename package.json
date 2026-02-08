@@ -13,7 +13,7 @@
     "format": "prettier --config ./.prettierrc --write .",
     "type-check": "tsc",
     "type-check:test": "tsc -p tsconfig.test.json",
-    "test": "node --experimental-vm-modules ./node_modules/jest-cli/bin/jest.js",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "test-ci": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --ci",
     "cypress": "cypress",
     "cypress:run": "cypress run --spec 'cypress/e2e/**/*.cy.ts' --browser chrome"

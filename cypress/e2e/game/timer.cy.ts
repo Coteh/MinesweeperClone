@@ -45,7 +45,7 @@ describe('timer', () => {
                             {
                                 x: 1,
                                 y: 1,
-                                isMine: false,
+                                isMine: true,
                                 adjMinesCount: 0,
                                 isRevealed: false,
                                 isFlagged: false,
@@ -55,21 +55,23 @@ describe('timer', () => {
                         ],
                     ],
                     ended: false,
-                    win: false,
+                    won: false,
                     firstBlockClicked: false,
+                    score: 0,
                     didUndo: false,
                     achievedHighscore: false,
                     gameOptions: {
-                        width: 2,
-                        height: 2,
-                        numberOfMines: 0,
+                        boardWidth: 2,
+                        boardHeight: 2,
+                        numberOfMines: 1,
                         revealBoardOnLoss: true,
+                        difficultyKey: 'easy',
                     },
                     elapsedTimeMS: 0,
                     spareMineSpot: { x: 0, y: 0 },
                 };
                 const persistentState: GamePersistentState = {
-                    highscore: 0,
+                    highscore: {},
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
@@ -87,7 +89,8 @@ describe('timer', () => {
             .should('have.length', 3)
             .each(($img) => {
                 // All digits should be 0 initially
-                cy.wrap($img).should('have.attr', 'src').and('include', 'digits/0.png');
+                cy.wrap($img).should('have.attr', 'src').and('include', 'img/digits/0.png');
+                cy.wrap($img).should('have.attr', 'data-asset', 'img/digits/0.png');
             });
 
         // Click a block to start the timer
@@ -101,30 +104,44 @@ describe('timer', () => {
         cy.get('#time-board')
             .find('img')
             .last()
-            .should('have.attr', 'src')
-            .and('match', /digits\/[1-9].png/);
+            .should(($img) => {
+                const src = $img.attr('src') || '';
+                const asset = $img.attr('data-asset') || '';
+
+                expect(src).to.match(/img\/digits\/[1-9]\.png/);
+                expect(asset).to.match(/img\/digits\/[1-9]\.png/);
+
+                const match = src.match(/img\/digits\/(\d+|-)\.png/);
+                const expectedAsset = match ? `img/digits/${match[1]}.png` : '';
+                expect(asset).to.eq(expectedAsset);
+            });
 
         // Wait for another second
         cy.wait(1000);
 
-        // Check that time is at least 2 seconds
-        // Since timer could show values like "002", we check if last digit is >= 2
-        // or if it wrapped around (e.g., "010" means 10 seconds)
+        // Check that time is exactly 2 seconds
         cy.get('#time-board')
             .find('img')
             .then(($imgs) => {
                 // Get all three digit image sources
                 const digits = $imgs.toArray().map((img) => {
                     const src = img.getAttribute('src') || '';
-                    const match = src.match(/digits\/(\d+|-)\.png/);
+                    const match = src.match(/img\/digits\/(\d+|-)\.png/);
                     return match ? match[1] : '0';
                 });
-                
+
                 // Parse the full time value
                 const timeValue = parseInt(digits.join(''), 10);
-                
-                // Verify time is at least 2 seconds
-                expect(timeValue).to.be.gte(2);
+
+                // Verify time is exactly 2 seconds
+                expect(timeValue).to.eq(2);
+
+                $imgs.each((_, img) => {
+                    const src = img.getAttribute('src') || '';
+                    const match = src.match(/img\/digits\/(\d+|-)\.png/);
+                    const asset = match ? `img/digits/${match[1]}.png` : 'img/digits/0.png';
+                    expect(img.getAttribute('data-asset')).to.eq(asset);
+                });
             });
     });
 });
