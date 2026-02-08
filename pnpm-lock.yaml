@@ -67,8 +67,8 @@ importers:
         specifier: ^1.4.5
         version: 1.4.5
       pixi-filters:
-        specifier: 6.1.0
-        version: 6.1.0(pixi.js@8.7.3)
+        specifier: 6.1.5
+        version: 6.1.5(pixi.js@8.7.3)
       prettier:
         specifier: 3.8.1
         version: 3.8.1
@@ -1603,7 +1603,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   global-dirs@3.0.1:
     resolution: {integrity: sha512-NBcGGFbBA9s1VzD41QXDG+3++t9Mn5t1FpLdhESY6oKY4gYTFpX4wO3sqGUa0Srjtbfj3szX0RnemmrVRUdULA==}
@@ -2309,8 +2309,8 @@ packages:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
 
-  pixi-filters@6.1.0:
-    resolution: {integrity: sha512-Btjyg/WvCD/xWqZk1BAygqkTvoN7bSU7b4G/R+FpZ06f0DDwGTVnmlp8ZSITEV89osQHMe+8lKGDbuR1tndePQ==}
+  pixi-filters@6.1.5:
+    resolution: {integrity: sha512-Ewb/J+kxAbaNN+0/ATJbglAJG+skGJfh7BIDP3ILIDdD6wWk1p0pGa25pVf1T8hGBOQSUNVAmwwJBwkj+cyLLA==}
     peerDependencies:
       pixi.js: '>=8.0.0-0'
 
@@ -5494,7 +5494,7 @@ snapshots:
 
   pirates@4.0.7: {}
 
-  pixi-filters@6.1.0(pixi.js@8.7.3):
+  pixi-filters@6.1.5(pixi.js@8.7.3):
     dependencies:
       '@types/gradient-parser': 0.1.5
       pixi.js: 8.7.3
