@@ -320,6 +320,8 @@ export const selectSpot = function (x: number, y: number) {
         gameState.ended = true;
         clearInterval(gameTimer);
         checkForHighscore();
+        // Auto-flag all remaining unflagged mines
+        flagRemainingMines();
         eventHandler({ type: 'win', data: { gameState, persistentState } });
     }
     eventHandler({ type: 'reveal', data: { x, y } });
@@ -377,6 +379,8 @@ export const selectAdjacentSpots = function (x: number, y: number) {
         gameState.ended = true;
         clearInterval(gameTimer);
         checkForHighscore();
+        // Auto-flag all remaining unflagged mines
+        flagRemainingMines();
         eventHandler({ type: 'win', data: { gameState, persistentState } });
     }
     // TODO: Should game state be passed into the draw?
@@ -601,6 +605,18 @@ export const flagSpot = function (x: number, y: number, expression?: boolean) {
     eventHandler({ type: 'draw', data: { gameState, persistentState } });
     gameStorage.saveGame(gameState);
     return { flagInfo: gameState.board[y][x].isFlagged ? 'flagged' : 'unflagged' };
+};
+
+const flagRemainingMines = function () {
+    // Auto-flag all unrevealed, unflagged mines when player wins
+    for (let i = 0; i < gameState.gameOptions.boardHeight; i++) {
+        for (let j = 0; j < gameState.gameOptions.boardWidth; j++) {
+            const cell = gameState.board[i][j];
+            if (cell.isMine && !cell.isRevealed && !cell.isFlagged) {
+                cell.isFlagged = true;
+            }
+        }
+    }
 };
 
 const checkForWin = function () {
