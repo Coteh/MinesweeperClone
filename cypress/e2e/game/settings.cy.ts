@@ -273,4 +273,42 @@ describe('settings', () => {
         // Verify body has cloudy class
         cy.get('body').should('have.class', 'cloudy');
     });
+
+    it('should not animate the sound effects knob when opening settings with sound already enabled', () => {
+        // Set sound effects to enabled in local storage
+        window.localStorage.setItem(
+            'preferences',
+            JSON.stringify({
+                sound: 'enabled',
+            }),
+        );
+
+        cy.reload();
+        cy.waitForGameReady();
+
+        // Select a non-classic theme to ensure the knob animation would be visible
+        cy.get('.settings-link').click();
+        cy.selectTheme('cloudy');
+        cy.get('.dialog .close').click();
+
+        // Now open settings again and verify the knob is already in enabled position
+        // without animating
+        cy.get('.settings-link').click();
+
+        cy.get('.settings').within(() => {
+            cy.get('.settings-item.sound .knob').should('have.class', 'enabled');
+            
+            // Get the computed style of the knob-inside element
+            // If the transition hasn't started, it should already be at left: 29px
+            cy.get('.settings-item.sound .knob .knob-inside').should(($knobInside) => {
+                const computedStyle = window.getComputedStyle($knobInside[0]);
+                const left = computedStyle.getPropertyValue('left');
+                // In enabled state, the knob-inside should be at left: 29px
+                // If it's animating, it might be at a different value
+                // We check that it's already at or very close to the final position
+                expect(left).to.equal('29px');
+            });
+        });
+    });
 });
+
