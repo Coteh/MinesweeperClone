@@ -309,6 +309,91 @@ export function setupSettingsSubsystem(
             currDifficulty = selectableDifficulties[0];
         }
 
+        // Set initial state for settings knobs BEFORE setting up event listeners
+        // This prevents CSS transitions from animating when the dialog opens
+        const highlightSettingElem = document.querySelector(`.setting.${HIGHLIGHT_SETTING_NAME}`);
+        if (highlightSettingElem) {
+            if (isMobile) {
+                highlightSettingElem.remove();
+            } else {
+                const canHighlight = getPreferenceValue(HIGHLIGHT_PREFERENCE_NAME);
+                if (canHighlight === SETTING_ENABLED) {
+                    const knob = highlightSettingElem.querySelector('.knob');
+                    if (knob) {
+                        knob.classList.add('enabled');
+                    }
+                }
+            }
+        }
+
+        const fullscreenOptionElem = document.querySelector(`.setting.${FULLSCREEN_SETTING_NAME}`);
+        if (fullscreenOptionElem) {
+            if (isMobile) {
+                fullscreenOptionElem.remove();
+            } else {
+                const fullscreenEnabled = getPreferenceValue(FULLSCREEN_PREFERENCE_NAME);
+                if (fullscreenEnabled === SETTING_ENABLED) {
+                    const knob = fullscreenOptionElem.querySelector('.knob');
+                    if (knob) {
+                        knob.classList.add('enabled');
+                    }
+                }
+            }
+        }
+
+        const soundEffectsSettingElem = document.querySelector(`.setting.${SOUND_SETTING_NAME}`);
+        if (soundEffectsSettingElem) {
+            const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
+
+            // Get stored volume or default to 100
+            const storedVolume = parseInt(
+                getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100',
+                10,
+            );
+
+            const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
+
+            actionIconManager.changeIcon(
+                knob,
+                getVolumeIcon(audioManager.isSoundEffectsEnabled(), storedVolume),
+            );
+            if (soundsEnabled === SETTING_ENABLED) {
+                knob.classList.add('enabled');
+            }
+
+            // Set up volume slider
+            const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
+            if (volumeSlider) {
+                volumeSlider.value = storedVolume.toString();
+
+                volumeSlider.addEventListener('input', (e) => {
+                    const volume = parseInt((e.target as HTMLInputElement).value, 10);
+                    audioManager.setSoundEffectsVolume(volume / 100);
+                    savePreferenceValue(SOUND_VOLUME_PREFERENCE_NAME, volume.toString());
+
+                    // Auto-enable sound effects when adjusting volume while muted
+                    if (!audioManager.isSoundEffectsEnabled() && volume > 0) {
+                        audioManager.toggleSoundEffects(true);
+                        savePreferenceValue(SOUND_PREFERENCE_NAME, SETTING_ENABLED);
+                        knob.classList.add('enabled');
+                    }
+
+                    // Update icon based on volume level (only if sound is enabled)
+                    if (audioManager.isSoundEffectsEnabled()) {
+                        actionIconManager.changeIcon(knob, getVolumeIcon(true, volume));
+                    }
+                });
+
+                // Play click sound when releasing slider
+                // The 'change' event fires on both mouse and touch interactions when the value changes
+                volumeSlider.addEventListener('change', () => {
+                    if (audioManager.isSoundEffectsEnabled()) {
+                        audioManager.playSoundEffect(SoundEffect.Click);
+                    }
+                });
+            }
+        }
+
         // Set up event listeners for each settings element
         const settings = document.querySelectorAll('.setting');
         settings.forEach((setting) => {
@@ -366,36 +451,6 @@ export function setupSettingsSubsystem(
             });
         });
 
-        const highlightSettingElem = document.querySelector(`.setting.${HIGHLIGHT_SETTING_NAME}`);
-        if (highlightSettingElem) {
-            if (isMobile) {
-                highlightSettingElem.remove();
-            } else {
-                const canHighlight = getPreferenceValue(HIGHLIGHT_PREFERENCE_NAME);
-                if (canHighlight === SETTING_ENABLED) {
-                    const knob = highlightSettingElem.querySelector('.knob');
-                    if (knob) {
-                        knob.classList.add('enabled');
-                    }
-                }
-            }
-        }
-
-        const fullscreenOptionElem = document.querySelector(`.setting.${FULLSCREEN_SETTING_NAME}`);
-        if (fullscreenOptionElem) {
-            if (isMobile) {
-                fullscreenOptionElem.remove();
-            } else {
-                const fullscreenEnabled = getPreferenceValue(FULLSCREEN_PREFERENCE_NAME);
-                if (fullscreenEnabled === SETTING_ENABLED) {
-                    const knob = fullscreenOptionElem.querySelector('.knob');
-                    if (knob) {
-                        knob.classList.add('enabled');
-                    }
-                }
-            }
-        }
-
         const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement;
         // Populate theme options from config
         themeSelector.innerHTML = '';
@@ -446,59 +501,6 @@ export function setupSettingsSubsystem(
                     themeSelector.showPicker();
                 }
             });
-
-        const soundEffectsSettingElem = document.querySelector(`.setting.${SOUND_SETTING_NAME}`);
-        if (soundEffectsSettingElem) {
-            const soundsEnabled = getPreferenceValue(SOUND_PREFERENCE_NAME);
-
-            // Get stored volume or default to 100
-            const storedVolume = parseInt(
-                getPreferenceValue(SOUND_VOLUME_PREFERENCE_NAME) || '100',
-                10,
-            );
-
-            const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
-
-            actionIconManager.changeIcon(
-                knob,
-                getVolumeIcon(audioManager.isSoundEffectsEnabled(), storedVolume),
-            );
-            if (soundsEnabled === SETTING_ENABLED) {
-                knob.classList.add('enabled');
-            }
-
-            // Set up volume slider
-            const volumeSlider = document.getElementById('volume-slider') as HTMLInputElement;
-            if (volumeSlider) {
-                volumeSlider.value = storedVolume.toString();
-
-                volumeSlider.addEventListener('input', (e) => {
-                    const volume = parseInt((e.target as HTMLInputElement).value, 10);
-                    audioManager.setSoundEffectsVolume(volume / 100);
-                    savePreferenceValue(SOUND_VOLUME_PREFERENCE_NAME, volume.toString());
-
-                    // Auto-enable sound effects when adjusting volume while muted
-                    if (!audioManager.isSoundEffectsEnabled() && volume > 0) {
-                        audioManager.toggleSoundEffects(true);
-                        savePreferenceValue(SOUND_PREFERENCE_NAME, SETTING_ENABLED);
-                        knob.classList.add('enabled');
-                    }
-
-                    // Update icon based on volume level (only if sound is enabled)
-                    if (audioManager.isSoundEffectsEnabled()) {
-                        actionIconManager.changeIcon(knob, getVolumeIcon(true, volume));
-                    }
-                });
-
-                // Play click sound when releasing slider
-                // The 'change' event fires on both mouse and touch interactions when the value changes
-                volumeSlider.addEventListener('change', () => {
-                    if (audioManager.isSoundEffectsEnabled()) {
-                        audioManager.playSoundEffect(SoundEffect.Click);
-                    }
-                });
-            }
-        }
     }
 
     // Set up settings pane toggling
