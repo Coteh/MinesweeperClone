@@ -281,6 +281,17 @@ export function setupSettingsSubsystem(
             return 'volume-2';
         };
 
+        // Disable transitions on all knobs during initialization
+        // This prevents animation when the dialog opens with settings already enabled
+        const allKnobs = document.querySelectorAll('.knob');
+        allKnobs.forEach((knob) => {
+            (knob as HTMLElement).style.transition = 'none';
+            const knobInside = knob.querySelector('.knob-inside') as HTMLElement;
+            if (knobInside) {
+                knobInside.style.transition = 'none';
+            }
+        });
+
         // Initialize the difficulty UI element
         const difficultySelector = document.getElementById(
             'difficulty-selector',
@@ -310,7 +321,6 @@ export function setupSettingsSubsystem(
         }
 
         // Set initial state for settings knobs BEFORE setting up event listeners
-        // This prevents CSS transitions from animating when the dialog opens
         const highlightSettingElem = document.querySelector(`.setting.${HIGHLIGHT_SETTING_NAME}`);
         if (highlightSettingElem) {
             if (isMobile) {
@@ -501,6 +511,18 @@ export function setupSettingsSubsystem(
                     themeSelector.showPicker();
                 }
             });
+
+        // Re-enable transitions after initial state is set
+        // Use requestAnimationFrame to ensure DOM has settled
+        requestAnimationFrame(() => {
+            allKnobs.forEach((knob) => {
+                (knob as HTMLElement).style.transition = '';
+                const knobInside = knob.querySelector('.knob-inside') as HTMLElement;
+                if (knobInside) {
+                    knobInside.style.transition = '';
+                }
+            });
+        });
     }
 
     // Set up settings pane toggling
