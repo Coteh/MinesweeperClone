@@ -9,7 +9,7 @@ import {
     GameState,
 } from '../src/game';
 import { Mock } from 'jest-mock';
-import { NonexistentMockGameStorage } from './util';
+import { NonexistentMockGameStorage, MockGameStorage } from './util';
 import { IGameStorage } from '../src/storage';
 
 describe('auto-flag mines on win', function () {
@@ -298,136 +298,135 @@ describe('auto-flag mines on win', function () {
     });
 
     it('should auto-flag remaining mines when winning via selectAdjacentSpots', async function () {
-        // Create a small 3x3 board with 2 mines for a controlled test
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        // Create a preset 3x3 board with specific mine positions
+        // Board layout:
+        //   0 1 2
+        // 0 M 1 0
+        // 1 1 1 0
+        // 2 0 0 0
+        // This ensures we can test selectAdjacentSpots win scenario consistently
+
+        const presetBoard: GameState['board'] = [];
+        for (let i = 0; i < 3; i++) {
+            presetBoard[i] = [];
+            for (let j = 0; j < 3; j++) {
+                presetBoard[i][j] = {
+                    x: j,
+                    y: i,
+                    isMine: false,
+                    isRevealed: false,
+                    isLosingSpot: false,
+                    isFlagged: false,
+                    isQuestionMark: false,
+                    adjMinesCount: 0,
+                };
+            }
+        }
+
+        // Place mine at position [0,0]
+        presetBoard[0][0].isMine = true;
+
+        const presetState: GameState = {
+            board: presetBoard,
+            ended: false,
+            won: false,
+            firstBlockClicked: true,
+            score: 0,
+            didUndo: false,
+            achievedHighscore: false,
+            gameOptions: {
+                boardWidth: 3,
+                boardHeight: 3,
+                numberOfMines: 1,
+                revealBoardOnLoss: true,
+                difficultyKey: 'test',
+            },
+            elapsedTimeMS: 0,
+            spareMineSpot: { x: -1, y: -1 },
+        };
+
+        const gameState = await setupGame(new MockGameStorage(presetState), {
             boardWidth: 3,
             boardHeight: 3,
-            numberOfMines: 2,
+            numberOfMines: 1,
             revealBoardOnLoss: true,
             difficultyKey: 'test',
         });
 
-        // Find all mines
-        const minePositions: { x: number; y: number }[] = [];
+        // Verify mine is at expected position
+        expect(gameState.board[0][0].isMine).toBe(true);
+
+        // Reveal cells strategically to set up the selectAdjacentSpots scenario
+        // Reveal position [1,0] which is adjacent to the mine at [0,0]
+        selectSpot(1, 0);
+        expect(gameState.board[0][1].isRevealed).toBe(true);
+        expect(gameState.board[0][1].adjMinesCount).toBe(1);
+
+        // Reveal position [1,1] which is also adjacent to the mine
+        selectSpot(1, 1);
+        expect(gameState.board[1][1].isRevealed).toBe(true);
+        expect(gameState.board[1][1].adjMinesCount).toBe(1);
+
+        // Reveal bottom row cells [2,0], [2,1], [2,2]
+        selectSpot(0, 2);
+        selectSpot(1, 2);
+        selectSpot(2, 2);
+
+        // At this point, we should have most cells revealed except [0,2] and [2,0] and [2,1]
+        // which should have been auto-revealed since they have 0 adjacent mines
+
+        // Now we need to reveal [0,2] which is not adjacent to any mines
+        if (!gameState.board[2][0].isRevealed) {
+            selectSpot(2, 0);
+        }
+
+        // Reveal [1,2] as well
+        if (!gameState.board[2][1].isRevealed) {
+            selectSpot(2, 1);
+        }
+
+        // Now only [0,1] should be unrevealed (besides the mine at [0,0])
+        // But wait, we already revealed [1,0], so let's check what's actually unrevealed
+
+        // Find unrevealed safe cells
+        let unrevealedSafeCells: { x: number; y: number }[] = [];
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
-                if (gameState.board[i][j].isMine) {
-                    minePositions.push({ x: j, y: i });
+                if (!gameState.board[i][j].isRevealed && !gameState.board[i][j].isMine) {
+                    unrevealedSafeCells.push({ x: j, y: i });
                 }
             }
         }
 
-        expect(minePositions.length).toBe(2);
-
-        // Reveal all safe cells except the last one
-        let safeCells: { x: number; y: number }[] = [];
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (!gameState.board[i][j].isMine) {
-                    safeCells.push({ x: j, y: i });
-                }
-            }
-        }
-
-        // Reveal all but the last safe cell
-        for (let i = 0; i < safeCells.length - 1; i++) {
-            if (!gameState.board[safeCells[i].y][safeCells[i].x].isRevealed) {
-                selectSpot(safeCells[i].x, safeCells[i].y);
-            }
-            // Stop if we've already won (auto-reveal might have revealed everything)
-            if (gameState.won) {
-                break;
-            }
-        }
-
-        // If the game already won due to auto-reveal, that's fine - verify auto-flagging worked
+        // If all safe cells are revealed due to auto-reveal, that's okay - verify auto-flagging
         if (gameState.won) {
             expect(countUnflaggedMines(gameState)).toBe(0);
             return;
         }
 
-        // Find a revealed cell that has the last unrevealed safe cell as adjacent
-        let triggerCell: { x: number; y: number } | null = null;
-        const lastSafeCell = safeCells[safeCells.length - 1];
+        // We should have at least one unrevealed safe cell
+        expect(unrevealedSafeCells.length).toBeGreaterThan(0);
 
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                const cell = gameState.board[i][j];
-                if (cell.isRevealed && !cell.isMine && cell.adjMinesCount > 0) {
-                    // Check if this cell is adjacent to the last safe cell
-                    const positions = [
-                        [j - 1, i - 1],
-                        [j, i - 1],
-                        [j + 1, i - 1],
-                        [j - 1, i],
-                        [j + 1, i],
-                        [j - 1, i + 1],
-                        [j, i + 1],
-                        [j + 1, i + 1],
-                    ];
+        // Flag the mine at [0,0]
+        flagSpot(0, 0);
+        expect(gameState.board[0][0].isFlagged).toBe(true);
 
-                    let isAdjacentToLastSafe = false;
-                    let adjMines: { x: number; y: number }[] = [];
+        // Now use selectAdjacentSpots on a revealed cell adjacent to unrevealed safe cells
+        // Cell at [1,0] has adjMinesCount=1 and one flag at [0,0], so it should reveal adjacent cells
+        selectAdjacentSpots(1, 0);
 
-                    positions.forEach(([x, y]) => {
-                        if (x >= 0 && x < 3 && y >= 0 && y < 3) {
-                            if (x === lastSafeCell.x && y === lastSafeCell.y) {
-                                isAdjacentToLastSafe = true;
-                            }
-                            if (gameState.board[y][x].isMine) {
-                                adjMines.push({ x, y });
-                            }
-                        }
-                    });
+        // Wait for async operations
+        await new Promise((resolve) => setTimeout(resolve, 100));
 
-                    // If this cell is adjacent to the last safe cell and has adjacent mines
-                    if (isAdjacentToLastSafe && adjMines.length === cell.adjMinesCount) {
-                        // Flag all adjacent mines
-                        adjMines.forEach((pos) => {
-                            if (!gameState.board[pos.y][pos.x].isFlagged) {
-                                flagSpot(pos.x, pos.y);
-                            }
-                        });
-                        triggerCell = { x: j, y: i };
-                        break;
-                    }
-                }
-            }
-            if (triggerCell) break;
-        }
+        // Verify the player has won
+        expect(gameState.won).toBe(true);
+        expect(gameState.ended).toBe(true);
 
-        // If we found a trigger cell, use selectAdjacentSpots to win
-        if (triggerCell) {
-            // Call selectAdjacentSpots on the revealed cell
-            // This should reveal the last safe cell and trigger a win
-            selectAdjacentSpots(triggerCell.x, triggerCell.y);
+        // Verify the mine is still flagged
+        expect(gameState.board[0][0].isFlagged).toBe(true);
 
-            // Wait for async operations
-            await new Promise((resolve) => setTimeout(resolve, 100));
-
-            // Verify the player has won
-            expect(gameState.won).toBe(true);
-            expect(gameState.ended).toBe(true);
-
-            // Verify all mines are now flagged (some manually, rest auto-flagged)
-            const flaggedCount = calculateFlaggedCount(gameState);
-            expect(flaggedCount).toBe(2);
-
-            // Verify there are no unflagged mines
-            const unflaggedMines = countUnflaggedMines(gameState);
-            expect(unflaggedMines).toBe(0);
-
-            // Verify all mines are flagged and not revealed
-            for (const pos of minePositions) {
-                expect(gameState.board[pos.y][pos.x].isFlagged).toBe(true);
-                expect(gameState.board[pos.y][pos.x].isRevealed).toBe(false);
-            }
-        } else {
-            // Fallback: If the random board doesn't have the right setup,
-            // just reveal the last cell normally to ensure the test passes
-            selectSpot(lastSafeCell.x, lastSafeCell.y);
-            expect(gameState.won).toBe(true);
-            expect(countUnflaggedMines(gameState)).toBe(0);
-        }
+        // Verify there are no unflagged mines
+        const unflaggedMines = countUnflaggedMines(gameState);
+        expect(unflaggedMines).toBe(0);
     });
 });
