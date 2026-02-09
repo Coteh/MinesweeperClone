@@ -281,16 +281,21 @@ export function setupSettingsSubsystem(
             return 'volume-2';
         };
 
+        // Helper function to enable/disable transitions on all knobs
+        const setKnobTransitions = (enabled: boolean) => {
+            const allKnobs = document.querySelectorAll('.knob');
+            allKnobs.forEach((knob) => {
+                (knob as HTMLElement).style.transition = enabled ? '' : 'none';
+                const knobInside = knob.querySelector('.knob-inside') as HTMLElement;
+                if (knobInside) {
+                    knobInside.style.transition = enabled ? '' : 'none';
+                }
+            });
+        };
+
         // Disable transitions on all knobs during initialization
         // This prevents animation when the dialog opens with settings already enabled
-        const allKnobs = document.querySelectorAll('.knob');
-        allKnobs.forEach((knob) => {
-            (knob as HTMLElement).style.transition = 'none';
-            const knobInside = knob.querySelector('.knob-inside') as HTMLElement;
-            if (knobInside) {
-                knobInside.style.transition = 'none';
-            }
-        });
+        setKnobTransitions(false);
 
         // Initialize the difficulty UI element
         const difficultySelector = document.getElementById(
@@ -515,13 +520,7 @@ export function setupSettingsSubsystem(
         // Re-enable transitions after initial state is set
         // Use requestAnimationFrame to ensure DOM has settled
         requestAnimationFrame(() => {
-            allKnobs.forEach((knob) => {
-                (knob as HTMLElement).style.transition = '';
-                const knobInside = knob.querySelector('.knob-inside') as HTMLElement;
-                if (knobInside) {
-                    knobInside.style.transition = '';
-                }
-            });
+            setKnobTransitions(true);
         });
     }
 
