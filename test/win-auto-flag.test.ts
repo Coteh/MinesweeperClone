@@ -298,16 +298,17 @@ describe('auto-flag mines on win', function () {
     });
 
     it('should auto-flag remaining mines when winning via selectAdjacentSpots', async function () {
-        // Create a preset 3x3 board with specific mine positions
+        // Create a preset 3x4 board with specific mine positions
         // Board layout:
         //   0 1 2
-        // 0 M 1 0
-        // 1 1 1 0
-        // 2 0 0 0
-        // This ensures we can test selectAdjacentSpots win scenario consistently
+        // 0 U M 1
+        // 1 U 1 1
+        // 2 U U U
+        // 3 M U U
+        // U is unrevealed safe, 1 is revealed safe with adj count, M is a mine (not revealed)
 
         const presetBoard: GameState['board'] = [];
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 4; i++) {
             presetBoard[i] = [];
             for (let j = 0; j < 3; j++) {
                 presetBoard[i][j] = {
@@ -323,8 +324,17 @@ describe('auto-flag mines on win', function () {
             }
         }
 
-        // Place mine at position [0,0]
-        presetBoard[0][0].isMine = true;
+        // Place mines at positions [1,0] and [0,3]
+        presetBoard[0][1].isMine = true;
+        presetBoard[3][0].isMine = true;
+
+        // Set revealed tiles based on layout
+        presetBoard[0][2].isRevealed = true;
+        presetBoard[0][2].adjMinesCount = 1;
+        presetBoard[1][1].isRevealed = true;
+        presetBoard[1][1].adjMinesCount = 1;
+        presetBoard[1][2].isRevealed = true;
+        presetBoard[1][2].adjMinesCount = 1;
 
         const presetState: GameState = {
             board: presetBoard,
@@ -336,8 +346,8 @@ describe('auto-flag mines on win', function () {
             achievedHighscore: false,
             gameOptions: {
                 boardWidth: 3,
-                boardHeight: 3,
-                numberOfMines: 1,
+                boardHeight: 4,
+                numberOfMines: 2,
                 revealBoardOnLoss: true,
                 difficultyKey: 'test',
             },
@@ -347,86 +357,49 @@ describe('auto-flag mines on win', function () {
 
         const gameState = await setupGame(new MockGameStorage(presetState), {
             boardWidth: 3,
-            boardHeight: 3,
-            numberOfMines: 1,
+            boardHeight: 4,
+            numberOfMines: 2,
             revealBoardOnLoss: true,
             difficultyKey: 'test',
         });
 
-        // Verify mine is at expected position
-        expect(gameState.board[0][0].isMine).toBe(true);
+        // Verify mines are at expected positions and unrevealed
+        expect(gameState.board[0][1].isMine).toBe(true);
+        expect(gameState.board[0][1].isRevealed).toBe(false);
+        expect(gameState.board[3][0].isMine).toBe(true);
+        expect(gameState.board[3][0].isRevealed).toBe(false);
 
-        // Reveal cells strategically to set up the selectAdjacentSpots scenario
-        // Reveal position [1,0] which is adjacent to the mine at [0,0]
-        selectSpot(1, 0);
-        expect(gameState.board[0][1].isRevealed).toBe(true);
-        expect(gameState.board[0][1].adjMinesCount).toBe(1);
+        // Flag the mine at [1,0]
+        flagSpot(1, 0);
+        expect(gameState.board[0][1].isFlagged).toBe(true);
 
-        // Reveal position [1,1] which is also adjacent to the mine
-        selectSpot(1, 1);
-        expect(gameState.board[1][1].isRevealed).toBe(true);
-        expect(gameState.board[1][1].adjMinesCount).toBe(1);
+        // The second mine should still be unflagged at this point
+        expect(gameState.board[3][0].isFlagged).toBe(false);
 
-        // Reveal bottom row cells [2,0], [2,1], [2,2]
-        selectSpot(0, 2);
-        selectSpot(1, 2);
-        selectSpot(2, 2);
-
-        // At this point, we should have most cells revealed except [0,2] and [2,0] and [2,1]
-        // which should have been auto-revealed since they have 0 adjacent mines
-
-        // Now we need to reveal [0,2] which is not adjacent to any mines
-        if (!gameState.board[2][0].isRevealed) {
-            selectSpot(2, 0);
-        }
-
-        // Reveal [1,2] as well
-        if (!gameState.board[2][1].isRevealed) {
-            selectSpot(2, 1);
-        }
-
-        // Now only [0,1] should be unrevealed (besides the mine at [0,0])
-        // But wait, we already revealed [1,0], so let's check what's actually unrevealed
-
-        // Find unrevealed safe cells
-        let unrevealedSafeCells: { x: number; y: number }[] = [];
-        for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3; j++) {
-                if (!gameState.board[i][j].isRevealed && !gameState.board[i][j].isMine) {
-                    unrevealedSafeCells.push({ x: j, y: i });
-                }
-            }
-        }
-
-        // If all safe cells are revealed due to auto-reveal, that's okay - verify auto-flagging
-        if (gameState.won) {
-            expect(countUnflaggedMines(gameState)).toBe(0);
-            return;
-        }
-
-        // We should have at least one unrevealed safe cell
-        expect(unrevealedSafeCells.length).toBeGreaterThan(0);
-
-        // Flag the mine at [0,0]
-        flagSpot(0, 0);
-        expect(gameState.board[0][0].isFlagged).toBe(true);
-
-        // Now use selectAdjacentSpots on a revealed cell adjacent to unrevealed safe cells
-        // Cell at [1,0] has adjMinesCount=1 and one flag at [0,0], so it should reveal adjacent cells
-        selectAdjacentSpots(1, 0);
+        // Use selectAdjacentSpots on a revealed tile to reveal the remaining safe tiles
+        selectAdjacentSpots(1, 1);
 
         // Wait for async operations
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await Promise.resolve();
 
         // Verify the player has won
         expect(gameState.won).toBe(true);
         expect(gameState.ended).toBe(true);
 
-        // Verify the mine is still flagged
-        expect(gameState.board[0][0].isFlagged).toBe(true);
+        // Verify the final unrevealed safe tile was revealed
+        expect(gameState.board[1][0].isRevealed).toBe(true);
 
-        // Verify there are no unflagged mines
+        // Verify both mines are flagged and not revealed
+        expect(gameState.board[0][1].isFlagged).toBe(true);
+        expect(gameState.board[0][1].isRevealed).toBe(false);
+        expect(gameState.board[3][0].isFlagged).toBe(true);
+        expect(gameState.board[3][0].isRevealed).toBe(false);
+
+        // Verify there are no unflagged mines and the mine counter is 0
         const unflaggedMines = countUnflaggedMines(gameState);
         expect(unflaggedMines).toBe(0);
+        const flaggedCount = calculateFlaggedCount(gameState);
+        const unflaggedMineCount = gameState.gameOptions.numberOfMines - flaggedCount;
+        expect(unflaggedMineCount).toBe(0);
     });
 });
