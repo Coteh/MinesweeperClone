@@ -40,7 +40,6 @@ import {
 
 import { loadConfig } from './config/index';
 import type { Config } from './config';
-import { getPreferenceValue } from './preferences';
 import { updateNavLayout } from './nav-layout';
 
 export type FrontendState = {
@@ -418,7 +417,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Get stored theme early so we can apply the correct theme class before loading assets
-        const storedTheme: Theme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
+        // Read directly from storage since preferences haven't been initialized yet
+        const storedPreferences = gameStorage.loadPreferences();
+        const storedTheme: Theme = (storedPreferences[THEME_PREFERENCE_NAME] as Theme) || BASIC_THEME;
         
         // Remove all theme classes from body, then add the stored theme class
         // This ensures only one theme class is present
