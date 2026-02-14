@@ -420,7 +420,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Get stored theme early so we can apply the correct theme class before loading assets
         const storedTheme: Theme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
         
-        // Add theme class to body before loading/applying assets
+        // Remove all theme classes from body, then add the stored theme class
+        // This ensures only one theme class is present
+        const selectableThemes = Object.keys(gameConfig.theme) as Theme[];
+        selectableThemes.forEach(theme => document.body.classList.remove(theme));
         document.body.classList.add(storedTheme);
         
         // Load assets via import.meta.glob via theme-assets helper
@@ -468,7 +471,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         setDebugEnabled(import.meta.env.VITE_DEBUG_ENABLED);
 
         // Complete the theme setup (this will update theme colors and background)
-        // storedTheme was already loaded earlier
+        // The theme class was already added to body earlier to ensure correct CSS during asset loading.
+        // switchTheme will handle the rest: theme colors, background, CSS variables, etc.
         await themeManager.switchTheme(storedTheme);
 
         const loaderWrapper = document.querySelector('.loader-wrapper') as HTMLElement;
