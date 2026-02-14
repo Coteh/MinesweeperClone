@@ -417,16 +417,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     try {
+        // Get stored theme early so we can apply the correct theme class before loading assets
+        const storedTheme: Theme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
+        
+        // Add theme class to body before loading/applying assets
+        document.body.classList.add(storedTheme);
+        
         // Load assets via import.meta.glob via theme-assets helper
         const mod = await import('./manager/theme-assets');
         const { getThemeAssets } = mod;
-        const assetsMap = getThemeAssets(themeManager.getCurrentTheme());
+        // Load assets for the stored theme, not the default theme
+        const assetsMap = getThemeAssets(storedTheme);
 
         // loadAssets will show loader UI and preload/register logical keys
         await assetManager.loadAssets(assetsMap);
 
         // Apply assets to any DOM elements that have data-asset attributes
         assetManager.applyDataAssets();
+
+        // Update nav layout to ensure elements are in the correct container for the theme
+        // This must be done before theme initialization to ensure CSS is applied correctly
+        updateNavLayout(storedTheme);
 
         await backgroundManager.initialize();
 
@@ -456,12 +467,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setDebugEnabled(import.meta.env.VITE_DEBUG_ENABLED);
 
-        // Get stored theme
-        const storedTheme: Theme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
-
-        // Set up game theme based on current setting
+        // Complete the theme setup (this will update theme colors and background)
+        // storedTheme was already loaded earlier
         await themeManager.switchTheme(storedTheme);
-        updateNavLayout(storedTheme);
 
         const loaderWrapper = document.querySelector('.loader-wrapper') as HTMLElement;
         const loaderElem = loaderWrapper.querySelector('.loader') as HTMLElement;
