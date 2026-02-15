@@ -93,8 +93,8 @@ describe('gameplay', () => {
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();
@@ -1496,9 +1496,9 @@ describe('gameplay', () => {
                                 unlockables: {},
                                 hasPlayedBefore: true,
                             };
-                            window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                            window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                             window.localStorage.setItem(
-                                'persistent-state',
+                                'ms-persistent-state',
                                 JSON.stringify(persistentState),
                             );
                         },
@@ -1607,9 +1607,9 @@ describe('gameplay', () => {
                         hasPlayedBefore: true,
                     };
 
-                    window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -1622,7 +1622,7 @@ describe('gameplay', () => {
             cy.get('#new-game img').should('have.attr', 'data-asset', 'img/Smiley_proud.png');
 
             cy.window().then((win) => {
-                const storedState = win.localStorage.getItem('game-state');
+                const storedState = win.localStorage.getItem('ms-game-state');
                 expect(storedState).to.not.equal(null);
                 const gameState = JSON.parse(storedState as string) as GameState;
                 expect(gameState.won).to.equal(true);

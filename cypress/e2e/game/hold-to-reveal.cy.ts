@@ -86,8 +86,8 @@ describe('hold-to-reveal functionality', () => {
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();

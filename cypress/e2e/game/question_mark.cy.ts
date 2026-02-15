@@ -69,8 +69,8 @@ describe('question mark input mode', () => {
                     spareMineSpot: { x: 0, y: 0 },
                 };
                 const persistentState = { highscore: 0, unlockables: {}, hasPlayedBefore: true };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();

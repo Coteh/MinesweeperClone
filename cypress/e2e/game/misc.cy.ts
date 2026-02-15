@@ -12,7 +12,7 @@ describe('misc', () => {
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();

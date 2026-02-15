@@ -85,7 +85,7 @@ describe('Theme Selector', () => {
                 const preferences = {
                     theme: 'ocean',
                 };
-                win.localStorage.setItem('preferences', JSON.stringify(preferences));
+                win.localStorage.setItem('ms-preferences', JSON.stringify(preferences));
             },
         });
         cy.waitForGameReady();
@@ -340,7 +340,7 @@ describe('Nav Layout', () => {
                 const preferences = {
                     theme: 'ocean',
                 };
-                win.localStorage.setItem('preferences', JSON.stringify(preferences));
+                win.localStorage.setItem('ms-preferences', JSON.stringify(preferences));
             },
         });
         cy.waitForGameReady();
@@ -356,7 +356,7 @@ describe('Nav Layout', () => {
                 const preferences = {
                     theme: 'classic',
                 };
-                win.localStorage.setItem('preferences', JSON.stringify(preferences));
+                win.localStorage.setItem('ms-preferences', JSON.stringify(preferences));
             },
         });
         cy.waitForGameReady();
@@ -405,8 +405,8 @@ describe('Win/Lose Status Bar Colors', () => {
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();
@@ -471,8 +471,8 @@ describe('Win/Lose Status Bar Colors', () => {
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();
@@ -537,8 +537,8 @@ describe('Win/Lose Status Bar Colors', () => {
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();
@@ -618,8 +618,8 @@ describe('Win/Lose Status Bar Colors', () => {
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();

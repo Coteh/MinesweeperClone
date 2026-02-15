@@ -75,8 +75,8 @@ describe('settings', () => {
                     unlockables: {},
                     hasPlayedBefore: true,
                 };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
-                window.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
             },
         });
         cy.waitForGameReady();
@@ -131,7 +131,7 @@ describe('settings', () => {
 
     it("should reenable a setting if it's set to enabled in local storage and page is reloaded", () => {
         window.localStorage.setItem(
-            'preferences',
+            'ms-preferences',
             JSON.stringify({
                 highlight: 'enabled',
             }),
@@ -170,7 +170,7 @@ describe('settings', () => {
         // Set local storage preferences value to "invalid" to simulate an invalid state
         cy.visit('/', {
             onBeforeLoad: () => {
-                window.localStorage.setItem('preferences', 'invalid');
+                window.localStorage.setItem('ms-preferences', 'invalid');
             },
         });
         cy.waitForGameReady();
@@ -183,7 +183,7 @@ describe('settings', () => {
         cy.window().then((win) => {
             // The invalid value should be replaced with the default value,
             // which will be set to debug hud options in dev mode
-            const preferences = win.localStorage.getItem('preferences');
+            const preferences = win.localStorage.getItem('ms-preferences');
 
             if (!preferences) {
                 throw new Error('Expected preferences to exist in localStorage.');
@@ -197,7 +197,7 @@ describe('settings', () => {
             // TODO: In production, these two options will not be enabled,
             // so the test will need to check that the preferences are set to the default values.
             // AFAIK, there is no way to turn off Vite dev mode for just one test, so this will have to do for now.
-            // expect(win.localStorage.getItem("preferences")).to.deep.equal({});
+            // expect(win.localStorage.getItem("ms-preferences")).to.deep.equal({});
             // NOTE: The assertion commented above should actually fail atm, because the default values are not set
             // at all upon invalid value in production.
         });
@@ -206,7 +206,7 @@ describe('settings', () => {
 
         cy.get('.settings-item.highlight .knob').should('have.class', 'enabled');
         cy.window().then((win) => {
-            const preferences = win.localStorage.getItem('preferences');
+            const preferences = win.localStorage.getItem('ms-preferences');
 
             if (!preferences) {
                 throw new Error('Expected preferences to exist in localStorage.');
@@ -223,7 +223,7 @@ describe('settings', () => {
 
         cy.get('.settings-item.highlight .knob').should('not.have.class', 'enabled');
         cy.window().then((win) => {
-            const preferences = win.localStorage.getItem('preferences');
+            const preferences = win.localStorage.getItem('ms-preferences');
 
             if (!preferences) {
                 throw new Error('Expected preferences to exist in localStorage.');
