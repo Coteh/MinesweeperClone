@@ -40,6 +40,7 @@ import {
 
 import { loadConfig } from './config/index';
 import type { Config } from './config';
+import { getPreferenceValue } from './preferences';
 import { updateNavLayout } from './nav-layout';
 
 export type FrontendState = {
@@ -416,32 +417,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     try {
-        // Get stored theme early so we can apply the correct theme class before loading assets
-        // Read directly from storage since preferences haven't been initialized yet
-        const storedPreferences = gameStorage.loadPreferences();
-        const storedTheme: Theme = (storedPreferences[THEME_PREFERENCE_NAME] as Theme) || BASIC_THEME;
-        
-        // Remove all theme classes from body, then add the stored theme class
-        // This ensures only one theme class is present
-        const selectableThemes = Object.keys(gameConfig.theme) as Theme[];
-        selectableThemes.forEach(theme => document.body.classList.remove(theme));
-        document.body.classList.add(storedTheme);
-        
         // Load assets via import.meta.glob via theme-assets helper
         const mod = await import('./manager/theme-assets');
         const { getThemeAssets } = mod;
-        // Load assets for the stored theme, not the default theme
-        const assetsMap = getThemeAssets(storedTheme);
+        const assetsMap = getThemeAssets(themeManager.getCurrentTheme());
 
         // loadAssets will show loader UI and preload/register logical keys
         await assetManager.loadAssets(assetsMap);
 
         // Apply assets to any DOM elements that have data-asset attributes
         assetManager.applyDataAssets();
-
-        // Update nav layout to ensure elements are in the correct container for the theme
-        // This must be done before theme initialization to ensure CSS is applied correctly
-        updateNavLayout(storedTheme);
 
         await backgroundManager.initialize();
 
@@ -471,10 +456,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setDebugEnabled(import.meta.env.VITE_DEBUG_ENABLED);
 
-        // Complete the theme setup (this will update theme colors and background)
-        // The theme class was already added to body earlier to ensure correct CSS during asset loading.
-        // switchTheme will handle the rest: theme colors, background, CSS variables, etc.
+        // Get stored theme
+        const storedTheme: Theme = getPreferenceValue(THEME_PREFERENCE_NAME) || BASIC_THEME;
+
+        // Set up game theme based on current setting
         await themeManager.switchTheme(storedTheme);
+        updateNavLayout(storedTheme);
 
         const loaderWrapper = document.querySelector('.loader-wrapper') as HTMLElement;
         const loaderElem = loaderWrapper.querySelector('.loader') as HTMLElement;
