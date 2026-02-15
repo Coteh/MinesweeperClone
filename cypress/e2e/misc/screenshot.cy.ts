@@ -72,7 +72,7 @@ describe('misc', () => {
                     debugHudEnabled: true,
                     debugHudVisible: false,
                 };
-                window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                 window.localStorage.setItem('ms-persistent-state', JSON.stringify(persistentState));
                 window.localStorage.setItem('ms-preferences', JSON.stringify(preferences));
             },
