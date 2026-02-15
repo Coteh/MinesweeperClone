@@ -2,9 +2,9 @@ import { IGameStorage } from '.';
 import { GamePersistentState, GameState } from '../game';
 import { Preferences } from '../preferences';
 
-export const GAME_STATE_KEY = 'game-state';
-export const PERSISTENT_STATE_KEY = 'persistent-state';
-export const PREFERENCES_KEY = 'preferences';
+export const GAME_STATE_KEY = 'ms-game-state';
+export const PERSISTENT_STATE_KEY = 'ms-persistent-state';
+export const PREFERENCES_KEY = 'ms-preferences';
 
 export class BrowserGameStorage implements IGameStorage {
     saveGame = (gameState: GameState) => {

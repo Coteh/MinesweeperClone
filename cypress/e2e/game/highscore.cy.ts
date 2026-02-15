@@ -94,9 +94,9 @@ describe('high score system', () => {
                         unlockables: {},
                         hasPlayedBefore: true,
                     };
-                    window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -119,7 +119,7 @@ describe('high score system', () => {
             // Verify persistent state was updated
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}',
+                    win.localStorage.getItem('ms-persistent-state') || '{}',
                 );
                 expect(persistentState.highscore).to.have.property('easy');
                 expect(persistentState.highscore.easy).to.equal(45000);
@@ -180,9 +180,9 @@ describe('high score system', () => {
                         unlockables: {},
                         hasPlayedBefore: true,
                     };
-                    window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -202,7 +202,7 @@ describe('high score system', () => {
             // Verify persistent state was updated with better score
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}',
+                    win.localStorage.getItem('ms-persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(30000);
             });
@@ -262,9 +262,9 @@ describe('high score system', () => {
                         unlockables: {},
                         hasPlayedBefore: true,
                     };
-                    window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -283,7 +283,7 @@ describe('high score system', () => {
             // Verify persistent state was NOT updated
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}',
+                    win.localStorage.getItem('ms-persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(45000); // Still the old score
             });
@@ -343,9 +343,9 @@ describe('high score system', () => {
                         unlockables: {},
                         hasPlayedBefore: true,
                     };
-                    window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -364,7 +364,7 @@ describe('high score system', () => {
             // Verify persistent state was NOT updated
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}',
+                    win.localStorage.getItem('ms-persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(45000); // No change
             });
@@ -424,9 +424,9 @@ describe('high score system', () => {
                         unlockables: {},
                         hasPlayedBefore: true,
                     };
-                    window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -446,7 +446,7 @@ describe('high score system', () => {
             // Verify both easy and medium scores are maintained separately
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}',
+                    win.localStorage.getItem('ms-persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(45000); // Easy score unchanged
                 expect(persistentState.highscore.medium).to.equal(90000); // Medium score added
@@ -481,7 +481,7 @@ describe('high score system', () => {
                         hasPlayedBefore: false,
                     };
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -511,7 +511,7 @@ describe('high score system', () => {
                         hasPlayedBefore: true,
                     };
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -553,7 +553,7 @@ describe('high score system', () => {
                         hasPlayedBefore: true,
                     };
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -595,7 +595,7 @@ describe('high score system', () => {
                         hasPlayedBefore: true,
                     };
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
                 },
@@ -673,12 +673,12 @@ describe('high score system', () => {
                     const preferences = {
                         difficulty: 'easy',
                     };
-                    window.localStorage.setItem('game-state', JSON.stringify(gameState));
+                    window.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
                     window.localStorage.setItem(
-                        'persistent-state',
+                        'ms-persistent-state',
                         JSON.stringify(persistentState),
                     );
-                    window.localStorage.setItem('preferences', JSON.stringify(preferences));
+                    window.localStorage.setItem('ms-preferences', JSON.stringify(preferences));
                 },
             });
             cy.waitForGameReady();
@@ -699,7 +699,7 @@ describe('high score system', () => {
             // Verify easy high score was saved
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}',
+                    win.localStorage.getItem('ms-persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(50000);
             });
@@ -752,7 +752,7 @@ describe('high score system', () => {
                     elapsedTimeMS: 75000, // 75 seconds on medium
                     spareMineSpot: { x: 0, y: 0 },
                 };
-                win.localStorage.setItem('game-state', JSON.stringify(mediumGameState));
+                win.localStorage.setItem('ms-game-state', JSON.stringify(mediumGameState));
             });
 
             // Reload to apply the new game state
@@ -772,7 +772,7 @@ describe('high score system', () => {
             // Verify both high scores are maintained separately
             cy.window().then((win) => {
                 const persistentState = JSON.parse(
-                    win.localStorage.getItem('persistent-state') || '{}',
+                    win.localStorage.getItem('ms-persistent-state') || '{}',
                 );
                 expect(persistentState.highscore.easy).to.equal(50000);
                 expect(persistentState.highscore.medium).to.equal(75000);
@@ -838,8 +838,11 @@ describe('high score system', () => {
                         unlockables: {},
                         hasPlayedBefore: true,
                     };
-                    win.localStorage.setItem('game-state', JSON.stringify(gameState));
-                    win.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                    win.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                    win.localStorage.setItem(
+                        'ms-persistent-state',
+                        JSON.stringify(persistentState),
+                    );
                 },
             });
             cy.waitForGameReady();
@@ -913,8 +916,11 @@ describe('high score system', () => {
                         unlockables: {},
                         hasPlayedBefore: true,
                     };
-                    win.localStorage.setItem('game-state', JSON.stringify(gameState));
-                    win.localStorage.setItem('persistent-state', JSON.stringify(persistentState));
+                    win.localStorage.setItem('ms-game-state', JSON.stringify(gameState));
+                    win.localStorage.setItem(
+                        'ms-persistent-state',
+                        JSON.stringify(persistentState),
+                    );
                 },
             });
             cy.waitForGameReady();
