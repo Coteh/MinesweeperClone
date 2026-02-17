@@ -82,8 +82,8 @@ describe('dialogs', () => {
 
     describe('general dialog behaviour', () => {
         it('should be visible', () => {
-            // The Debug dialog is an example of a closable dialog that can be triggered in normal usage (during debug mode)
-            cy.get('.debug-link#debug').click();
+            // The Help dialog is an example of a closable dialog that can be triggered in normal usage
+            cy.get('.help-link').click();
 
             cy.get('.dialog').should('be.visible');
             cy.get('.overlay-back').should('be.visible');
@@ -92,8 +92,8 @@ describe('dialogs', () => {
 
     describe('closable dialogs', () => {
         beforeEach(() => {
-            // The Debug dialog is an example of a closable dialog that can be triggered in normal usage (during debug mode)
-            cy.get('.debug-link#debug').click();
+            // The Help dialog is an example of a closable dialog that can be triggered in normal usage
+            cy.get('.help-link').click();
         });
 
         it('can be closed by clicking on the X button', () => {
@@ -143,7 +143,9 @@ describe('dialogs', () => {
         beforeEach(() => {
             cy.clearBrowserCache();
             cy.reload();
-            cy.get('.debug-link#debug').click();
+            cy.waitForGameReady();
+            cy.get('.settings-link').click();
+            cy.get('.debug-link#debug').scrollIntoView().click();
             cy.contains('Prompt Dialog').click();
         });
 
@@ -165,7 +167,8 @@ describe('dialogs', () => {
             cy.get('.dialog').should('not.exist');
             cy.get('.overlay-back').should('not.be.visible');
 
-            cy.get('.debug-link#debug').click();
+            cy.get('.settings-link').click();
+            cy.get('.debug-link#debug').scrollIntoView().click();
             cy.contains('Prompt Dialog').click();
 
             cy.contains('Yes').click();
@@ -186,6 +189,8 @@ describe('dialogs', () => {
         beforeEach(() => {
             cy.clearBrowserCache();
             cy.reload();
+            cy.waitForGameReady();
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.contains('Non-Closable Dialog').click();
         });
@@ -230,7 +235,7 @@ describe('dialogs', () => {
         };
 
         it('should display correct dialog background and text colors for basic theme', () => {
-            cy.get('.debug-link#debug').click();
+            cy.get('.help-link').click();
             cy.get('.dialog').should('be.visible');
 
             // basic theme should have light grey background (#D3D3D3) and black text
@@ -246,7 +251,7 @@ describe('dialogs', () => {
             cy.selectTheme('classic');
             cy.get('.dialog button.close').click();
 
-            cy.get('.debug-link#debug').click();
+            cy.get('.help-link').click();
             cy.get('.dialog').should('be.visible');
 
             // classic theme should have light grey background (#D3D3D3) and black text
@@ -261,7 +266,7 @@ describe('dialogs', () => {
             cy.selectTheme('ocean');
             cy.get('.dialog button.close').click();
 
-            cy.get('.debug-link#debug').click();
+            cy.get('.help-link').click();
             cy.get('.dialog').should('be.visible');
 
             // ocean theme should have dark blue background (#0D3D56) and white text
@@ -276,11 +281,11 @@ describe('dialogs', () => {
             cy.selectTheme('desert');
             cy.get('.dialog button.close').click();
 
-            cy.get('.debug-link#debug').click();
+            cy.get('.help-link').click();
             cy.get('.dialog').should('be.visible');
 
-            // desert theme should have sand background (#C89F6F) and black text
-            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#C89F6F'));
+            // desert theme should have sand background and black text
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#D4C5A0'));
             cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
 
             cy.get('.dialog button.close').should('have.css', 'color', hexToRgbString('#000000'));
@@ -291,11 +296,26 @@ describe('dialogs', () => {
             cy.selectTheme('cloudy');
             cy.get('.dialog button.close').click();
 
-            cy.get('.debug-link#debug').click();
+            cy.get('.help-link').click();
             cy.get('.dialog').should('be.visible');
 
             // cloudy theme should have light blue background (#E6F3FF) and black text
             cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#E6F3FF'));
+            cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
+
+            cy.get('.dialog button.close').should('have.css', 'color', hexToRgbString('#000000'));
+        });
+
+        it('should display correct dialog background and text colors for dust field theme', () => {
+            cy.get('.settings-link').click();
+            cy.selectTheme('dustfield');
+            cy.get('.dialog button.close').click();
+
+            cy.get('.help-link').click();
+            cy.get('.dialog').should('be.visible');
+
+            // desert theme should have dust background and black text
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#9F8560'));
             cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
 
             cy.get('.dialog button.close').should('have.css', 'color', hexToRgbString('#000000'));
@@ -313,9 +333,9 @@ describe('dialogs', () => {
             cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#0D3D56'));
             cy.get('.dialog').should('have.css', 'color', hexToRgbString('#FFFFFF'));
 
-            // Switch to desert theme - should change to sand background, black text
-            cy.selectTheme('desert');
-            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#C89F6F'));
+            // Switch to dustfield theme - should change to dust background, black text
+            cy.selectTheme('dustfield');
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#9F8560'));
             cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
         });
     });
