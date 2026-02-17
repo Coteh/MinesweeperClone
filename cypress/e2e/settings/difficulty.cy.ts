@@ -163,4 +163,39 @@ describe('difficulty', () => {
         cy.get('.settings-link').click();
         cy.get('#difficulty-selector').should('have.value', 'medium');
     });
+
+    it('should keep status bar dimmed when switching difficulty', () => {
+        // Open settings dialog (which dims the status bar)
+        cy.get('.settings-link').click();
+
+        // Wait for dialog to be visible
+        cy.get('.dialog-content').should('be.visible');
+
+        // Get the dimmed status bar color before switching difficulty
+        cy.get("meta[name='theme-color']").then((meta) => {
+            const dimmedColorBefore = meta.attr('content');
+
+            // Change difficulty
+            cy.selectDifficulty('medium');
+
+            // Verify status bar is still dimmed (should have same dimmed color)
+            cy.get("meta[name='theme-color']").should('have.attr', 'content', dimmedColorBefore);
+
+            // Change to another difficulty to verify it works multiple times
+            cy.selectDifficulty('hard');
+
+            // Status bar should still be dimmed with the same color
+            cy.get("meta[name='theme-color']").should('have.attr', 'content', dimmedColorBefore);
+
+            // Close dialog and verify status bar is no longer dimmed
+            cy.get('.overlay-back').click('left');
+
+            // The status bar should now have the normal (non-dimmed) color
+            cy.get("meta[name='theme-color']").should(
+                'not.have.attr',
+                'content',
+                dimmedColorBefore,
+            );
+        });
+    });
 });
