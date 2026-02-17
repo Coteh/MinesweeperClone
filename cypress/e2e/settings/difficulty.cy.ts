@@ -100,6 +100,17 @@ describe('difficulty', () => {
         // Verify dropdown default value
         cy.get('#difficulty-selector').should('have.value', 'easy');
 
+        // Change to easy_8x8 difficulty
+        cy.selectDifficulty('easy_8x8');
+
+        cy.get('.overlay-back').click('left');
+
+        // Verify game board changed to easy_8x8 difficulty
+        cy.get('.game-board > .row').eq(0).children().should('have.length', 8);
+        cy.get('.game-board > .row').should('have.length', 8);
+
+        cy.get('.settings-link').click();
+
         // Change to medium difficulty
         cy.selectDifficulty('medium');
 
