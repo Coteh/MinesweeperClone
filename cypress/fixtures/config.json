@@ -1,7 +1,19 @@
 {
     "difficulty": {
+        "easy_8x8": {
+            "displayName": "Easy (8x8)",
+            "boardWidth": 8,
+            "boardHeight": 8,
+            "numberOfMines": 10,
+            "bounds": {
+                "minX": -200,
+                "minY": -200,
+                "maxX": 200,
+                "maxY": 200
+            }
+        },
         "easy": {
-            "displayName": "Easy",
+            "displayName": "Easy (9x9)",
             "boardWidth": 9,
             "boardHeight": 9,
             "numberOfMines": 10,

@@ -24,6 +24,7 @@ export const CLEAR_DATA_SETTING_NAME = 'clear-all-data';
 export const SETTING_ENABLED = 'enabled';
 export const SETTING_DISABLED = 'disabled';
 
+export const DIFFICULTY_EASY_8X8 = 'easy_8x8';
 export const DIFFICULTY_EASY = 'easy';
 export const DIFFICULTY_MEDIUM = 'medium';
 export const DIFFICULTY_HARD = 'hard';
