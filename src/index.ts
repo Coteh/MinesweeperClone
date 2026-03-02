@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }, 500);
                 renderDigits(timeBoard, gameState.elapsedTimeMS / 1000, assetManager);
                 backgroundManager.renderInitial();
-                themeManager.applyNormalThemeColor();
+                themeManager.applyNormalGameStateColor();
                 if (!interactionSubsystem) {
                     interactionSubsystem = setupInteractionSubsystem(
                         transformManager,
