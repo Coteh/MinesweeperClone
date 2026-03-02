@@ -430,6 +430,15 @@ export class ThemeManager {
     }
 
     /**
+     * Reset game state to normal and apply the appropriate theme color,
+     * preserving the current dimmed state (e.g., when a dialog is open)
+     */
+    applyNormalGameStateColor() {
+        this.gameStateType = GameStateType.Normal;
+        this.applyCurrentThemeColor();
+    }
+
+    /**
      * Apply the current theme color based on current state (dimmed/normal, win/lose/normal)
      */
     applyCurrentThemeColor() {
