@@ -281,6 +281,7 @@ export const renderBoard = (
                         applyPreviewState();
                     }, 100);
                 } else if (!gameState.ended) {
+                    if (flagPreviewTimeout) clearTimeout(flagPreviewTimeout);
                     flagPreviewTimeout = setTimeout(() => {
                         startFlagPreview(elem, gameState.board[i][j].isFlagged);
                     }, FLAG_PREVIEW_HOLD_THRESHOLD);
@@ -360,6 +361,7 @@ export const renderBoard = (
                         applyPreviewState();
                     }, 100);
                 } else if (!gameState.ended) {
+                    if (flagPreviewTimeout) clearTimeout(flagPreviewTimeout);
                     flagPreviewTimeout = setTimeout(() => {
                         startFlagPreview(elem, gameState.board[i][j].isFlagged);
                     }, FLAG_PREVIEW_HOLD_THRESHOLD);
