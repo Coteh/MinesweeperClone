@@ -9,6 +9,7 @@ import {
 } from './game';
 import { BrowserGameStorage } from './storage/browser';
 import {
+    cancelFlagPreview,
     createDialogContentFromTemplate,
     renderBoard,
     renderDialog,
@@ -200,6 +201,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             case 'error':
                 break;
             case 'lose': {
+                cancelFlagPreview();
                 console.log('Player loses!');
                 setSmileyImage(newGameImage, SMILEY_SAD, assetManager);
                 clearInterval(timeBoardInterval);
@@ -212,6 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             }
             case 'win': {
+                cancelFlagPreview();
                 console.log('Player wins!');
                 setSmileyImage(newGameImage, SMILEY_PROUD, assetManager);
                 transformManager.resetZoom(true);

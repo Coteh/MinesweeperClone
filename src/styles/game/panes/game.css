@@ -208,6 +208,21 @@ body:not(.classic) .game-space > .game-top {
     color: grey;
 }
 
+/* Flag Preview */
+
+.flag-preview {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    object-fit: contain;
+    /* transition applied via JS after placement to avoid animating initial positioning */
+}
+
+img.flag-img-fading {
+    transition: opacity 150ms ease-in;
+    opacity: 0.2;
+}
+
 /* Question Mark Input Mode Toggle */
 
 .question-link svg {
