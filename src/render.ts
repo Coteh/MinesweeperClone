@@ -65,10 +65,6 @@ const startFlagPreview = (tileElement: HTMLElement, isFlagged: boolean) => {
         el.style.transform = `translateY(${startOffset}px)`;
         el.style.opacity = '0';
     }
-
-    if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-    }
 };
 
 export const cancelFlagPreview = () => {
