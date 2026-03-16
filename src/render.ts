@@ -9,6 +9,82 @@ import { ThemeManager } from './manager/theme';
 // Module-level reference to the ThemeManager
 let themeManagerRef: ThemeManager | null = null;
 
+// Flag preview hold threshold in milliseconds (configurable)
+const FLAG_PREVIEW_HOLD_THRESHOLD = 250;
+
+// Module-level asset manager reference for flag preview
+let assetManagerRef: AssetManager | null = null;
+
+// Module-level flag preview state
+let flagPreviewTimeout: ReturnType<typeof setTimeout> | null = null;
+let flagPreviewElement: HTMLElement | null = null;
+
+const startFlagPreview = (tileElement: HTMLElement, isFlagged: boolean) => {
+    cancelFlagPreview();
+
+    const rect = tileElement.getBoundingClientRect();
+    const flagSrc = assetManagerRef?.getImage('img/Flag.png')?.src ?? 'img/Flag.png';
+
+    const el = document.createElement('img') as HTMLImageElement;
+    el.src = flagSrc;
+    el.className = 'flag-preview';
+    el.style.left = `${rect.left + 2}px`;
+    el.style.top = `${rect.top + 2}px`;
+    el.style.width = `${rect.width - 4}px`;
+    el.style.height = `${rect.height - 4}px`;
+
+    const startOffset = -(rect.top + rect.height);
+
+    if (!isFlagged) {
+        // Flag add: descend from top of screen to tile
+        el.style.transform = `translateY(${startOffset}px)`;
+        el.style.opacity = '0';
+    } else {
+        // Flag remove: start at tile, ascend to top of screen
+        el.style.transform = 'translateY(0)';
+        el.style.opacity = '0.65';
+
+        // Dim the real flag on the tile
+        const flagImg = tileElement.querySelector('img[data-asset="img/Flag.png"]');
+        if (flagImg) {
+            flagImg.classList.add('flag-img-fading');
+        }
+    }
+
+    document.body.appendChild(el);
+    flagPreviewElement = el;
+
+    // Force reflow then apply transition
+    el.getBoundingClientRect();
+    el.style.transition = 'transform 150ms ease-out, opacity 150ms ease-out';
+
+    if (!isFlagged) {
+        el.style.transform = 'translateY(0)';
+        el.style.opacity = '0.65';
+    } else {
+        el.style.transform = `translateY(${startOffset}px)`;
+        el.style.opacity = '0';
+    }
+
+    if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+    }
+};
+
+export const cancelFlagPreview = () => {
+    if (flagPreviewTimeout) {
+        clearTimeout(flagPreviewTimeout);
+        flagPreviewTimeout = null;
+    }
+    if (flagPreviewElement) {
+        flagPreviewElement.remove();
+        flagPreviewElement = null;
+    }
+    document.querySelectorAll('img.flag-img-fading').forEach((el) => {
+        el.classList.remove('flag-img-fading');
+    });
+};
+
 /**
  * Set the ThemeManager reference for dialog color dimming
  * Must be called during initialization
@@ -85,6 +161,7 @@ export const renderBoard = (
     gameState: GameState,
     assetManager: AssetManager,
 ) => {
+    assetManagerRef = assetManager;
     parentElem.innerHTML = '';
     // console.log('rendering', gameState.board.length);
     for (let i = 0; i < gameState.board.length; i++) {
@@ -203,6 +280,10 @@ export const renderBoard = (
                     previewTimeout = setTimeout(() => {
                         applyPreviewState();
                     }, 100);
+                } else if (!gameState.ended) {
+                    flagPreviewTimeout = setTimeout(() => {
+                        startFlagPreview(elem, gameState.board[i][j].isFlagged);
+                    }, FLAG_PREVIEW_HOLD_THRESHOLD);
                 }
             });
 
@@ -218,12 +299,14 @@ export const renderBoard = (
 
                 if (distance > 15) {
                     // Cancel the interaction
+                    cancelFlagPreview();
                     clearPreviewState();
                     blockPressed = false;
                 }
             });
 
             elem.addEventListener('touchcancel', () => {
+                cancelFlagPreview();
                 clearPreviewState();
                 blockPressed = false;
             });
@@ -236,11 +319,15 @@ export const renderBoard = (
                 }
                 console.log('touchend on mine block');
 
+                cancelFlagPreview();
                 clearPreviewState();
 
                 const holdDuration = Date.now() - pressStartTime;
 
-                if (holdDuration > 250 && !gameState.board[i][j].isRevealed) {
+                if (
+                    holdDuration > FLAG_PREVIEW_HOLD_THRESHOLD &&
+                    !gameState.board[i][j].isRevealed
+                ) {
                     flagSpot(j, i);
                     blockPressed = false;
                     return;
@@ -262,6 +349,7 @@ export const renderBoard = (
                 // Only handle left mouse button
                 if (e.button !== 0) return;
 
+                pressStartTime = Date.now();
                 blockPressed = true;
                 console.log(`mouse down on spot (${j}, ${i})`);
 
@@ -271,6 +359,10 @@ export const renderBoard = (
                     previewTimeout = setTimeout(() => {
                         applyPreviewState();
                     }, 100);
+                } else if (!gameState.ended) {
+                    flagPreviewTimeout = setTimeout(() => {
+                        startFlagPreview(elem, gameState.board[i][j].isFlagged);
+                    }, FLAG_PREVIEW_HOLD_THRESHOLD);
                 }
             });
 
@@ -280,9 +372,21 @@ export const renderBoard = (
 
                 if (!blockPressed) return;
 
+                cancelFlagPreview();
                 clearPreviewState();
 
                 console.log(`selecting spot (${j}, ${i})`);
+
+                const holdDuration = Date.now() - pressStartTime;
+
+                if (
+                    holdDuration > FLAG_PREVIEW_HOLD_THRESHOLD &&
+                    !gameState.board[i][j].isRevealed
+                ) {
+                    flagSpot(j, i);
+                    blockPressed = false;
+                    return;
+                }
 
                 if (gameState.board[i][j].isRevealed) {
                     selectAdjacentSpots(j, i);
@@ -297,6 +401,7 @@ export const renderBoard = (
 
             elem.addEventListener('mouseleave', () => {
                 if (!blockPressed) return;
+                cancelFlagPreview();
                 clearPreviewState();
                 blockPressed = false;
             });
