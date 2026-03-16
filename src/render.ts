@@ -325,7 +325,7 @@ export const renderBoard = (
                 const holdDuration = Date.now() - pressStartTime;
 
                 if (
-                    holdDuration > FLAG_PREVIEW_HOLD_THRESHOLD &&
+                    holdDuration >= FLAG_PREVIEW_HOLD_THRESHOLD &&
                     !gameState.board[i][j].isRevealed
                 ) {
                     flagSpot(j, i);
@@ -380,7 +380,7 @@ export const renderBoard = (
                 const holdDuration = Date.now() - pressStartTime;
 
                 if (
-                    holdDuration > FLAG_PREVIEW_HOLD_THRESHOLD &&
+                    holdDuration >= FLAG_PREVIEW_HOLD_THRESHOLD &&
                     !gameState.board[i][j].isRevealed
                 ) {
                     flagSpot(j, i);
