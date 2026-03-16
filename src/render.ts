@@ -149,10 +149,10 @@ const getSmileyFace = (gameState: GameState): string => {
     return 'img/Smiley.png';
 };
 
-// Helper to clear preview classes from all tiles
-const clearAllPreviews = () => {
-    document.querySelectorAll('.box.preview').forEach((elem) => {
-        elem.classList.remove('preview');
+// Helper to clear reveal-preview classes from all tiles
+const clearAllRevealPreviews = () => {
+    document.querySelectorAll('.box.reveal-preview').forEach((elem) => {
+        elem.classList.remove('reveal-preview');
     });
 };
 
@@ -224,17 +224,17 @@ export const renderBoard = (
             let blockPressed: boolean;
             let touchStartX: number;
             let touchStartY: number;
-            let previewTimeout: NodeJS.Timeout | null = null;
+            let revealPreviewTimeout: NodeJS.Timeout | null = null;
 
-            const applyPreviewState = () => {
+            const applyRevealPreviewState = () => {
                 if (!gameState.board[i][j].isRevealed) return;
                 if (gameState.ended) return; // Don't show surprised face if game has ended
 
                 // Get adjacent non-revealed, non-flagged tiles
-                const previewTiles = getAdjacentTileElements(j, i, gameState, parentElem);
+                const revealPreviewTiles = getAdjacentTileElements(j, i, gameState, parentElem);
 
-                // Apply preview class to adjacent tiles
-                previewTiles.forEach((tile) => tile.classList.add('preview'));
+                // Apply reveal-preview class to adjacent tiles
+                revealPreviewTiles.forEach((tile) => tile.classList.add('reveal-preview'));
 
                 // Change smiley to surprised
                 const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
@@ -246,15 +246,15 @@ export const renderBoard = (
                 }
             };
 
-            const clearPreviewState = () => {
-                // Cancel any pending preview timeout
-                if (previewTimeout) {
-                    clearTimeout(previewTimeout);
-                    previewTimeout = null;
+            const clearRevealPreviewState = () => {
+                // Cancel any pending reveal-preview timeout
+                if (revealPreviewTimeout) {
+                    clearTimeout(revealPreviewTimeout);
+                    revealPreviewTimeout = null;
                 }
 
-                // Use clearAllPreviews to handle any DOM elements with preview class
-                clearAllPreviews();
+                // Use clearAllRevealPreviews to handle any DOM elements with reveal-preview class
+                clearAllRevealPreviews();
 
                 // Restore smiley face
                 const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
@@ -274,11 +274,11 @@ export const renderBoard = (
                 touchStartY = e.touches[0].clientY;
                 console.log('touch start on mine block');
 
-                // Apply preview state after a short delay (100ms) if tile is revealed
+                // Apply reveal-preview state after a short delay (100ms) if tile is revealed
                 // This prevents drag gestures from triggering the preview
                 if (gameState.board[i][j].isRevealed) {
-                    previewTimeout = setTimeout(() => {
-                        applyPreviewState();
+                    revealPreviewTimeout = setTimeout(() => {
+                        applyRevealPreviewState();
                     }, 100);
                 } else if (!gameState.ended) {
                     if (flagPreviewTimeout) clearTimeout(flagPreviewTimeout);
@@ -301,14 +301,14 @@ export const renderBoard = (
                 if (distance > 15) {
                     // Cancel the interaction
                     cancelFlagPreview();
-                    clearPreviewState();
+                    clearRevealPreviewState();
                     blockPressed = false;
                 }
             });
 
             elem.addEventListener('touchcancel', () => {
                 cancelFlagPreview();
-                clearPreviewState();
+                clearRevealPreviewState();
                 blockPressed = false;
             });
 
@@ -321,7 +321,7 @@ export const renderBoard = (
                 console.log('touchend on mine block');
 
                 cancelFlagPreview();
-                clearPreviewState();
+                clearRevealPreviewState();
 
                 const holdDuration = Date.now() - pressStartTime;
 
@@ -354,11 +354,11 @@ export const renderBoard = (
                 blockPressed = true;
                 console.log(`mouse down on spot (${j}, ${i})`);
 
-                // Apply preview state after a short delay if tile is revealed
+                // Apply reveal-preview state after a short delay if tile is revealed
                 // This gives a more deliberate feel
                 if (gameState.board[i][j].isRevealed) {
-                    previewTimeout = setTimeout(() => {
-                        applyPreviewState();
+                    revealPreviewTimeout = setTimeout(() => {
+                        applyRevealPreviewState();
                     }, 100);
                 } else if (!gameState.ended) {
                     if (flagPreviewTimeout) clearTimeout(flagPreviewTimeout);
@@ -375,7 +375,7 @@ export const renderBoard = (
                 if (!blockPressed) return;
 
                 cancelFlagPreview();
-                clearPreviewState();
+                clearRevealPreviewState();
 
                 console.log(`selecting spot (${j}, ${i})`);
 
@@ -404,7 +404,7 @@ export const renderBoard = (
             elem.addEventListener('mouseleave', () => {
                 if (!blockPressed) return;
                 cancelFlagPreview();
-                clearPreviewState();
+                clearRevealPreviewState();
                 blockPressed = false;
             });
 

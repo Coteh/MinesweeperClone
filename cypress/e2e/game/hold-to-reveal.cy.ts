@@ -175,14 +175,14 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('have.class', 'preview');
+                    cy.get('.box').eq(0).should('have.class', 'reveal-preview');
                 });
 
             // The flagged tile should NOT have preview class
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(1).should('not.have.class', 'preview');
+                    cy.get('.box').eq(1).should('not.have.class', 'reveal-preview');
                 });
 
             // Check that smiley face changed to surprised
@@ -201,7 +201,7 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('not.have.class', 'preview');
+                    cy.get('.box').eq(0).should('not.have.class', 'reveal-preview');
                 });
 
             // Verify smiley face is restored
@@ -237,7 +237,7 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('have.class', 'preview');
+                    cy.get('.box').eq(0).should('have.class', 'reveal-preview');
                 });
 
             // Check that smiley face changed to surprised
@@ -256,7 +256,7 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('not.have.class', 'preview');
+                    cy.get('.box').eq(0).should('not.have.class', 'reveal-preview');
                 });
 
             // Verify smiley face is restored
@@ -280,7 +280,7 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('not.have.class', 'preview');
+                    cy.get('.box').eq(0).should('not.have.class', 'reveal-preview');
                 });
 
             // Verify smiley face is still restored
@@ -409,19 +409,19 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('have.class', 'preview');
+                    cy.get('.box').eq(0).should('have.class', 'reveal-preview');
                 });
 
             cy.get('.game-board > .row')
                 .eq(2)
                 .within(() => {
-                    cy.get('.box').eq(1).should('have.class', 'preview');
+                    cy.get('.box').eq(1).should('have.class', 'reveal-preview');
                 });
 
             cy.get('.game-board > .row')
                 .eq(3)
                 .within(() => {
-                    cy.get('.box').eq(1).should('have.class', 'preview');
+                    cy.get('.box').eq(1).should('have.class', 'reveal-preview');
                 });
 
             // Verify surprised face is shown
@@ -442,19 +442,19 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('not.have.class', 'preview');
+                    cy.get('.box').eq(0).should('not.have.class', 'reveal-preview');
                 });
 
             cy.get('.game-board > .row')
                 .eq(2)
                 .within(() => {
-                    cy.get('.box').eq(1).should('not.have.class', 'preview');
+                    cy.get('.box').eq(1).should('not.have.class', 'reveal-preview');
                 });
 
             cy.get('.game-board > .row')
                 .eq(3)
                 .within(() => {
-                    cy.get('.box').eq(1).should('not.have.class', 'preview');
+                    cy.get('.box').eq(1).should('not.have.class', 'reveal-preview');
                 });
 
             // Verify smiley face is restored
@@ -538,7 +538,7 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('have.class', 'preview');
+                    cy.get('.box').eq(0).should('have.class', 'reveal-preview');
                 });
 
             // Check that smiley face changed to surprised
@@ -566,7 +566,7 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('not.have.class', 'preview');
+                    cy.get('.box').eq(0).should('not.have.class', 'reveal-preview');
                 });
 
             // Verify smiley face is restored
@@ -599,7 +599,7 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('not.have.class', 'preview');
+                    cy.get('.box').eq(0).should('not.have.class', 'reveal-preview');
                 });
 
             // Verify smiley face is still restored
@@ -644,7 +644,7 @@ describe('hold-to-reveal functionality', () => {
             cy.get('.game-board > .row')
                 .eq(1)
                 .within(() => {
-                    cy.get('.box').eq(0).should('have.class', 'preview');
+                    cy.get('.box').eq(0).should('have.class', 'reveal-preview');
                 });
 
             // Now make a different move (flag another tile) which triggers board re-render
@@ -655,7 +655,7 @@ describe('hold-to-reveal functionality', () => {
                 });
 
             // Preview classes should be cleared
-            cy.get('.box.preview').should('not.exist');
+            cy.get('.box.reveal-preview').should('not.exist');
         });
     });
 });

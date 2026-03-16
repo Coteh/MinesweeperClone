@@ -115,7 +115,7 @@ body:not(.classic) .game-space > .game-top {
     background-color: var(--block-revealed-color);
 }
 
-.box.preview {
+.box.reveal-preview {
     background-color: var(--block-revealed-color);
 }
 
