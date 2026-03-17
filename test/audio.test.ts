@@ -169,6 +169,73 @@ describe('AudioManager', () => {
             expect(consoleErrorSpy).toHaveBeenCalledWith('Sound not loaded:', 'click');
             consoleErrorSpy.mockRestore();
         });
+
+        it('should defer playback until AudioContext is resumed when suspended', async () => {
+            const playSpy = jest.spyOn(mockSound, 'play');
+            const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+            (
+                Howler as {
+                    ctx: { state: string; resume: () => Promise<void> } | null;
+                }
+            ).ctx = {
+                state: 'suspended',
+                resume: mockResume,
+            };
+
+            audioManager.playSoundEffect(SoundEffect.Click);
+
+            expect(mockResume).toHaveBeenCalled();
+            expect(playSpy).not.toHaveBeenCalled(); // not yet — waiting for resume
+
+            await Promise.resolve(); // flush the resume promise
+
+            expect(playSpy).toHaveBeenCalled();
+        });
+
+        it('should play sound immediately when AudioContext is already running', () => {
+            const playSpy = jest.spyOn(mockSound, 'play');
+            const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+            (
+                Howler as {
+                    ctx: { state: string; resume: () => Promise<void> } | null;
+                }
+            ).ctx = {
+                state: 'running',
+                resume: mockResume,
+            };
+
+            audioManager.playSoundEffect(SoundEffect.Click);
+
+            expect(mockResume).not.toHaveBeenCalled();
+            expect(playSpy).toHaveBeenCalled();
+        });
+
+        it('should play sound even if AudioContext resume fails', async () => {
+            const playSpy = jest.spyOn(mockSound, 'play');
+            const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+            const mockError = new Error('Resume failed');
+            const mockResume = jest.fn<() => Promise<void>>().mockRejectedValue(mockError);
+            (
+                Howler as {
+                    ctx: { state: string; resume: () => Promise<void> } | null;
+                }
+            ).ctx = {
+                state: 'suspended',
+                resume: mockResume,
+            };
+
+            audioManager.playSoundEffect(SoundEffect.Click);
+
+            await Promise.resolve(); // flush the rejected resume promise
+            await Promise.resolve(); // flush the .catch() handler
+
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                'Failed to resume audio context:',
+                mockError,
+            );
+            expect(playSpy).toHaveBeenCalled();
+            consoleWarnSpy.mockRestore();
+        });
     });
 
     describe('AudioContext resume handlers', () => {
