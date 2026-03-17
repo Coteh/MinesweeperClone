@@ -34,6 +34,7 @@ export class AudioManager {
 
     private soundEffectsEnabled: boolean;
     private soundEffectsVolume: number;
+    private needsAudioResume: boolean = false;
 
     constructor(assetManager: AssetManager) {
         this.assetManager = assetManager;
@@ -64,37 +65,45 @@ export class AudioManager {
     }
 
     /**
-     * Sets up event listeners to resume AudioContext when the page becomes visible again.
-     * This is necessary for iOS PWAs where the AudioContext gets suspended when the app
-     * goes to background and needs to be explicitly resumed.
-     * NOTE: Might not need this anymore after https://github.com/goldfire/howler.js/pull/1770 is merged.
+     * Sets up event listeners to recover audio after iOS suspends the AudioContext when
+     * the user switches to a native app (e.g. tapping a link that opens the GitHub app).
+     *
+     * The problem: when a native app takes focus, iOS suspends the WebAudio AudioContext.
+     * Howler's play() check is `Howler.state === 'running' && ctx.state !== 'interrupted'`.
+     * Since iOS reports the suspended context as 'suspended' (not 'interrupted'), Howler
+     * sees this as fine and tries to play immediately on a suspended context. The buffer
+     * source starts but never produces audio; the end timer fires and the sound is dropped.
+     *
+     * The fix: on the first user gesture after the page was hidden, override Howler's
+     * internal state to 'suspended' so that its _autoResume() takes the correct code path:
+     * it resumes the AudioContext and emits the 'resume' event that pending sounds wait on.
+     * NOTE: This workaround can be removed if https://github.com/goldfire/howler.js/pull/1770
+     * is ever merged and released.
      */
     private setupAudioContextResumeHandlers() {
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                this.resumeAudioContext();
+            if (document.visibilityState === 'hidden') {
+                this.needsAudioResume = true;
             }
         });
 
-        // On iOS, AudioContext.resume() must be called within a user gesture.
-        // When returning from an external link opened via target="_blank" (e.g. Safari),
-        // visibilitychange fires but is not considered a user gesture, so resume() is
-        // silently blocked. Resuming on the next user interaction ensures audio works again.
-        const resumeOnInteraction = () => this.resumeAudioContext();
+        const resumeOnInteraction = () => {
+            if (!this.needsAudioResume) return;
+            this.needsAudioResume = false;
+
+            const ctx = Howler.ctx;
+            if (!ctx || ctx.state === 'running') return;
+
+            // Force Howler's internal state to 'suspended' so _autoResume() takes the
+            // branch that calls ctx.resume() and emits 'resume' to all queued Howl sounds.
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (Howler as any).state = 'suspended';
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (Howler as any)._autoResume();
+        };
+
         document.addEventListener('touchstart', resumeOnInteraction, { passive: true });
         document.addEventListener('click', resumeOnInteraction);
-    }
-
-    /**
-     * Attempts to resume the AudioContext if it's not running.
-     * If the AudioContext is already running, this is a no-op.
-     */
-    private resumeAudioContext() {
-        if (Howler.ctx && Howler.ctx.state !== 'running') {
-            Howler.ctx.resume().catch((err) => {
-                console.warn('Failed to resume audio context:', err);
-            });
-        }
     }
 
     playSoundEffect(soundEffect: SoundEffect, settings?: SoundSettings) {
@@ -116,39 +125,19 @@ export class AudioManager {
 
         const resolvedSound = sound;
 
-        const play = () => {
-            // Calculate final volume
-            let finalVolume = this.soundEffectsVolume;
+        let finalVolume = this.soundEffectsVolume;
 
-            if (typeof settings !== 'undefined') {
-                if (typeof settings.seek !== 'undefined') {
-                    resolvedSound.seek(settings.seek);
-                }
-                if (typeof settings.volume !== 'undefined') {
-                    // Apply both the per-sound volume and the global volume
-                    finalVolume = settings.volume * this.soundEffectsVolume;
-                }
+        if (typeof settings !== 'undefined') {
+            if (typeof settings.seek !== 'undefined') {
+                resolvedSound.seek(settings.seek);
             }
-
-            resolvedSound.volume(finalVolume);
-            resolvedSound.play();
-        };
-
-        // If the AudioContext is suspended (e.g., iOS suspends it after switching tabs),
-        // resume it before playing. AudioContext.resume() resolves asynchronously, so we
-        // defer playback to the .then() callback. This is called within a user gesture
-        // (touchend/click handler), so iOS will allow the resume to succeed.
-        if (Howler.ctx && Howler.ctx.state !== 'running') {
-            Howler.ctx
-                .resume()
-                .then(play)
-                .catch((err) => {
-                    console.warn('Failed to resume audio context:', err);
-                    play();
-                });
-            return;
+            if (typeof settings.volume !== 'undefined') {
+                // Apply both the per-sound volume and the global volume
+                finalVolume = settings.volume * this.soundEffectsVolume;
+            }
         }
 
-        play();
+        resolvedSound.volume(finalVolume);
+        resolvedSound.play();
     }
 }
