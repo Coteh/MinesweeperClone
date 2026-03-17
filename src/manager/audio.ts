@@ -75,6 +75,14 @@ export class AudioManager {
                 this.resumeAudioContext();
             }
         });
+
+        // On iOS, AudioContext.resume() must be called within a user gesture.
+        // When returning from an external link opened via target="_blank" (e.g. Safari),
+        // visibilitychange fires but is not considered a user gesture, so resume() is
+        // silently blocked. Resuming on the next user interaction ensures audio works again.
+        const resumeOnInteraction = () => this.resumeAudioContext();
+        document.addEventListener('touchstart', resumeOnInteraction, { passive: true });
+        document.addEventListener('click', resumeOnInteraction);
     }
 
     /**

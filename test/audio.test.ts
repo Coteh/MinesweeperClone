@@ -180,6 +180,61 @@ describe('AudioManager', () => {
             );
         });
 
+        it('should set up touchstart event listener', () => {
+            expect(mockDocument.addEventListener).toHaveBeenCalledWith(
+                'touchstart',
+                expect.any(Function),
+                { passive: true },
+            );
+        });
+
+        it('should set up click event listener', () => {
+            expect(mockDocument.addEventListener).toHaveBeenCalledWith(
+                'click',
+                expect.any(Function),
+            );
+        });
+
+        it('should resume audio context on touchstart when suspended', () => {
+            const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+            (
+                Howler as {
+                    ctx: { state: string; resume: () => Promise<void> } | null;
+                }
+            ).ctx = {
+                state: 'suspended',
+                resume: mockResume,
+            };
+
+            const touchstartHandler = (
+                mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
+            ).mock.calls.find((call) => call[0] === 'touchstart')?.[1] as () => void;
+
+            touchstartHandler();
+
+            expect(mockResume).toHaveBeenCalled();
+        });
+
+        it('should resume audio context on click when suspended', () => {
+            const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+            (
+                Howler as {
+                    ctx: { state: string; resume: () => Promise<void> } | null;
+                }
+            ).ctx = {
+                state: 'suspended',
+                resume: mockResume,
+            };
+
+            const clickHandler = (
+                mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
+            ).mock.calls.find((call) => call[0] === 'click')?.[1] as () => void;
+
+            clickHandler();
+
+            expect(mockResume).toHaveBeenCalled();
+        });
+
         it('should resume audio context when it is not running on visibility change', () => {
             const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
             (
