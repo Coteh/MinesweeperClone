@@ -114,20 +114,41 @@ export class AudioManager {
             return;
         }
 
-        // Calculate final volume
-        let finalVolume = this.soundEffectsVolume;
+        const resolvedSound = sound;
 
-        if (typeof settings !== 'undefined') {
-            if (typeof settings.seek !== 'undefined') {
-                sound.seek(settings.seek);
+        const play = () => {
+            // Calculate final volume
+            let finalVolume = this.soundEffectsVolume;
+
+            if (typeof settings !== 'undefined') {
+                if (typeof settings.seek !== 'undefined') {
+                    resolvedSound.seek(settings.seek);
+                }
+                if (typeof settings.volume !== 'undefined') {
+                    // Apply both the per-sound volume and the global volume
+                    finalVolume = settings.volume * this.soundEffectsVolume;
+                }
             }
-            if (typeof settings.volume !== 'undefined') {
-                // Apply both the per-sound volume and the global volume
-                finalVolume = settings.volume * this.soundEffectsVolume;
-            }
+
+            resolvedSound.volume(finalVolume);
+            resolvedSound.play();
+        };
+
+        // If the AudioContext is suspended (e.g., iOS suspends it after switching tabs),
+        // resume it before playing. AudioContext.resume() resolves asynchronously, so we
+        // defer playback to the .then() callback. This is called within a user gesture
+        // (touchend/click handler), so iOS will allow the resume to succeed.
+        if (Howler.ctx && Howler.ctx.state !== 'running') {
+            Howler.ctx
+                .resume()
+                .then(play)
+                .catch((err) => {
+                    console.warn('Failed to resume audio context:', err);
+                    play();
+                });
+            return;
         }
 
-        sound.volume(finalVolume);
-        sound.play();
+        play();
     }
 }
