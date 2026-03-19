@@ -123,13 +123,11 @@ export class AudioManager {
             return;
         }
 
-        const resolvedSound = sound;
-
         let finalVolume = this.soundEffectsVolume;
 
         if (typeof settings !== 'undefined') {
             if (typeof settings.seek !== 'undefined') {
-                resolvedSound.seek(settings.seek);
+                sound.seek(settings.seek);
             }
             if (typeof settings.volume !== 'undefined') {
                 // Apply both the per-sound volume and the global volume
@@ -137,7 +135,7 @@ export class AudioManager {
             }
         }
 
-        resolvedSound.volume(finalVolume);
-        resolvedSound.play();
+        sound.volume(finalVolume);
+        sound.play();
     }
 }
