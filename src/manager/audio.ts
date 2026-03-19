@@ -65,20 +65,17 @@ export class AudioManager {
     }
 
     /**
-     * Sets up event listeners to recover audio after iOS suspends the AudioContext when
-     * the user switches to a native app (e.g. tapping a link that opens the GitHub app).
+     * Recovers audio after iOS suspends the AudioContext when the user switches to a
+     * native app. iOS sets ctx.state to 'suspended' but Howler has no listener for
+     * external state changes, so Howler.state stays 'running'. This mismatch causes
+     * _autoResume() to no-op and play() to fire immediately on a dead context, silently
+     * dropping sounds.
      *
-     * The problem: when a native app takes focus, iOS suspends the WebAudio AudioContext.
-     * Howler's play() check is `Howler.state === 'running' && ctx.state !== 'interrupted'`.
-     * Since iOS reports the suspended context as 'suspended' (not 'interrupted'), Howler
-     * sees this as fine and tries to play immediately on a suspended context. The buffer
-     * source starts but never produces audio; the end timer fires and the sound is dropped.
+     * Fix: on the first gesture after returning, sync Howler.state to 'suspended' so
+     * _autoResume() takes the branch that calls ctx.resume() and emits 'resume' to all
+     * Howls — including any already-playing sounds like looping background music.
      *
-     * The fix: on the first user gesture after the page was hidden, override Howler's
-     * internal state to 'suspended' so that its _autoResume() takes the correct code path:
-     * it resumes the AudioContext and emits the 'resume' event that pending sounds wait on.
-     * NOTE: This workaround can be removed if https://github.com/goldfire/howler.js/pull/1770
-     * is ever merged and released.
+     * NOTE: Remove if https://github.com/goldfire/howler.js/pull/1770 is ever merged.
      */
     private setupAudioContextResumeHandlers() {
         document.addEventListener('visibilitychange', () => {
@@ -94,8 +91,8 @@ export class AudioManager {
             const ctx = Howler.ctx;
             if (!ctx || ctx.state === 'running') return;
 
-            // Force Howler's internal state to 'suspended' so _autoResume() takes the
-            // branch that calls ctx.resume() and emits 'resume' to all queued Howl sounds.
+            // Sync Howler's internal state to match the real AudioContext state so that
+            // _autoResume() enters the branch that calls ctx.resume() and emits 'resume'.
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (Howler as any).state = 'suspended';
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
