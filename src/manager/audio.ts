@@ -86,17 +86,32 @@ export class AudioManager {
 
         const resumeOnInteraction = () => {
             if (!this.needsAudioResume) return;
-            this.needsAudioResume = false;
 
             const ctx = Howler.ctx;
-            if (!ctx || ctx.state === 'running') return;
+            if (!ctx || ctx.state === 'running') {
+                this.needsAudioResume = false;
+                return;
+            }
 
-            // Sync Howler's internal state to match the real AudioContext state so that
-            // _autoResume() enters the branch that calls ctx.resume() and emits 'resume'.
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (Howler as any).state = 'suspended';
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (Howler as any)._autoResume();
+            type HowlerInternals = { state?: string; _autoResume?: () => void };
+            const howler = Howler as unknown as HowlerInternals;
+
+            if ('state' in howler && typeof howler._autoResume === 'function') {
+                // Sync Howler's internal state to match the real AudioContext state so that
+                // _autoResume() enters the branch that calls ctx.resume() and emits 'resume'.
+                howler.state = 'suspended';
+                howler._autoResume();
+                this.needsAudioResume = false;
+            } else {
+                // Howler internals unavailable; fall back to resuming the AudioContext directly.
+                ctx.resume()
+                    .then(() => {
+                        this.needsAudioResume = false;
+                    })
+                    .catch((err) => {
+                        console.warn('Failed to resume audio context:', err);
+                    });
+            }
         };
 
         document.addEventListener('touchstart', resumeOnInteraction, { passive: true });
