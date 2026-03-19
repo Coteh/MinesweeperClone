@@ -115,8 +115,11 @@ export class AudioManager {
             }
         };
 
-        document.addEventListener('touchstart', resumeOnInteraction, { passive: true });
-        document.addEventListener('click', resumeOnInteraction);
+        document.addEventListener('touchstart', resumeOnInteraction, {
+            passive: true,
+            capture: true,
+        });
+        document.addEventListener('click', resumeOnInteraction, { capture: true });
     }
 
     playSoundEffect(soundEffect: SoundEffect, settings?: SoundSettings) {
