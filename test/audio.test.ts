@@ -170,24 +170,18 @@ describe('AudioManager', () => {
             consoleErrorSpy.mockRestore();
         });
 
-        it('should defer playback until AudioContext is resumed when suspended', async () => {
+        it('should play sound even when AudioContext is suspended', () => {
             const playSpy = jest.spyOn(mockSound, 'play');
-            const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
             (
                 Howler as {
                     ctx: { state: string; resume: () => Promise<void> } | null;
                 }
             ).ctx = {
                 state: 'suspended',
-                resume: mockResume,
+                resume: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
             };
 
             audioManager.playSoundEffect(SoundEffect.Click);
-
-            expect(mockResume).toHaveBeenCalled();
-            expect(playSpy).not.toHaveBeenCalled(); // not yet — waiting for resume
-
-            await Promise.resolve(); // flush the resume promise
 
             expect(playSpy).toHaveBeenCalled();
         });
@@ -210,35 +204,37 @@ describe('AudioManager', () => {
             expect(playSpy).toHaveBeenCalled();
         });
 
-        it('should play sound even if AudioContext resume fails', async () => {
+        it('should play sound even when AudioContext resume would fail', () => {
             const playSpy = jest.spyOn(mockSound, 'play');
-            const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-            const mockError = new Error('Resume failed');
-            const mockResume = jest.fn<() => Promise<void>>().mockRejectedValue(mockError);
             (
                 Howler as {
                     ctx: { state: string; resume: () => Promise<void> } | null;
                 }
             ).ctx = {
                 state: 'suspended',
-                resume: mockResume,
+                resume: jest
+                    .fn<() => Promise<void>>()
+                    .mockRejectedValue(new Error('Resume failed')),
             };
 
             audioManager.playSoundEffect(SoundEffect.Click);
 
-            await Promise.resolve(); // flush the rejected resume promise
-            await Promise.resolve(); // flush the .catch() handler
-
-            expect(consoleWarnSpy).toHaveBeenCalledWith(
-                'Failed to resume audio context:',
-                mockError,
-            );
             expect(playSpy).toHaveBeenCalled();
-            consoleWarnSpy.mockRestore();
         });
     });
 
     describe('AudioContext resume handlers', () => {
+        const triggerHiddenVisibilityChange = () => {
+            Object.defineProperty(mockDocument, 'visibilityState', {
+                value: 'hidden',
+                configurable: true,
+            });
+            const handler = (
+                mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
+            ).mock.calls.find((call) => call[0] === 'visibilitychange')?.[1] as () => void;
+            handler();
+        };
+
         it('should set up event listener for visibility change', () => {
             // This should have been called in the constructor
             expect(mockDocument.addEventListener).toHaveBeenCalledWith(
@@ -273,6 +269,8 @@ describe('AudioManager', () => {
                 resume: mockResume,
             };
 
+            triggerHiddenVisibilityChange();
+
             const touchstartHandler = (
                 mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
             ).mock.calls.find((call) => call[0] === 'touchstart')?.[1] as () => void;
@@ -293,6 +291,8 @@ describe('AudioManager', () => {
                 resume: mockResume,
             };
 
+            triggerHiddenVisibilityChange();
+
             const clickHandler = (
                 mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
             ).mock.calls.find((call) => call[0] === 'click')?.[1] as () => void;
@@ -302,7 +302,7 @@ describe('AudioManager', () => {
             expect(mockResume).toHaveBeenCalled();
         });
 
-        it('should resume audio context when it is not running on visibility change', () => {
+        it('should resume audio context on next gesture after page was hidden with suspended context', () => {
             const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
             (
                 Howler as {
@@ -313,18 +313,13 @@ describe('AudioManager', () => {
                 resume: mockResume,
             };
 
-            // Simulate visibility change
-            const visibilityChangeHandler = (
+            triggerHiddenVisibilityChange();
+
+            const clickHandler = (
                 mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
-            ).mock.calls.find((call) => call[0] === 'visibilitychange')?.[1] as () => void;
+            ).mock.calls.find((call) => call[0] === 'click')?.[1] as () => void;
 
-            // Mock document.visibilityState
-            Object.defineProperty(mockDocument, 'visibilityState', {
-                value: 'visible',
-                configurable: true,
-            });
-
-            visibilityChangeHandler();
+            clickHandler();
 
             expect(mockResume).toHaveBeenCalled();
         });
@@ -392,19 +387,16 @@ describe('AudioManager', () => {
                 resume: mockResume,
             };
 
-            // Simulate visibility change
-            const visibilityChangeHandler = (
+            triggerHiddenVisibilityChange();
+
+            const clickHandler = (
                 mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
-            ).mock.calls.find((call) => call[0] === 'visibilitychange')?.[1] as () => void;
+            ).mock.calls.find((call) => call[0] === 'click')?.[1] as () => void;
 
-            Object.defineProperty(mockDocument, 'visibilityState', {
-                value: 'visible',
-                configurable: true,
-            });
-
-            visibilityChangeHandler();
+            clickHandler();
 
             // Flush the microtask queue so that the rejected resume's .catch() handler can run.
+            await Promise.resolve();
             await Promise.resolve();
 
             expect(consoleWarnSpy).toHaveBeenCalledWith(
