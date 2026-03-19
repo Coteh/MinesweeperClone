@@ -243,19 +243,18 @@ describe('AudioManager', () => {
             );
         });
 
-        it('should set up touchstart event listener in capture phase', () => {
+        it('should set up touchstart event listener', () => {
             expect(mockDocument.addEventListener).toHaveBeenCalledWith(
                 'touchstart',
                 expect.any(Function),
-                { passive: true, capture: true },
+                { passive: true },
             );
         });
 
-        it('should set up click event listener in capture phase', () => {
+        it('should set up click event listener', () => {
             expect(mockDocument.addEventListener).toHaveBeenCalledWith(
                 'click',
                 expect.any(Function),
-                { capture: true },
             );
         });
 
