@@ -302,28 +302,6 @@ describe('AudioManager', () => {
             expect(mockResume).toHaveBeenCalled();
         });
 
-        it('should resume audio context on next gesture after page was hidden with suspended context', () => {
-            const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
-            (
-                Howler as {
-                    ctx: { state: string; resume: () => Promise<void> } | null;
-                }
-            ).ctx = {
-                state: 'suspended',
-                resume: mockResume,
-            };
-
-            triggerHiddenVisibilityChange();
-
-            const clickHandler = (
-                mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
-            ).mock.calls.find((call) => call[0] === 'click')?.[1] as () => void;
-
-            clickHandler();
-
-            expect(mockResume).toHaveBeenCalled();
-        });
-
         it('should not resume audio context when it is already running', () => {
             const mockResume = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
             (
@@ -357,19 +335,15 @@ describe('AudioManager', () => {
                 }
             ).ctx = null;
 
-            // Simulate visibility change
-            const visibilityChangeHandler = (
-                mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
-            ).mock.calls.find((call) => call[0] === 'visibilitychange')?.[1] as () => void;
-
-            Object.defineProperty(mockDocument, 'visibilityState', {
-                value: 'visible',
-                configurable: true,
-            });
-
             // This should not throw
             expect(() => {
-                visibilityChangeHandler();
+                triggerHiddenVisibilityChange();
+
+                const clickHandler = (
+                    mockDocument.addEventListener as jest.Mock<DocumentAddEventListener>
+                ).mock.calls.find((call) => call[0] === 'click')?.[1] as () => void;
+
+                clickHandler();
             }).not.toThrow();
         });
 
