@@ -98,7 +98,8 @@ export class AudioManager {
 
             if ('state' in howler && typeof howler._autoResume === 'function') {
                 // Sync Howler's internal state to match the real AudioContext state so that
-                // _autoResume() enters the branch that calls ctx.resume() and emits 'resume'.
+                // when _autoResume() is called, it will take the correct path inside that function
+                // to call ctx.resume() and emit 'resume' to all registered Howls.
                 howler.state = 'suspended';
                 howler._autoResume();
                 this.needsAudioResume = false;
