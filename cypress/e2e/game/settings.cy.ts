@@ -297,7 +297,7 @@ describe('settings', () => {
 
         cy.get('.settings').within(() => {
             cy.get('.settings-item.sound .knob').should('have.class', 'enabled');
-            
+
             // Get the computed style of the knob-inside element
             // If the transition hasn't started, it should already be at left: 29px
             cy.get('.settings-item.sound .knob .knob-inside').should(($knobInside) => {
@@ -311,4 +311,3 @@ describe('settings', () => {
         });
     });
 });
-
