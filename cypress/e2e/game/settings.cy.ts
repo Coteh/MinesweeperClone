@@ -291,23 +291,31 @@ describe('settings', () => {
         cy.selectTheme('cloudy');
         cy.get('.dialog .close').click();
 
+        // Slow the knob transition to 10s so any in-progress animation is clearly detectable
+        cy.document().then((doc) => {
+            const style = doc.createElement('style');
+            style.id = 'test-slow-knob-transition';
+            style.textContent = '.knob-inside { transition-duration: 10s !important; }';
+            doc.head.appendChild(style);
+        });
+
         // Now open settings again and verify the knob is already in enabled position
         // without animating
         cy.get('.settings-link').click();
 
-        cy.get('.settings').within(() => {
-            cy.get('.settings-item.sound .knob').should('have.class', 'enabled');
-
-            // Get the computed style of the knob-inside element
-            // If the transition hasn't started, it should already be at left: 29px
-            cy.get('.settings-item.sound .knob .knob-inside').should(($knobInside) => {
-                const computedStyle = window.getComputedStyle($knobInside[0]);
-                const left = computedStyle.getPropertyValue('left');
-                // In enabled state, the knob-inside should be at left: 29px
-                // If it's animating, it might be at a different value
-                // We check that it's already at or very close to the final position
-                expect(left).to.equal('29px');
+        // Check position exactly once (no Cypress retry) — with the fix the knob snaps
+        // to 29px before transitions are re-enabled, so it reads 29px immediately.
+        // Without the fix it would be mid-animation (~0px) after Cypress's ~100ms overhead
+        // on a 10s transition.
+        cy.get('.settings-item.sound .knob .knob-inside')
+            .should('exist')
+            .then(($knobInside) => {
+                const left = parseFloat(window.getComputedStyle($knobInside[0]).left);
+                expect(left).to.be.closeTo(29, 1);
             });
+
+        cy.document().then((doc) => {
+            doc.getElementById('test-slow-knob-transition')?.remove();
         });
     });
 });
