@@ -2,14 +2,19 @@ import { VerifyBoardOptions } from '..';
 import { MineBlock } from '../../../src/game';
 
 Cypress.Commands.add('waitForGameReady', () => {
-    // Wait for board to have actual rendered height (assets loaded)
+    // Wait for board to have content (at least one row with boxes)
+    // This ensures renderBoard has been called
+    cy.get('.game-board > .row').should('exist');
+    cy.get('.game-board > .row > .box').should('exist');
+
+    // Confirm visibility
+    cy.get('.game-board').should('be.visible');
+
+    // Wait for board to have actual rendered height (layout complete)
     cy.get('.game-board').should(($board) => {
         const height = $board[0].getBoundingClientRect().height;
         expect(height, 'Board should have height > 0').to.be.greaterThan(0);
     });
-
-    // Confirm visibility
-    cy.get('.game-board').should('be.visible');
 });
 
 Cypress.Commands.add(
