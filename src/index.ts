@@ -8,15 +8,6 @@ import {
     EventHandler,
 } from './game';
 import { BrowserGameStorage } from './storage/browser';
-import {
-    cancelFlagPreview,
-    createDialogContentFromTemplate,
-    renderBoard,
-    renderDialog,
-    renderDigits,
-    renderPromptDialog,
-    setThemeManager,
-} from './render';
 import * as feather from 'feather-icons';
 import confetti from 'canvas-confetti';
 import { ActionIconManager } from './manager/action-icon';
@@ -43,6 +34,11 @@ import { loadConfig } from './config/index';
 import type { Config } from './config';
 import { getPreferenceValue } from './preferences';
 import { updateNavLayout } from './nav-layout';
+import { renderDigits } from './components/digits';
+import { cancelFlagPreview, renderBoard } from './components/board';
+import { createDialogContentFromTemplate } from './util';
+import { renderDialog } from './components/dialog';
+import { renderPromptDialog } from './components/prompt-dialog';
 
 export type FrontendState = {
     gameOptions: GameOptions;
@@ -104,9 +100,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const transformManager = new TransformManager(middleElem);
     const themeManager = new ThemeManager(backgroundManager, assetManager, gameConfig);
     const audioManager = new AudioManager(assetManager);
-
-    // Set the theme manager reference for dialog dimming
-    setThemeManager(themeManager);
 
     // Initialize frontend state from the first difficulty in the config, fallback to hardcoded values
     const difficultyKeys = Object.keys(gameConfig.difficulty);
@@ -240,6 +233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             renderDialog(dialogElem, {
                                 fadeIn: true,
                                 effect: 'pop',
+                                themeManager,
                             });
 
                             // Trigger confetti effect
@@ -293,6 +287,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     onNewGameStarted();
                 }
             },
+            themeManager,
         });
         const buttons = document.querySelectorAll('dialog button');
         buttons.forEach((button) => {
@@ -361,6 +356,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 height: '75%',
                 maxWidth: '600px',
             },
+            themeManager,
         });
         helpLink.blur();
         audioManager.playSoundEffect(SoundEffect.Click);
@@ -401,6 +397,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             style: {
                 maxWidth: '500px',
             },
+            themeManager,
         });
         leaderboardLink.blur();
         audioManager.playSoundEffect(SoundEffect.Click);
@@ -451,6 +448,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             actionIconManager,
             transformManager,
             audioManager,
+            themeManager,
             closeDialog,
         );
 
@@ -492,6 +490,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             fadeIn: true,
             effect: 'expand',
             closable: false,
+            themeManager,
         });
     }
 });

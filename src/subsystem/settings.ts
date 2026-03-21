@@ -1,6 +1,5 @@
 import MobileDetect from 'mobile-detect';
 import { getPreferenceValue, initPreferences, savePreferenceValue } from '../preferences';
-import { createDialogContentFromTemplate, renderDialog, renderPromptDialog } from '../render';
 import { FrontendState } from '..';
 import { FullscreenManager } from '../manager/fullscreen';
 import { GameState, newGame } from '../game';
@@ -38,6 +37,9 @@ export type SettingsSubsystem = {
 };
 
 import type { Config } from '../config';
+import { createDialogContentFromTemplate } from '../util';
+import { renderPromptDialog } from '../components/prompt-dialog';
+import { renderDialog } from '../components/dialog';
 
 export function setupSettingsSubsystem(
     gameConfig: Config,
@@ -120,6 +122,7 @@ export function setupSettingsSubsystem(
             onCancel: () => {
                 fullscreenManager.toggleFullscreen(false);
             },
+            themeManager,
         });
     }
 
@@ -136,6 +139,7 @@ export function setupSettingsSubsystem(
                     height: '75%',
                     maxWidth: '600px',
                 },
+                themeManager,
             });
 
             const settingsDialogContent = document.querySelector(
@@ -214,6 +218,7 @@ export function setupSettingsSubsystem(
                             height: '75%',
                             maxWidth: '600px',
                         },
+                        themeManager,
                     });
                 });
             }
@@ -236,6 +241,7 @@ export function setupSettingsSubsystem(
                             height: '60vh',
                             maxWidth: '500px',
                         },
+                        themeManager,
                     });
                 });
             }

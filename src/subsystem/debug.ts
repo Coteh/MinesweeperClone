@@ -1,3 +1,6 @@
+import { renderDialog } from '../components/dialog';
+import { renderNotification } from '../components/notification';
+import { renderPromptDialog } from '../components/prompt-dialog';
 import {
     DEBUG_HUD_ENABLED_PREFERENCE_NAME,
     DEBUG_HUD_VISIBLE_PREFERENCE_NAME,
@@ -7,14 +10,10 @@ import {
 import { newGame } from '../game';
 import { ActionIconManager } from '../manager/action-icon';
 import { AudioManager, SoundEffect } from '../manager/audio';
+import { ThemeManager } from '../manager/theme';
 import { TransformManager } from '../manager/transform';
 import { getPreferenceValue, savePreferenceValue } from '../preferences';
-import {
-    createDialogContentFromTemplate,
-    renderDialog,
-    renderNotification,
-    renderPromptDialog,
-} from '../render';
+import { createDialogContentFromTemplate } from '../util';
 
 export type DebugSubsystem = {
     toggleDebugHud: (isVisible: boolean) => void;
@@ -25,6 +24,7 @@ export function setupDebugSubsystem(
     actionIconManager: ActionIconManager,
     transformManager: TransformManager,
     audioManager: AudioManager,
+    themeManager: ThemeManager,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
 ): DebugSubsystem {
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;
@@ -47,6 +47,7 @@ export function setupDebugSubsystem(
             renderDialog(createDialogContentFromTemplate('#debug-dialog-content'), {
                 fadeIn: true,
                 effect: 'pop',
+                themeManager,
             });
             const closeDialogAndOverlay = () => {
                 const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
@@ -83,8 +84,10 @@ export function setupDebugSubsystem(
                             renderDialog(dialogElem, {
                                 fadeIn: true,
                                 effect: 'expand',
+                                themeManager,
                             });
                         },
+                        themeManager,
                     });
                 },
             );
@@ -99,6 +102,7 @@ export function setupDebugSubsystem(
                         fadeIn: true,
                         effect: 'expand',
                         closable: false,
+                        themeManager,
                     });
                 },
             );
