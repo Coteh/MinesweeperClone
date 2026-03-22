@@ -461,9 +461,9 @@ export function setupSettingsSubsystem(
             fadeIn: true,
             effect: 'pop',
             style: {
-                width: '85%',
-                height: '75%',
-                maxWidth: '440px',
+                width: '90%',
+                height: '85%',
+                maxWidth: '520px',
             },
         });
     }
