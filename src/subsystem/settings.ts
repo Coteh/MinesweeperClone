@@ -462,6 +462,7 @@ export function setupSettingsSubsystem(
             effect: 'pop',
             style: {
                 width: '85%',
+                height: '75%',
                 maxWidth: '440px',
             },
         });
