@@ -177,8 +177,13 @@ body a > .commit-hash {
     flex-direction: column;
     gap: 1.2em;
     flex: 1;
+    overflow-x: hidden;
     overflow-y: auto;
     min-height: 0;
+}
+
+.custom-difficulty-body > * {
+    flex-shrink: 0;
 }
 
 .custom-difficulty h2 {
