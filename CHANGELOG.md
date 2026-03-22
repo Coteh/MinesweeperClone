@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Custom difficulties
 - Sound effects for game actions (tile reveal, flag placement, explosions, win, zoom controls)
 - Question mark sound effect using the existing click sound
 - Volume slider control for sound effects in settings

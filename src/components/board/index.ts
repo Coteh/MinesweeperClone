@@ -140,7 +140,7 @@ export const createBoardComponent = ({ assetManager }: BoardComponentProps) => {
         });
     };
 
-    return ({parentElem, gameState}: BoardRenderProps) => {
+    return ({ parentElem, gameState }: BoardRenderProps) => {
         parentElem.innerHTML = '';
         // console.log('rendering', gameState.board.length);
         for (let i = 0; i < gameState.board.length; i++) {
@@ -216,7 +216,9 @@ export const createBoardComponent = ({ assetManager }: BoardComponentProps) => {
                     revealPreviewTiles.forEach((tile) => tile.classList.add('reveal-preview'));
 
                     // Change smiley to surprised
-                    const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
+                    const newGameImage = document.querySelector(
+                        '#new-game img',
+                    ) as HTMLImageElement;
                     if (newGameImage) {
                         const smileySurprisedImg = 'img/Smiley_surprised.png';
                         const pre = assetManager.getImage(smileySurprisedImg);
@@ -236,7 +238,9 @@ export const createBoardComponent = ({ assetManager }: BoardComponentProps) => {
                     clearAllRevealPreviews();
 
                     // Restore smiley face
-                    const newGameImage = document.querySelector('#new-game img') as HTMLImageElement;
+                    const newGameImage = document.querySelector(
+                        '#new-game img',
+                    ) as HTMLImageElement;
                     if (newGameImage) {
                         const smileyFaceImgName = getSmileyFace(gameState);
                         const pre = assetManager.getImage(smileyFaceImgName);
@@ -397,4 +401,4 @@ export const createBoardComponent = ({ assetManager }: BoardComponentProps) => {
             parentElem.appendChild(row);
         }
     };
-}
+};

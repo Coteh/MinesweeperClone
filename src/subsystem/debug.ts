@@ -21,11 +21,7 @@ export function setupDebugSubsystem(
     actionIconManager: ActionIconManager,
     transformManager: TransformManager,
     audioManager: AudioManager,
-    {
-        renderDialog,
-        renderPromptDialog,
-        renderNotification,
-    }: ComponentMap,
+    { renderDialog, renderPromptDialog, renderNotification }: ComponentMap,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
 ): DebugSubsystem {
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;

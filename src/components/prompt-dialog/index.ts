@@ -4,7 +4,7 @@ import type * as CSS from 'csstype';
 
 type PromptDialogComponentProps = {
     themeManager: ThemeManager;
-}
+};
 
 export type PromptDialogRenderProps = {
     content: HTMLElement;
@@ -94,4 +94,4 @@ export const createPromptDialogComponent = ({ themeManager }: PromptDialogCompon
         // Apply dimmed theme color based on current game state when dialog opens
         themeManager.applyDimmedColorForCurrentState();
     };
-}
+};

@@ -89,7 +89,8 @@
     padding: 0.5em 1em;
 }
 
-.settings .setting-controls input[type='range'] {
+.settings .setting-controls input[type='range'],
+.custom-difficulty .setting-controls input[type='range'] {
     width: 100%;
     max-width: 400px;
     height: 10px;
@@ -101,7 +102,8 @@
     pointer-events: initial;
 }
 
-.settings .setting-controls input[type='range']::-webkit-slider-thumb {
+.settings .setting-controls input[type='range']::-webkit-slider-thumb,
+.custom-difficulty .setting-controls input[type='range']::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 28px;
@@ -111,7 +113,8 @@
     cursor: pointer;
 }
 
-.settings .setting-controls input[type='range']::-moz-range-thumb {
+.settings .setting-controls input[type='range']::-moz-range-thumb,
+.custom-difficulty .setting-controls input[type='range']::-moz-range-thumb {
     width: 28px;
     height: 28px;
     background: var(--correct-color, #4caf50);
@@ -169,10 +172,6 @@ body a > .commit-hash {
 
 .custom-difficulty h2 {
     margin: 0 0 0.25em 0;
-    font-size: 1.2em;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
 }
 
 .custom-difficulty-section-label {
@@ -333,9 +332,8 @@ body a > .commit-hash {
     color: var(--losing-block-color, #cc0000);
 }
 
-/* Use the same track/thumb style as the volume slider */
+/* Custom difficulty sliders fill full width (no 400px cap) */
 .custom-difficulty .setting-controls input[type='range'] {
-    width: 100%;
     max-width: none;
 }
 

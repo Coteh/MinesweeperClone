@@ -4,7 +4,7 @@ export type NotificationRenderProps = {
 };
 
 export const createNotificationComponent = () => {
-    return ({msg, timeoutMS = 1000}: NotificationRenderProps) => {
+    return ({ msg, timeoutMS = 1000 }: NotificationRenderProps) => {
         const template = document.querySelector('#notification') as HTMLTemplateElement;
         const clone = template.content.cloneNode(true) as HTMLElement;
 
@@ -27,5 +27,5 @@ export const createNotificationComponent = () => {
                 notification.remove();
             }, 1000);
         }, timeoutMS);
-    }
+    };
 };

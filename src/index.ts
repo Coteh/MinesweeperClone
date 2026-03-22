@@ -104,18 +104,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const audioManager = new AudioManager(assetManager);
 
     const components: ComponentMap = {
-        renderDigits: createDigitsComponent({assetManager}),
-        renderBoard: createBoardComponent({assetManager}),
-        renderDialog: createDialogComponent({themeManager}),
-        renderPromptDialog: createPromptDialogComponent({themeManager}),
+        renderDigits: createDigitsComponent({ assetManager }),
+        renderBoard: createBoardComponent({ assetManager }),
+        renderDialog: createDialogComponent({ themeManager }),
+        renderPromptDialog: createPromptDialogComponent({ themeManager }),
         renderNotification: createNotificationComponent(),
     };
-    const {
-        renderDigits,
-        renderBoard,
-        renderDialog,
-        renderPromptDialog,
-     } = components;
+    const { renderDigits, renderBoard, renderDialog, renderPromptDialog } = components;
 
     // Initialize frontend state from the first difficulty in the config, fallback to hardcoded values
     const difficultyKeys = Object.keys(gameConfig.difficulty);
@@ -192,7 +187,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderBoard({
                     parentElem: gameBoard,
                     gameState,
-                })
+                });
                 const unflaggedCount =
                     gameState.gameOptions.numberOfMines -
                     gameState.board.reduce(
@@ -203,7 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderDigits({
                     parentElem: mineCountBoard,
                     digits: unflaggedCount,
-                })
+                });
                 break;
             }
             case 'reveal':

@@ -18,7 +18,7 @@ export type DialogRenderProps = {
 };
 
 export const createDialogComponent = ({ themeManager }: DialogComponentProps) => {
-    return ({content, fadeIn, effect, closable, style}: DialogRenderProps) => {
+    return ({ content, fadeIn, effect, closable, style }: DialogRenderProps) => {
         // Close any currently existing dialogs
         const dialogElem = document.querySelector('.dialog');
         if (dialogElem) dialogElem.remove();

@@ -52,10 +52,7 @@ export function setupSettingsSubsystem(
     actionIconManager: ActionIconManager,
     transformManager: import('../manager/transform').TransformManager,
     frontendState: FrontendState,
-    {
-        renderDialog,
-        renderPromptDialog,
-    }: ComponentMap,
+    { renderDialog, renderPromptDialog }: ComponentMap,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
     onThemeSwitch?: (theme: string) => void,
 ): SettingsSubsystem {

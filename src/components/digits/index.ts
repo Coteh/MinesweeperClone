@@ -10,7 +10,7 @@ export type DigitsRenderProps = {
 };
 
 export const createDigitsComponent = ({ assetManager }: DigitsComponentProps) => {
-    return ({parentElem, digits}: DigitsRenderProps) => {
+    return ({ parentElem, digits }: DigitsRenderProps) => {
         let digitStr;
         if (digits < 0) {
             digitStr = Math.abs(digits).toString().padStart(3, '0');
