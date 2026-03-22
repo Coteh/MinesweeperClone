@@ -168,6 +168,18 @@ body a > .commit-hash {
     flex-direction: column;
     gap: 1.2em;
     width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.custom-difficulty-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 .custom-difficulty h2 {
