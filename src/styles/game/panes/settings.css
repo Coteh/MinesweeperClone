@@ -162,6 +162,11 @@ body a > .commit-hash {
 
 /* Custom Difficulty Dialog */
 
+.dialog > div.dialog-content:has(.custom-difficulty) {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+}
+
 .custom-difficulty {
     font-family: var(--text-font-family);
     display: flex;
@@ -349,6 +354,10 @@ body a > .commit-hash {
 }
 
 /* Custom difficulty sliders fill full width (no 400px cap) */
+.custom-difficulty .setting-controls {
+    padding: 0 1em;
+}
+
 .custom-difficulty .setting-controls input[type='range'] {
     max-width: none;
 }
