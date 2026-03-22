@@ -1,6 +1,4 @@
-import { renderDialog } from '../components/dialog';
-import { renderNotification } from '../components/notification';
-import { renderPromptDialog } from '../components/prompt-dialog';
+import { ComponentMap } from '../components';
 import {
     DEBUG_HUD_ENABLED_PREFERENCE_NAME,
     DEBUG_HUD_VISIBLE_PREFERENCE_NAME,
@@ -10,7 +8,6 @@ import {
 import { newGame } from '../game';
 import { ActionIconManager } from '../manager/action-icon';
 import { AudioManager, SoundEffect } from '../manager/audio';
-import { ThemeManager } from '../manager/theme';
 import { TransformManager } from '../manager/transform';
 import { getPreferenceValue, savePreferenceValue } from '../preferences';
 import { createDialogContentFromTemplate } from '../util';
@@ -24,7 +21,11 @@ export function setupDebugSubsystem(
     actionIconManager: ActionIconManager,
     transformManager: TransformManager,
     audioManager: AudioManager,
-    themeManager: ThemeManager,
+    {
+        renderDialog,
+        renderPromptDialog,
+        renderNotification,
+    }: ComponentMap,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
 ): DebugSubsystem {
     const debugOverlay = document.querySelector('#debug-overlay') as HTMLDivElement;
@@ -44,10 +45,10 @@ export function setupDebugSubsystem(
         debugButton.addEventListener('click', (e) => {
             e.preventDefault();
             audioManager.playSoundEffect(SoundEffect.Click);
-            renderDialog(createDialogContentFromTemplate('#debug-dialog-content'), {
+            renderDialog({
+                content: createDialogContentFromTemplate('#debug-dialog-content'),
                 fadeIn: true,
                 effect: 'pop',
-                themeManager,
             });
             const closeDialogAndOverlay = () => {
                 const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
@@ -75,19 +76,19 @@ export function setupDebugSubsystem(
                     const dialogElem = createDialogContentFromTemplate('#prompt-dialog-content');
                     (dialogElem.querySelector('.prompt-text') as HTMLSpanElement).innerText =
                         'Answer?';
-                    renderPromptDialog(dialogElem, {
+                    renderPromptDialog({
+                        content: dialogElem,
                         fadeIn: true,
                         effect: 'expand',
                         onConfirm: () => {
                             const dialogElem = document.createElement('span');
                             dialogElem.innerText = 'Confirmed';
-                            renderDialog(dialogElem, {
+                            renderDialog({
+                                content: dialogElem,
                                 fadeIn: true,
                                 effect: 'expand',
-                                themeManager,
                             });
                         },
-                        themeManager,
                     });
                 },
             );
@@ -98,11 +99,11 @@ export function setupDebugSubsystem(
                     const dialogElem = document.createElement('span');
                     dialogElem.innerText =
                         'Testing a dialog that does not close. You will need to refresh the page.';
-                    renderDialog(dialogElem, {
+                    renderDialog({
+                        content: dialogElem,
                         fadeIn: true,
                         effect: 'expand',
                         closable: false,
-                        themeManager,
                     });
                 },
             );
@@ -110,7 +111,10 @@ export function setupDebugSubsystem(
                 'click',
                 (e) => {
                     e.preventDefault();
-                    renderNotification('This is a test notification', 2500);
+                    renderNotification({
+                        msg: 'This is a test notification',
+                        timeoutMS: 2500,
+                    });
                 },
             );
             debugButton.blur();

@@ -34,11 +34,13 @@ import { loadConfig } from './config/index';
 import type { Config } from './config';
 import { getPreferenceValue } from './preferences';
 import { updateNavLayout } from './nav-layout';
-import { renderDigits } from './components/digits';
-import { cancelFlagPreview, renderBoard } from './components/board';
 import { createDialogContentFromTemplate } from './util';
-import { renderDialog } from './components/dialog';
-import { renderPromptDialog } from './components/prompt-dialog';
+import { createDigitsComponent } from './components/digits';
+import { createBoardComponent } from './components/board';
+import { createDialogComponent } from './components/dialog';
+import { createPromptDialogComponent } from './components/prompt-dialog';
+import { createNotificationComponent } from './components/notification';
+import { ComponentMap } from './components';
 
 export type FrontendState = {
     gameOptions: GameOptions;
@@ -101,6 +103,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themeManager = new ThemeManager(backgroundManager, assetManager, gameConfig);
     const audioManager = new AudioManager(assetManager);
 
+    const components: ComponentMap = {
+        renderDigits: createDigitsComponent({assetManager}),
+        renderBoard: createBoardComponent({assetManager}),
+        renderDialog: createDialogComponent({themeManager}),
+        renderPromptDialog: createPromptDialogComponent({themeManager}),
+        renderNotification: createNotificationComponent(),
+    };
+    const {
+        renderDigits,
+        renderBoard,
+        renderDialog,
+        renderPromptDialog,
+     } = components;
+
     // Initialize frontend state from the first difficulty in the config, fallback to hardcoded values
     const difficultyKeys = Object.keys(gameConfig.difficulty);
     if (difficultyKeys.length > 0) {
@@ -145,9 +161,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 setSmileyImage(newGameImage, SMILEY_NORMAL, assetManager);
                 clearInterval(timeBoardInterval);
                 timeBoardInterval = setInterval(() => {
-                    renderDigits(timeBoard, gameState.elapsedTimeMS / 1000, assetManager);
+                    renderDigits({
+                        parentElem: timeBoard,
+                        digits: gameState.elapsedTimeMS / 1000,
+                    });
                 }, 500);
-                renderDigits(timeBoard, gameState.elapsedTimeMS / 1000, assetManager);
+                renderDigits({
+                    parentElem: timeBoard,
+                    digits: gameState.elapsedTimeMS / 1000,
+                });
                 backgroundManager.renderInitial();
                 themeManager.applyNormalGameStateColor();
                 if (!interactionSubsystem) {
@@ -167,7 +189,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             }
             case 'draw': {
-                renderBoard(gameBoard, gameState, assetManager);
+                renderBoard({
+                    parentElem: gameBoard,
+                    gameState,
+                })
                 const unflaggedCount =
                     gameState.gameOptions.numberOfMines -
                     gameState.board.reduce(
@@ -175,7 +200,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                             acc + row.reduce((acc, val) => acc + (val.isFlagged ? 1 : 0), 0),
                         0,
                     );
-                renderDigits(mineCountBoard, unflaggedCount, assetManager);
+                renderDigits({
+                    parentElem: mineCountBoard,
+                    digits: unflaggedCount,
+                })
                 break;
             }
             case 'reveal':
@@ -194,7 +222,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             case 'error':
                 break;
             case 'lose': {
-                cancelFlagPreview();
                 console.log('Player loses!');
                 setSmileyImage(newGameImage, SMILEY_SAD, assetManager);
                 clearInterval(timeBoardInterval);
@@ -207,7 +234,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             }
             case 'win': {
-                cancelFlagPreview();
                 console.log('Player wins!');
                 setSmileyImage(newGameImage, SMILEY_PROUD, assetManager);
                 transformManager.resetZoom(true);
@@ -230,10 +256,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                                 dialogElem.querySelector('.high-score-time') as HTMLElement
                             ).innerText = timeFormatted;
 
-                            renderDialog(dialogElem, {
+                            renderDialog({
+                                content: dialogElem,
                                 fadeIn: true,
                                 effect: 'pop',
-                                themeManager,
                             });
 
                             // Trigger confetti effect
@@ -278,7 +304,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const dialogElem = createDialogContentFromTemplate('#prompt-dialog-content');
         (dialogElem.querySelector('.prompt-text') as HTMLSpanElement).innerText =
             'Are you sure you want to start a new game? All progress will be lost.';
-        renderPromptDialog(dialogElem, {
+        renderPromptDialog({
+            content: dialogElem,
             fadeIn: true,
             effect: 'expand',
             onConfirm: () => {
@@ -287,7 +314,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     onNewGameStarted();
                 }
             },
-            themeManager,
         });
         const buttons = document.querySelectorAll('dialog button');
         buttons.forEach((button) => {
@@ -348,7 +374,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Apply asset manager URLs to template images
         assetManager.applyDataAssets(howToPlayElem);
 
-        renderDialog(howToPlayElem, {
+        renderDialog({
+            content: howToPlayElem,
             fadeIn: true,
             effect: 'pop',
             style: {
@@ -356,7 +383,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 height: '75%',
                 maxWidth: '600px',
             },
-            themeManager,
         });
         helpLink.blur();
         audioManager.playSoundEffect(SoundEffect.Click);
@@ -391,13 +417,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             tbody.appendChild(row);
         });
 
-        renderDialog(leaderboardElem, {
+        renderDialog({
+            content: leaderboardElem,
             fadeIn: true,
             effect: 'pop',
             style: {
                 maxWidth: '500px',
             },
-            themeManager,
         });
         leaderboardLink.blur();
         audioManager.playSoundEffect(SoundEffect.Click);
@@ -440,6 +466,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             actionIconManager,
             transformManager,
             frontendState,
+            components,
             closeDialog,
             updateNavLayout,
         );
@@ -448,7 +475,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             actionIconManager,
             transformManager,
             audioManager,
-            themeManager,
+            components,
             closeDialog,
         );
 
@@ -486,11 +513,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             errorContent.innerText = 'Unknown error occurred';
         }
 
-        renderDialog(elem, {
+        renderDialog({
+            content: elem,
             fadeIn: true,
             effect: 'expand',
             closable: false,
-            themeManager,
         });
     }
 });

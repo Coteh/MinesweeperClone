@@ -40,8 +40,7 @@ export type SettingsSubsystem = {
 
 import type { Config } from '../config';
 import { createDialogContentFromTemplate } from '../util';
-import { renderPromptDialog } from '../components/prompt-dialog';
-import { renderDialog } from '../components/dialog';
+import { ComponentMap } from '../components';
 
 export function setupSettingsSubsystem(
     gameConfig: Config,
@@ -53,6 +52,10 @@ export function setupSettingsSubsystem(
     actionIconManager: ActionIconManager,
     transformManager: import('../manager/transform').TransformManager,
     frontendState: FrontendState,
+    {
+        renderDialog,
+        renderPromptDialog,
+    }: ComponentMap,
     closeDialog: (dialog: HTMLDialogElement, overlayBackElem: HTMLElement) => void,
     onThemeSwitch?: (theme: string) => void,
 ): SettingsSubsystem {
@@ -456,14 +459,14 @@ export function setupSettingsSubsystem(
             closeDialog(dialog, overlayBackElem);
         });
 
-        renderDialog(dialogElem, {
+        renderDialog({
+            content: dialogElem,
             fadeIn: true,
             effect: 'pop',
             style: {
                 width: '85%',
                 maxWidth: '440px',
             },
-            themeManager,
         });
     }
 
@@ -471,7 +474,8 @@ export function setupSettingsSubsystem(
         const dialogElem = createDialogContentFromTemplate('#prompt-dialog-content');
         (dialogElem.querySelector('.prompt-text') as HTMLSpanElement).innerText =
             'Fullscreen mode was previously enabled. Do you want to re-enter fullscreen mode?';
-        renderPromptDialog(dialogElem, {
+        renderPromptDialog({
+            content: dialogElem,
             fadeIn: true,
             onConfirm: () => {
                 fullscreenManager.toggleFullscreen(true);
@@ -479,7 +483,6 @@ export function setupSettingsSubsystem(
             onCancel: () => {
                 fullscreenManager.toggleFullscreen(false);
             },
-            themeManager,
         });
     }
 
@@ -488,7 +491,8 @@ export function setupSettingsSubsystem(
             const settingsTemplateElem = createDialogContentFromTemplate(
                 '#settings-dialog-content',
             );
-            renderDialog(settingsTemplateElem, {
+            renderDialog({
+                content: settingsTemplateElem,
                 fadeIn: true,
                 effect: 'pop',
                 style: {
@@ -496,7 +500,6 @@ export function setupSettingsSubsystem(
                     height: '75%',
                     maxWidth: '600px',
                 },
-                themeManager,
             });
 
             const settingsDialogContent = document.querySelector(
@@ -567,7 +570,8 @@ export function setupSettingsSubsystem(
                     }
 
                     // Render the dialog
-                    renderDialog(dialogElem, {
+                    renderDialog({
+                        content: dialogElem,
                         fadeIn: true,
                         closable: true,
                         style: {
@@ -575,7 +579,6 @@ export function setupSettingsSubsystem(
                             height: '75%',
                             maxWidth: '600px',
                         },
-                        themeManager,
                     });
                 });
             }
@@ -590,7 +593,8 @@ export function setupSettingsSubsystem(
                 creditsButton.addEventListener('click', () => {
                     audioManager.playSoundEffect(SoundEffect.Click);
                     const creditsElem = createDialogContentFromTemplate('#credits-dialog-content');
-                    renderDialog(creditsElem, {
+                    renderDialog({
+                        content: creditsElem,
                         fadeIn: true,
                         effect: 'pop',
                         style: {
@@ -598,7 +602,6 @@ export function setupSettingsSubsystem(
                             height: '60vh',
                             maxWidth: '500px',
                         },
-                        themeManager,
                     });
                 });
             }
