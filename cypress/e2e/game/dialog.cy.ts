@@ -80,9 +80,35 @@ describe('dialogs', () => {
         cy.waitForGameReady();
     });
 
+    describe('closing a dialog immediately after opening (fadeIn crash fix)', () => {
+        it('closing a regular dialog immediately after open does not throw', () => {
+            // Freeze time so the 10ms fadeIn setTimeout cannot fire on its own
+            cy.clock();
+            cy.get('.settings-link').click();
+            cy.get('.dialog').should('exist');
+            cy.get('.dialog > button.close').click({ force: true });
+            // Advance clock past the 10ms threshold — triggers the setTimeout while
+            // the dialog is already gone, which would crash without the fix
+            cy.tick(50);
+            cy.get('.dialog').should('not.exist');
+        });
+
+        it('closing a prompt dialog immediately after open does not throw', () => {
+            cy.clock();
+            cy.get('.settings-link').click();
+            cy.get('.debug-link#debug').click({ force: true });
+            cy.contains('Prompt Dialog').click({ force: true });
+            cy.get('.dialog').should('exist');
+            cy.contains('Cancel').click({ force: true });
+            cy.tick(50);
+            cy.get('.dialog').should('not.exist');
+        });
+    });
+
     describe('general dialog behaviour', () => {
         it('should be visible', () => {
             // The Debug dialog is an example of a closable dialog that can be triggered in normal usage (during debug mode)
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
 
             cy.get('.dialog').should('be.visible');
@@ -93,6 +119,7 @@ describe('dialogs', () => {
     describe('closable dialogs', () => {
         beforeEach(() => {
             // The Debug dialog is an example of a closable dialog that can be triggered in normal usage (during debug mode)
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
         });
 
@@ -143,6 +170,8 @@ describe('dialogs', () => {
         beforeEach(() => {
             cy.clearBrowserCache();
             cy.reload();
+            cy.waitForGameReady();
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.contains('Prompt Dialog').click();
         });
@@ -165,6 +194,7 @@ describe('dialogs', () => {
             cy.get('.dialog').should('not.exist');
             cy.get('.overlay-back').should('not.be.visible');
 
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.contains('Prompt Dialog').click();
 
@@ -186,6 +216,8 @@ describe('dialogs', () => {
         beforeEach(() => {
             cy.clearBrowserCache();
             cy.reload();
+            cy.waitForGameReady();
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.contains('Non-Closable Dialog').click();
         });
@@ -230,6 +262,7 @@ describe('dialogs', () => {
         };
 
         it('should display correct dialog background and text colors for basic theme', () => {
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.get('.dialog').should('be.visible');
 
@@ -246,6 +279,7 @@ describe('dialogs', () => {
             cy.selectTheme('classic');
             cy.get('.dialog button.close').click();
 
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.get('.dialog').should('be.visible');
 
@@ -261,6 +295,7 @@ describe('dialogs', () => {
             cy.selectTheme('ocean');
             cy.get('.dialog button.close').click();
 
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.get('.dialog').should('be.visible');
 
@@ -276,11 +311,12 @@ describe('dialogs', () => {
             cy.selectTheme('desert');
             cy.get('.dialog button.close').click();
 
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.get('.dialog').should('be.visible');
 
-            // desert theme should have sand background (#C89F6F) and black text
-            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#C89F6F'));
+            // desert theme has sand background (#D4C5A0) and black text
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#D4C5A0'));
             cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
 
             cy.get('.dialog button.close').should('have.css', 'color', hexToRgbString('#000000'));
@@ -291,6 +327,7 @@ describe('dialogs', () => {
             cy.selectTheme('cloudy');
             cy.get('.dialog button.close').click();
 
+            cy.get('.settings-link').click();
             cy.get('.debug-link#debug').click();
             cy.get('.dialog').should('be.visible');
 
@@ -315,7 +352,7 @@ describe('dialogs', () => {
 
             // Switch to desert theme - should change to sand background, black text
             cy.selectTheme('desert');
-            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#C89F6F'));
+            cy.get('.dialog').should('have.css', 'background-color', hexToRgbString('#D4C5A0'));
             cy.get('.dialog').should('have.css', 'color', hexToRgbString('#000000'));
         });
     });

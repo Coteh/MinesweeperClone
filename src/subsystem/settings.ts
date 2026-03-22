@@ -18,7 +18,9 @@ import {
     SOUND_SETTING_NAME,
     SOUND_PREFERENCE_NAME,
     SOUND_VOLUME_PREFERENCE_NAME,
+    CUSTOM_DIFFICULTIES_PREFERENCE_NAME,
     THEME_SETTING_NAME,
+    DIFFICULTY_CUSTOM,
 } from '../consts';
 import { BackgroundManager } from '../manager/background';
 import { AudioManager, SoundEffect } from '../manager/audio';
@@ -86,6 +88,32 @@ export function setupSettingsSubsystem(
     // Get stored difficulty or default to easy
     let currDifficulty = getPreferenceValue<string>(DIFFICULTY_PREFERENCE_NAME) || DIFFICULTY_EASY;
 
+    type CustomDifficultyConfig = {
+        id: string;
+        name: string;
+        width: number;
+        height: number;
+        mines: number;
+    };
+
+    function getCustomDifficulties(): CustomDifficultyConfig[] {
+        const stored = getPreferenceValue<string>(CUSTOM_DIFFICULTIES_PREFERENCE_NAME);
+        if (!stored) return [];
+        try {
+            return JSON.parse(stored) as CustomDifficultyConfig[];
+        } catch {
+            return [];
+        }
+    }
+
+    function saveCustomDifficulties(diffs: CustomDifficultyConfig[]) {
+        savePreferenceValue(CUSTOM_DIFFICULTIES_PREFERENCE_NAME, JSON.stringify(diffs));
+    }
+
+    function generateCustomDifficultyName(width: number, height: number, mines: number): string {
+        return `${width}x${height}x${mines}`;
+    }
+
     // Helper to update game options based on difficulty
     function switchDifficulty(difficulty: string, options: SwitchDifficultyOptions) {
         const setting = gameConfig.difficulty[difficulty];
@@ -97,17 +125,346 @@ export function setupSettingsSubsystem(
             // set bounds on transform manager so panning gets clamped
             transformManager.setBounds(setting.bounds);
         } else {
-            // fallback to previous hardcoded defaults for safety
-            frontendState.gameOptions.boardWidth = 9;
-            frontendState.gameOptions.boardHeight = 9;
-            frontendState.gameOptions.numberOfMines = 10;
-            frontendState.gameOptions.difficultyKey = 'easy';
-            transformManager.setBounds(null);
+            const customDiff = getCustomDifficulties().find((d) => d.id === difficulty);
+            if (customDiff) {
+                frontendState.gameOptions.boardWidth = customDiff.width;
+                frontendState.gameOptions.boardHeight = customDiff.height;
+                frontendState.gameOptions.numberOfMines = customDiff.mines;
+                frontendState.gameOptions.difficultyKey = difficulty;
+                transformManager.setBounds(
+                    computeCustomBounds(customDiff.width, customDiff.height),
+                );
+            } else {
+                // fallback to previous hardcoded defaults for safety
+                frontendState.gameOptions.boardWidth = 9;
+                frontendState.gameOptions.boardHeight = 9;
+                frontendState.gameOptions.numberOfMines = 10;
+                frontendState.gameOptions.difficultyKey = 'easy';
+                transformManager.setBounds(null);
+            }
         }
         if (options.startNewGame) {
             newGame(frontendState.gameOptions);
         }
         currDifficulty = difficulty;
+    }
+
+    function computeCustomBounds(width: number, height: number) {
+        const maxX = Math.max(200, width * 23);
+        const maxY = Math.max(200, height * 19);
+        return { minX: -maxX, minY: -maxY, maxX, maxY };
+    }
+
+    function openCustomDifficultyDialog() {
+        const dialogElem = createDialogContentFromTemplate('#custom-difficulty-dialog-content');
+
+        const listContainer = dialogElem.querySelector('#custom-difficulty-list') as HTMLElement;
+        const widthSlider = dialogElem.querySelector('#custom-width-slider') as HTMLInputElement;
+        const heightSlider = dialogElem.querySelector('#custom-height-slider') as HTMLInputElement;
+        const minesSlider = dialogElem.querySelector('#custom-mines-slider') as HTMLInputElement;
+        const widthValue = dialogElem.querySelector('#custom-width-value') as HTMLElement;
+        const heightValue = dialogElem.querySelector('#custom-height-value') as HTMLElement;
+        const minesValue = dialogElem.querySelector('#custom-mines-value') as HTMLElement;
+        const minesMaxLabel = dialogElem.querySelector('#custom-mines-max-label') as HTMLElement;
+        const densityDisplay = dialogElem.querySelector('#custom-density-display') as HTMLElement;
+
+        let selectedId: string | null = null;
+        let pendingEntry: { id: string; name: string } | null = null;
+
+        const updateMinesMax = (width: number, height: number) => {
+            // TODO: Remove the 50% density cap once the board generation hang is fixed
+            // (generation can loop indefinitely at very high densities)
+            const maxMines = Math.floor(width * height * 0.5);
+            minesSlider.max = String(maxMines);
+            minesMaxLabel.innerText = `Max: ${maxMines}`;
+            if (parseInt(minesSlider.value, 10) > maxMines) {
+                minesSlider.value = String(maxMines);
+                minesValue.innerText = String(maxMines);
+            }
+        };
+
+        const updateDensity = (width: number, height: number, mines: number) => {
+            const density = (mines / (width * height)) * 100;
+            densityDisplay.innerText = `Density: ${density.toFixed(1)}%`;
+        };
+
+        const setSliders = (width: number, height: number, mines: number) => {
+            widthSlider.value = String(width);
+            heightSlider.value = String(height);
+            widthValue.innerText = String(width);
+            heightValue.innerText = String(height);
+            updateMinesMax(width, height);
+            const clampedMines = Math.min(mines, Math.floor(width * height * 0.5));
+            minesSlider.value = String(clampedMines);
+            minesValue.innerText = String(clampedMines);
+            updateDensity(width, height, clampedMines);
+        };
+
+        const renderList = () => {
+            const diffs = getCustomDifficulties();
+            listContainer.innerHTML = '';
+
+            if (diffs.length === 0 && !pendingEntry) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'custom-difficulty-empty';
+                emptyMsg.innerText = 'No saved configurations yet.';
+                listContainer.appendChild(emptyMsg);
+                return;
+            }
+
+            if (pendingEntry) {
+                const pending = pendingEntry;
+                const item = document.createElement('div');
+                item.className = 'custom-difficulty-list-item';
+                if (selectedId === pending.id) item.classList.add('selected');
+
+                const mainArea = document.createElement('div');
+                mainArea.className = 'custom-difficulty-list-item-main';
+
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.className = 'custom-difficulty-list-item-name-input';
+                nameInput.value = pending.name;
+                nameInput.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (selectedId !== pending.id) {
+                        selectedId = pending.id;
+                        setSliders(16, 16, 40);
+                        listContainer
+                            .querySelectorAll('.custom-difficulty-list-item')
+                            .forEach((el) => el.classList.remove('selected'));
+                        item.classList.add('selected');
+                    }
+                });
+                nameInput.addEventListener('blur', () => {
+                    const newName = nameInput.value.trim();
+                    pending.name = newName || 'New Difficulty';
+                    nameInput.value = pending.name;
+                });
+
+                const specEl = document.createElement('div');
+                specEl.className = 'custom-difficulty-list-item-spec';
+                specEl.innerText = 'Unsaved';
+
+                mainArea.appendChild(nameInput);
+                mainArea.appendChild(specEl);
+                mainArea.addEventListener('click', () => {
+                    selectedId = pending.id;
+                    setSliders(16, 16, 40);
+                    renderList();
+                });
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'custom-difficulty-delete-btn';
+                deleteBtn.innerText = '✕';
+                deleteBtn.title = 'Delete';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    pendingEntry = null;
+                    if (selectedId === pending.id) selectedId = null;
+                    renderList();
+                });
+
+                item.appendChild(mainArea);
+                item.appendChild(deleteBtn);
+                listContainer.appendChild(item);
+            }
+
+            diffs.forEach((diff) => {
+                const item = document.createElement('div');
+                item.className = 'custom-difficulty-list-item';
+                if (diff.id === selectedId) item.classList.add('selected');
+
+                const mainArea = document.createElement('div');
+                mainArea.className = 'custom-difficulty-list-item-main';
+
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.className = 'custom-difficulty-list-item-name-input';
+                nameInput.value = diff.name;
+                nameInput.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Select item without full re-render so focus isn't lost
+                    if (selectedId !== diff.id) {
+                        selectedId = diff.id;
+                        setSliders(diff.width, diff.height, diff.mines);
+                        listContainer
+                            .querySelectorAll('.custom-difficulty-list-item')
+                            .forEach((el) => el.classList.remove('selected'));
+                        item.classList.add('selected');
+                    }
+                });
+                nameInput.addEventListener('blur', () => {
+                    const newName = nameInput.value.trim();
+                    if (!newName) {
+                        nameInput.value = diff.name;
+                        return;
+                    }
+                    const diffs = getCustomDifficulties();
+                    const idx = diffs.findIndex((d) => d.id === diff.id);
+                    if (idx >= 0 && diffs[idx].name !== newName) {
+                        diffs[idx] = { ...diffs[idx], name: newName };
+                        saveCustomDifficulties(diffs);
+                    }
+                });
+
+                const specEl = document.createElement('div');
+                specEl.className = 'custom-difficulty-list-item-spec';
+                specEl.innerText = `${diff.width}x${diff.height}, ${diff.mines} mines`;
+
+                mainArea.appendChild(nameInput);
+                mainArea.appendChild(specEl);
+                mainArea.addEventListener('click', () => {
+                    selectedId = diff.id;
+                    setSliders(diff.width, diff.height, diff.mines);
+                    renderList();
+                });
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'custom-difficulty-delete-btn';
+                deleteBtn.innerText = '✕';
+                deleteBtn.title = 'Delete';
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const updated = getCustomDifficulties().filter((d) => d.id !== diff.id);
+                    saveCustomDifficulties(updated);
+                    if (selectedId === diff.id) selectedId = null;
+                    renderList();
+                });
+
+                item.appendChild(mainArea);
+                item.appendChild(deleteBtn);
+                listContainer.appendChild(item);
+            });
+        };
+
+        // Pre-select the active custom difficulty if one is being played
+        const activeDiff = getCustomDifficulties().find((d) => d.id === currDifficulty);
+        if (activeDiff) {
+            selectedId = activeDiff.id;
+            setSliders(activeDiff.width, activeDiff.height, activeDiff.mines);
+        } else {
+            setSliders(16, 16, 40);
+        }
+        renderList();
+
+        const addBtn = dialogElem.querySelector('.custom-difficulty-add-btn') as HTMLElement;
+        addBtn.addEventListener('click', () => {
+            pendingEntry = { id: 'pending-' + Date.now(), name: 'New Difficulty' };
+            selectedId = pendingEntry.id;
+            setSliders(16, 16, 40);
+            renderList();
+            const nameInput = listContainer.querySelector(
+                '.custom-difficulty-list-item.selected .custom-difficulty-list-item-name-input',
+            ) as HTMLInputElement | null;
+            nameInput?.focus();
+            nameInput?.select();
+        });
+
+        widthSlider.addEventListener('input', () => {
+            const w = parseInt(widthSlider.value, 10);
+            const h = parseInt(heightSlider.value, 10);
+            widthValue.innerText = String(w);
+            updateMinesMax(w, h);
+            updateDensity(w, h, parseInt(minesSlider.value, 10));
+        });
+
+        heightSlider.addEventListener('input', () => {
+            const w = parseInt(widthSlider.value, 10);
+            const h = parseInt(heightSlider.value, 10);
+            heightValue.innerText = String(h);
+            updateMinesMax(w, h);
+            updateDensity(w, h, parseInt(minesSlider.value, 10));
+        });
+
+        minesSlider.addEventListener('input', () => {
+            const mines = parseInt(minesSlider.value, 10);
+            minesValue.innerText = String(mines);
+            updateDensity(parseInt(widthSlider.value, 10), parseInt(heightSlider.value, 10), mines);
+        });
+
+        const startBtn = dialogElem.querySelector('.custom-difficulty-start') as HTMLElement;
+        const cancelBtn = dialogElem.querySelector('.custom-difficulty-cancel') as HTMLElement;
+
+        startBtn.addEventListener('click', () => {
+            const w = parseInt(widthSlider.value, 10);
+            const h = parseInt(heightSlider.value, 10);
+            const mines = parseInt(minesSlider.value, 10);
+
+            const diffs = getCustomDifficulties();
+            let configId: string;
+
+            if (selectedId && selectedId === pendingEntry?.id) {
+                // Saving the pending new entry — use the custom name if set, otherwise auto-generate
+                configId = Date.now().toString();
+                const name =
+                    pendingEntry.name !== 'New Difficulty'
+                        ? pendingEntry.name
+                        : generateCustomDifficultyName(w, h, mines);
+                diffs.push({ id: configId, name, width: w, height: h, mines });
+                saveCustomDifficulties(diffs);
+                pendingEntry = null;
+            } else if (selectedId) {
+                const idx = diffs.findIndex((d) => d.id === selectedId);
+                if (idx >= 0) {
+                    diffs[idx] = { ...diffs[idx], width: w, height: h, mines };
+                    saveCustomDifficulties(diffs);
+                    configId = selectedId;
+                } else {
+                    configId = Date.now().toString();
+                    diffs.push({
+                        id: configId,
+                        name: generateCustomDifficultyName(w, h, mines),
+                        width: w,
+                        height: h,
+                        mines,
+                    });
+                    saveCustomDifficulties(diffs);
+                }
+            } else {
+                configId = Date.now().toString();
+                diffs.push({
+                    id: configId,
+                    name: generateCustomDifficultyName(w, h, mines),
+                    width: w,
+                    height: h,
+                    mines,
+                });
+                saveCustomDifficulties(diffs);
+            }
+
+            frontendState.gameOptions.boardWidth = w;
+            frontendState.gameOptions.boardHeight = h;
+            frontendState.gameOptions.numberOfMines = mines;
+            frontendState.gameOptions.difficultyKey = configId;
+            transformManager.setBounds(computeCustomBounds(w, h));
+            savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, configId);
+            currDifficulty = configId;
+            newGame(frontendState.gameOptions);
+
+            audioManager.playSoundEffect(SoundEffect.Click);
+            const dialog = document.querySelector('.dialog') as HTMLDialogElement;
+            const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
+            closeDialog(dialog, overlayBackElem);
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            pendingEntry = null;
+            audioManager.playSoundEffect(SoundEffect.Click);
+            const dialog = document.querySelector('.dialog') as HTMLDialogElement;
+            const overlayBackElem = document.querySelector('.overlay-back') as HTMLElement;
+            closeDialog(dialog, overlayBackElem);
+        });
+
+        renderDialog(dialogElem, {
+            fadeIn: true,
+            effect: 'pop',
+            style: {
+                width: '85%',
+                maxWidth: '440px',
+            },
+            themeManager,
+        });
     }
 
     function promptFullscreen() {
@@ -307,7 +664,7 @@ export function setupSettingsSubsystem(
         const difficultySelector = document.getElementById(
             'difficulty-selector',
         ) as HTMLSelectElement;
-        // Populate options dynamically from gameConfig
+        // Populate options: presets, saved custom configs, then "Custom..." trigger
         difficultySelector.innerHTML = '';
         selectableDifficulties.forEach((key) => {
             const opt = document.createElement('option');
@@ -315,17 +672,37 @@ export function setupSettingsSubsystem(
             opt.innerText = gameConfig.difficulty[key].displayName || key;
             difficultySelector.appendChild(opt);
         });
+        getCustomDifficulties().forEach((cd) => {
+            const opt = document.createElement('option');
+            opt.value = cd.id;
+            opt.innerText = cd.name;
+            difficultySelector.appendChild(opt);
+        });
+        const customOpt = document.createElement('option');
+        customOpt.value = DIFFICULTY_CUSTOM;
+        customOpt.innerText = 'Custom...';
+        difficultySelector.appendChild(customOpt);
+
         difficultySelector.addEventListener('change', (e) => {
             const difficultyValue = (e.target as HTMLSelectElement).value;
-            switchDifficulty(difficultyValue, {
-                startNewGame: true,
-            });
-            savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, difficultyValue);
+            if (difficultyValue === DIFFICULTY_CUSTOM) {
+                // Revert selector to active difficulty, then open dialog
+                const prevIdx = [...difficultySelector.options].findIndex(
+                    (o) => o.value === currDifficulty,
+                );
+                difficultySelector.selectedIndex = prevIdx >= 0 ? prevIdx : 0;
+                openCustomDifficultyDialog();
+            } else {
+                switchDifficulty(difficultyValue, { startNewGame: true });
+                savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, difficultyValue);
+            }
         });
-        // Ensure selectedIndex matches current difficulty (currDifficulty may come from preferences)
-        const idx = selectableDifficulties.indexOf(currDifficulty);
-        if (idx >= 0) {
-            difficultySelector.selectedIndex = idx;
+
+        // Set selected index by matching value
+        const allOptions = [...difficultySelector.options];
+        const selectedIdx = allOptions.findIndex((o) => o.value === currDifficulty);
+        if (selectedIdx >= 0) {
+            difficultySelector.selectedIndex = selectedIdx;
         } else {
             difficultySelector.selectedIndex = 0;
             currDifficulty = selectableDifficulties[0];
@@ -536,14 +913,19 @@ export function setupSettingsSubsystem(
         audioManager.playSoundEffect(SoundEffect.Click);
     });
 
-    // Set up game difficulty based on current setting
-    if (!selectableDifficulties.includes(currDifficulty)) {
+    // Set up game difficulty based on current setting.
+    // switchDifficulty handles presets, saved custom configs, and falls back to easy.
+    if (
+        !selectableDifficulties.includes(currDifficulty) &&
+        currDifficulty !== DIFFICULTY_CUSTOM &&
+        !getCustomDifficulties().some((d) => d.id === currDifficulty)
+    ) {
         currDifficulty =
             selectableDifficulties.length > 0 ? selectableDifficulties[0] : DIFFICULTY_EASY;
     }
-    switchDifficulty(currDifficulty, {
-        startNewGame: false,
-    });
+    if (currDifficulty !== DIFFICULTY_CUSTOM) {
+        switchDifficulty(currDifficulty, { startNewGame: false });
+    }
 
     // Mobile-specific behavior
     const md = new MobileDetect(window.navigator.userAgent);

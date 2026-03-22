@@ -157,6 +157,210 @@ body a > .commit-hash {
     font-size: 0.9em;
 }
 
+/* Custom Difficulty Dialog */
+
+.custom-difficulty {
+    font-family: var(--text-font-family);
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+    width: 100%;
+}
+
+.custom-difficulty h2 {
+    margin: 0 0 0.25em 0;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.custom-difficulty-section-label {
+    font-size: 0.7em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-3);
+}
+
+.custom-difficulty-list-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: -0.6em;
+}
+
+.custom-difficulty-add-btn {
+    background: none;
+    border: 1px solid var(--gray-4);
+    color: var(--gray-3);
+    font-size: 1em;
+    line-height: 1;
+    width: 1.6em;
+    height: 1.6em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.custom-difficulty-add-btn:hover {
+    color: var(--correct-color, #4caf50);
+    border-color: var(--correct-color, #4caf50);
+    background: var(--gray-7);
+}
+
+.custom-difficulty-list {
+    border: 1px solid var(--gray-4);
+    height: 140px;
+    overflow-y: auto;
+    background: var(--dialog-background-color);
+}
+
+.custom-difficulty-list-item {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--gray-6);
+    cursor: pointer;
+}
+
+.custom-difficulty-list-item:last-child {
+    border-bottom: none;
+}
+
+.custom-difficulty-list-item.selected .custom-difficulty-list-item-main {
+    background: var(--gray-6);
+}
+
+.custom-difficulty-list-item-main {
+    flex: 1;
+    padding: 0.5em 0.75em;
+    min-width: 0;
+}
+
+.custom-difficulty-list-item-main:hover {
+    background: var(--gray-7);
+}
+
+.custom-difficulty-list-item-name-input {
+    font-weight: bold;
+    font-size: 0.85em;
+    width: 100%;
+    background: none;
+    border: none;
+    border-bottom: 1px solid transparent;
+    padding: 0;
+    color: inherit;
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: initial;
+}
+
+.custom-difficulty-list-item-name-input:focus {
+    border-bottom-color: var(--gray-4);
+    cursor: text;
+}
+
+.custom-difficulty-list-item-spec {
+    font-size: 0.7em;
+    color: var(--gray-3);
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+.custom-difficulty-delete-btn {
+    background: none;
+    border: none;
+    border-left: 1px solid var(--gray-6);
+    padding: 0 0.75em;
+    cursor: pointer;
+    color: var(--gray-3);
+    font-size: 0.85em;
+    flex-shrink: 0;
+}
+
+.custom-difficulty-delete-btn:hover {
+    color: var(--losing-block-color, #cc0000);
+    background: var(--gray-7);
+}
+
+.custom-difficulty-empty {
+    padding: 1em;
+    font-size: 0.8em;
+    color: var(--gray-4);
+    text-align: center;
+    font-style: italic;
+}
+
+.custom-difficulty-divider {
+    border-top: 1px solid var(--gray-6);
+    margin: -0.4em 0;
+}
+
+.custom-difficulty-control {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4em;
+}
+
+.custom-difficulty-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.custom-difficulty-label {
+    font-size: 0.7em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray-3);
+}
+
+.custom-difficulty-value {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: var(--correct-color, #4caf50);
+    line-height: 1;
+}
+
+.custom-difficulty-mines-value {
+    color: var(--losing-block-color, #cc0000);
+}
+
+/* Use the same track/thumb style as the volume slider */
+.custom-difficulty .setting-controls input[type='range'] {
+    width: 100%;
+    max-width: none;
+}
+
+.custom-difficulty-range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65em;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: var(--gray-4);
+    letter-spacing: 0.05em;
+}
+
+.custom-difficulty-stats {
+    font-size: 0.7em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--gray-3);
+    background: var(--gray-6);
+    padding: 0.4em 0.6em;
+    display: inline-block;
+    align-self: flex-start;
+}
+
 /* Credits Dialog */
 
 .credits {

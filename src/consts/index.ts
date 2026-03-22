@@ -12,6 +12,7 @@ export const FULLSCREEN_PREFERENCE_NAME = 'fullscreen';
 export const MUSIC_PREFERENCE_NAME = 'music';
 export const SOUND_PREFERENCE_NAME = 'sound';
 export const SOUND_VOLUME_PREFERENCE_NAME = 'soundVolume';
+export const CUSTOM_DIFFICULTIES_PREFERENCE_NAME = 'customDifficulties';
 
 export const THEME_SETTING_NAME = 'theme-switch';
 export const DIFFICULTY_SETTING_NAME = 'difficulty';
@@ -28,6 +29,7 @@ export const DIFFICULTY_EASY_8X8 = 'easy_8x8';
 export const DIFFICULTY_EASY = 'easy';
 export const DIFFICULTY_MEDIUM = 'medium';
 export const DIFFICULTY_HARD = 'hard';
+export const DIFFICULTY_CUSTOM = 'custom';
 
 export const SMILEY_NORMAL = 'img/Smiley.png';
 export const SMILEY_PROUD = 'img/Smiley_proud.png';

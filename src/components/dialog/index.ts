@@ -37,7 +37,7 @@ export const renderDialog = (content: HTMLElement, options?: DialogOptions) => {
             // have it base itself off of a computed transform property
             dialog.style.transform = 'translate(-50%, -50%) scale(0.5)';
             setTimeout(() => {
-                const dialog = document.querySelector('.dialog') as HTMLElement;
+                if (!document.contains(dialog)) return;
                 dialog.style.opacity = '';
                 dialog.style.transform = 'translate(-50%, -50%)';
             }, 10);

@@ -17,8 +17,10 @@ context('settings JSON integration', () => {
         // Check that dropdown options match config.json display names
         cy.fixture('config.json').then((settings) => {
             const keys = Object.keys(settings.difficulty);
-            // ensure number of options equals keys
-            cy.get('#difficulty-selector').find('option').should('have.length', keys.length);
+            // +1 for the "Custom..." option appended at the end
+            cy.get('#difficulty-selector')
+                .find('option')
+                .should('have.length', keys.length + 1);
             keys.forEach((k: string) => {
                 const displayName = settings.difficulty[k].displayName;
                 cy.get('#difficulty-selector')

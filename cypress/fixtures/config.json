@@ -57,7 +57,6 @@
             "loseColor": "#E74C3C",
             "highlightColor": "#FFFF00",
             "metaThemeColor": "#BBBBBB",
-            "popupBackground": "#FFFFFF",
             "textColor": "#000000",
             "tileBackground": "#BBBBBB",
             "tileBorder": "#888888"
@@ -69,7 +68,6 @@
             "loseColor": "#E74C3C",
             "highlightColor": "#00FFFF",
             "metaThemeColor": "#1E3A5F",
-            "popupBackground": "#05283A",
             "textColor": "#FFFFFF",
             "tileBackground": "#1E3A5F",
             "tileBorder": "#123144"
@@ -81,7 +79,6 @@
             "loseColor": "#E74C3C",
             "highlightColor": "#00FFFF",
             "metaThemeColor": "#1E3A5F",
-            "popupBackground": "#05283A",
             "textColor": "#FFFFFF",
             "tileBackground": "#1E3A5F",
             "tileBorder": "#123144"
@@ -93,7 +90,6 @@
             "loseColor": "#E74C3C",
             "highlightColor": "#FFFF00",
             "metaThemeColor": "#888888",
-            "popupBackground": "#F8F8F8",
             "textColor": "#000000",
             "tileBackground": "#808080",
             "tileBorder": "#666666"

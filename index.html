@@ -515,6 +515,61 @@
         <template id="changelog-content">
             <div id="changelog-text" class="dialog-text"></div>
         </template>
+        <template id="custom-difficulty-dialog-content">
+            <div class="custom-difficulty">
+                <h2>Custom Difficulty</h2>
+                <div class="custom-difficulty-list-header">
+                    <span class="custom-difficulty-section-label">Saved Configurations</span>
+                    <button class="custom-difficulty-add-btn" title="New configuration">+</button>
+                </div>
+                <div class="custom-difficulty-list" id="custom-difficulty-list"></div>
+                <div class="custom-difficulty-divider"></div>
+                <div class="custom-difficulty-control">
+                    <div class="custom-difficulty-label-row">
+                        <label class="custom-difficulty-label" for="custom-width-slider">Grid Width</label>
+                        <span class="custom-difficulty-value" id="custom-width-value">16</span>
+                    </div>
+                    <div class="setting-controls">
+                        <input type="range" id="custom-width-slider" min="9" max="30" value="16">
+                    </div>
+                    <div class="custom-difficulty-range-labels">
+                        <span>Min: 9</span>
+                        <span>Max: 30</span>
+                    </div>
+                </div>
+                <div class="custom-difficulty-control">
+                    <div class="custom-difficulty-label-row">
+                        <label class="custom-difficulty-label" for="custom-height-slider">Grid Height</label>
+                        <span class="custom-difficulty-value" id="custom-height-value">16</span>
+                    </div>
+                    <div class="setting-controls">
+                        <input type="range" id="custom-height-slider" min="9" max="24" value="16">
+                    </div>
+                    <div class="custom-difficulty-range-labels">
+                        <span>Min: 9</span>
+                        <span>Max: 24</span>
+                    </div>
+                </div>
+                <div class="custom-difficulty-control">
+                    <div class="custom-difficulty-label-row">
+                        <label class="custom-difficulty-label" for="custom-mines-slider">Mine Count</label>
+                        <span class="custom-difficulty-value custom-difficulty-mines-value" id="custom-mines-value">40</span>
+                    </div>
+                    <div class="setting-controls">
+                        <input type="range" id="custom-mines-slider" min="1" max="255" value="40">
+                    </div>
+                    <div class="custom-difficulty-range-labels">
+                        <span>Min: 1</span>
+                        <span id="custom-mines-max-label">Max: 255</span>
+                    </div>
+                </div>
+                <div class="custom-difficulty-stats">
+                    <span id="custom-density-display">Density: 15.6%</span>
+                </div>
+                <button class="button custom-difficulty-start"><span>Start New Game</span></button>
+                <button class="button custom-difficulty-cancel"><span>Cancel</span></button>
+            </div>
+        </template>
         <script src="src/index.ts" type="module"></script>
         <!-- <script src="vendor/snow.js" defer></script> -->
     </body>

@@ -22,7 +22,6 @@ export type ThemeConfig = {
     metaThemeColor: string;
     winStatusBarColor?: string;
     loseStatusBarColor?: string;
-    popupBackground: string;
     textColor: string;
     tileBackground: string;
     tileBorder: string;
@@ -80,7 +79,6 @@ const FALLBACK_CONFIG: Config = {
             mineText8: '#858585',
             highlightColor: '#FFFF00',
             metaThemeColor: '#BBBBBB',
-            popupBackground: '#FFFFFF',
             textColor: '#000000',
             tileBackground: '#BBBBBB',
             tileBorder: '#888888',
