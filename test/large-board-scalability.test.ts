@@ -37,21 +37,36 @@ describe('large board scalability', () => {
         const gameOptions: GameOptions = {
             boardWidth: 1000,
             boardHeight: 1000,
-            numberOfMines: 10,
+            numberOfMines: 1,
             revealBoardOnLoss: false,
             difficultyKey: 'custom',
         };
 
         await initGame(gameOptions, eventHandlerStub, new NonexistentMockGameStorage());
 
+        // Move the mine to the center so that revealing a spot will always flood fill
+        let state = getGameState();
+loop:
+        for (let i = 0; i < gameOptions.boardHeight; i++) {
+            for (let j = 0; j < gameOptions.boardWidth; j++) {
+                if (state.board[i][j].isMine) {
+                    state.board[i][j].isMine = false;
+                    break loop;
+                }
+            }
+        }
+        state.board[Math.floor(gameOptions.boardHeight / 2)][Math.floor(gameOptions.boardWidth / 2)].isMine = true;
+        
+        // Reveal top left corner
+        const result = selectSpot(0, 0);
+
         // The recursive flood fill silently overflows the call stack inside a
         // Promise constructor, leaving most tiles unrevealed. The game is
         // therefore never won. This assertion exposes that failure.
-        const result = selectSpot(0, 0);
         expect(result.win).toBe(true);
 
         // Double-check via game state: every non-mine cell must be revealed.
-        const state = getGameState();
+        state = getGameState();
         const totalCells = gameOptions.boardWidth * gameOptions.boardHeight;
         const expectedRevealed = totalCells - gameOptions.numberOfMines;
         let revealedCount = 0;
