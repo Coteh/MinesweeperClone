@@ -4,7 +4,7 @@ import { NonexistentMockGameStorage } from './util';
 import { Mock } from 'jest-mock';
 
 /**
- * Scalability regression test for large board flood fill.
+ * Scalability regression tests for large board flood fill.
  *
  * The current implementation uses a mutually-recursive flood fill
  * (revealSpot → revealMultiple → revealSpot …) whose executors run
@@ -13,14 +13,15 @@ import { Mock } from 'jest-mock';
  * exceeded". The RangeError is silently swallowed by the Promise machinery,
  * so the flood fill terminates early and leaves most tiles unrevealed.
  *
- * On a 1 000×1 000 board with only 10 mines, a flood fill from (0, 0) should
- * reveal all 999 990 non-mine cells and immediately win the game. If the
+ * Each test places the single mine at the center of the board so that
+ * clicking (0, 0) is guaranteed to trigger a full flood fill. If the
  * recursive implementation stack-overflows mid-fill, far fewer cells will be
- * revealed and the game will NOT be won — which is how this test catches the
+ * revealed and the game will NOT be won — which is how these tests catch the
  * bug.
  *
- * This test is intentionally RED. It documents the known failure so that a
- * future iterative implementation can turn it GREEN.
+ * These tests are intentionally RED. They document the known failure so that
+ * a future iterative implementation can turn them GREEN.
+ * See: https://github.com/Coteh/MinesweeperClone/issues/3
  */
 describe('large board scalability', () => {
     let eventHandlerStub: Mock;
@@ -79,4 +80,49 @@ loop:
         }
         expect(revealedCount).toBe(expectedRevealed);
     }, 30000 /* 30 s ceiling — the crash happens well before this */);
+
+    it('should complete a flood fill on a 100x100 board without stack overflow', async () => {
+        // 10 000 cells, 1 mine → 9 999 safe cells.
+        const gameOptions: GameOptions = {
+            boardWidth: 100,
+            boardHeight: 100,
+            numberOfMines: 1,
+            revealBoardOnLoss: false,
+            difficultyKey: 'custom',
+        };
+
+        await initGame(gameOptions, eventHandlerStub, new NonexistentMockGameStorage());
+
+        // Move the mine to the center so that revealing a spot will always flood fill
+        let state = getGameState();
+loop:
+        for (let i = 0; i < gameOptions.boardHeight; i++) {
+            for (let j = 0; j < gameOptions.boardWidth; j++) {
+                if (state.board[i][j].isMine) {
+                    state.board[i][j].isMine = false;
+                    break loop;
+                }
+            }
+        }
+        state.board[Math.floor(gameOptions.boardHeight / 2)][Math.floor(gameOptions.boardWidth / 2)].isMine = true;
+
+        // Reveal top left corner
+        const result = selectSpot(0, 0);
+
+        expect(result.win).toBe(true);
+
+        // Double-check via game state: every non-mine cell must be revealed.
+        state = getGameState();
+        const totalCells = gameOptions.boardWidth * gameOptions.boardHeight;
+        const expectedRevealed = totalCells - gameOptions.numberOfMines;
+        let revealedCount = 0;
+        for (let y = 0; y < gameOptions.boardHeight; y++) {
+            for (let x = 0; x < gameOptions.boardWidth; x++) {
+                if (state.board[y][x].isRevealed && !state.board[y][x].isMine) {
+                    revealedCount++;
+                }
+            }
+        }
+        expect(revealedCount).toBe(expectedRevealed);
+    }, 10000 /* 10 s ceiling */);
 });
