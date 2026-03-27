@@ -138,7 +138,7 @@ const initPersistentState = () => {
     }
 };
 
-export const initGame = async (
+export const initGame = (
     gameOptions: GameOptions,
     _eventHandler: EventHandler,
     _gameStorage: IGameStorage,
