@@ -419,7 +419,8 @@ const revealSpot = function (x: number, y: number) {
 
         if (!isMine) {
             if (amountOfAdjMines <= 0) {
-                const toAdd = adjacentSpots?.filter((spot) => !spot.isFlagged) ?? [];
+                const toAdd =
+                    adjacentSpots?.filter((spot) => !spot.isFlagged && !spot.isRevealed) ?? [];
                 for (const spot of toAdd) {
                     const key = spot.y * gameState.gameOptions.boardWidth + spot.x;
                     if (!visited.has(key)) {

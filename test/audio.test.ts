@@ -1,4 +1,4 @@
-import { jest, expect } from '@jest/globals';
+import { jest, expect, describe, beforeEach, it } from '@jest/globals';
 import { AudioManager, SoundEffect } from '../src/manager/audio';
 import { AssetManager } from '../src/manager/asset';
 import { Howler } from 'howler';

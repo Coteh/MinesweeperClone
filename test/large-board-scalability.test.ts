@@ -1,4 +1,4 @@
-import { jest, expect } from '@jest/globals';
+import { jest, expect, describe, beforeEach, it } from '@jest/globals';
 import { initGame, GameOptions, getGameState, selectSpot } from '../src/game';
 import { NonexistentMockGameStorage } from './util';
 import { Mock } from 'jest-mock';
