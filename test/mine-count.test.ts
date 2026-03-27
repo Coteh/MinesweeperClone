@@ -1,5 +1,13 @@
-import { jest, expect, describe, beforeEach, it } from '@jest/globals';
-import { initGame, selectSpot, flagSpot, getGameState, GameOptions, GameState } from '../src/game';
+import { jest, expect, describe, beforeEach, afterEach, it } from '@jest/globals';
+import {
+    initGame,
+    selectSpot,
+    flagSpot,
+    getGameState,
+    GameOptions,
+    GameState,
+    cleanupGame,
+} from '../src/game';
 import { Mock } from 'jest-mock';
 import { NonexistentMockGameStorage } from './util';
 import { IGameStorage } from '../src/storage';
@@ -21,6 +29,10 @@ describe('mine count with flags on loss', function () {
 
     beforeEach(() => {
         eventHandlerStub = jest.fn();
+    });
+
+    afterEach(() => {
+        cleanupGame();
     });
 
     it('should maintain mine count when flagged mines are revealed on loss', function () {

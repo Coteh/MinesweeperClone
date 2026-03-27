@@ -1,4 +1,4 @@
-import { jest, expect, describe, beforeEach, it } from '@jest/globals';
+import { jest, expect, describe, beforeEach, afterEach, it } from '@jest/globals';
 import {
     initGame,
     selectSpot,
@@ -7,6 +7,7 @@ import {
     getGameState,
     GameOptions,
     GameState,
+    cleanupGame,
 } from '../src/game';
 import { Mock } from 'jest-mock';
 import { NonexistentMockGameStorage, MockGameStorage } from './util';
@@ -42,6 +43,10 @@ describe('auto-flag mines on win', function () {
 
     beforeEach(() => {
         eventHandlerStub = jest.fn();
+    });
+
+    afterEach(() => {
+        cleanupGame();
     });
 
     it('should auto-flag all remaining unflagged mines when winning', function () {
