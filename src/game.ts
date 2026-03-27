@@ -82,11 +82,11 @@ export type GameEvent =
 
 export type EventHandler = (event: GameEvent) => void;
 
-type SpotRevealCallback = (
+type SpotRevealResult = {
     isMine: boolean,
     amountOfAdjMines: number,
     adjacentSpots: MineBlock[] | null,
-) => void;
+};
 
 let gameState: GameState = {} as GameState;
 let persistentState: GamePersistentState = {} as GamePersistentState;
@@ -387,7 +387,7 @@ export const selectAdjacentSpots = function (x: number, y: number) {
     return { hitInfo: 'land', win: won };
 };
 
-const performSpotReveal = function (x: number, y: number, callback?: SpotRevealCallback) {
+const performSpotReveal: (x: number, y: number) => SpotRevealResult = function (x, y) {
     gameState.board[y][x].isRevealed = true;
     // Clear any question mark when revealing
     gameState.board[y][x].isQuestionMark = false;
@@ -400,9 +400,6 @@ const performSpotReveal = function (x: number, y: number, callback?: SpotRevealC
         amountOfAdjMines = calculateAdjacentMines(adjacentSpots);
         gameState.board[y][x].adjMinesCount = amountOfAdjMines;
     }
-    if (callback) {
-        callback(isMine, amountOfAdjMines, adjacentSpots);
-    }
     return {
         isMine,
         amountOfAdjMines,
@@ -410,7 +407,7 @@ const performSpotReveal = function (x: number, y: number, callback?: SpotRevealC
     };
 };
 
-const revealSpot: (x: number, y: number) => boolean = function (x: number, y: number) {
+const revealSpot = function (x: number, y: number) {
     const queue = [{x, y}];
     const visited = new Set([y * gameState.gameOptions.boardWidth + x]);
     let head = 0;
@@ -442,19 +439,18 @@ const revealSpot: (x: number, y: number) => boolean = function (x: number, y: nu
                     }
                 }
             }
-            return true;
         }
     }
-
-    return visited.size > 0;
 };
 
 const revealMultiple: (spotArr: MineBlock[]) => boolean = function (spotArr: MineBlock[]) {
     let hasHitASpot = false;
     for (let i = 0; i < spotArr.length; i++) {
-        if (revealSpot(spotArr[i].x, spotArr[i].y)) {
-            hasHitASpot = true;
+        if (gameState.board[spotArr[i].y][spotArr[i].x].isRevealed) {
+            continue;
         }
+        revealSpot(spotArr[i].x, spotArr[i].y);
+        hasHitASpot = true;
     }
     return hasHitASpot;
 };
