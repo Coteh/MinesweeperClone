@@ -1,5 +1,5 @@
-import { jest, expect, describe, beforeEach, it } from '@jest/globals';
-import { initGame, GameOptions, getGameState, selectSpot } from '../src/game';
+import { jest, expect, describe, beforeEach, afterEach, it } from '@jest/globals';
+import { initGame, GameOptions, getGameState, selectSpot, cleanupGame } from '../src/game';
 import { NonexistentMockGameStorage } from './util';
 import { Mock } from 'jest-mock';
 
@@ -19,6 +19,10 @@ describe('large board scalability', () => {
 
     beforeEach(() => {
         eventHandlerStub = jest.fn();
+    });
+
+    afterEach(() => {
+        cleanupGame();
     });
 
     it('should complete a flood fill on a 100x100 board without stack overflow', () => {

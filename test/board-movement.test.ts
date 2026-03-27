@@ -1,5 +1,13 @@
 import { jest, expect, describe, beforeEach, it } from '@jest/globals';
-import { initGame, selectSpot, flagSpot, getGameState, GameOptions, GameState } from '../src/game';
+import {
+    initGame,
+    selectSpot,
+    flagSpot,
+    getGameState,
+    GameOptions,
+    GameState,
+    cleanupGame,
+} from '../src/game';
 import { Mock } from 'jest-mock';
 import { NonexistentMockGameStorage } from './util';
 import { IGameStorage } from '../src/storage';
@@ -14,6 +22,10 @@ describe('selecting tiles', function () {
 
     beforeEach(() => {
         eventHandlerStub = jest.fn();
+    });
+
+    afterEach(() => {
+        cleanupGame();
     });
 
     it('will select a spot on the board by marking it as revealed', function () {

@@ -1,4 +1,4 @@
-import { jest, expect, describe, beforeEach, it } from '@jest/globals';
+import { jest, expect, describe, beforeEach, afterEach, it } from '@jest/globals';
 import {
     GameState,
     initGame,
@@ -6,6 +6,7 @@ import {
     getGameState,
     selectSpot,
     setDebugEnabled,
+    cleanupGame,
 } from '../src/game';
 import { BoardOverfillException } from '../src/errors';
 import { NonexistentMockGameStorage } from './util';
@@ -102,6 +103,10 @@ describe('first click', () => {
     beforeEach(() => {
         eventHandlerStub = jest.fn();
         setDebugEnabled(false);
+    });
+
+    afterEach(() => {
+        cleanupGame();
     });
 
     it('should never be a mine', () => {

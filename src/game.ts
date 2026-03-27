@@ -659,6 +659,11 @@ export const setDebugEnabled = (enabled: boolean) => {
 
 /* To be used for tests */
 
+export const cleanupGame = () => {
+    // If timer isn't cleared on its own (ie. game doesn't end), then this will ensure the timer is cleared out
+    clearInterval(gameTimer);
+};
+
 export const getGameState: () => GameState = () => {
     return gameState;
 };
