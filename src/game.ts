@@ -83,9 +83,9 @@ export type GameEvent =
 export type EventHandler = (event: GameEvent) => void;
 
 type SpotRevealResult = {
-    isMine: boolean,
-    amountOfAdjMines: number,
-    adjacentSpots: MineBlock[] | null,
+    isMine: boolean;
+    amountOfAdjMines: number;
+    adjacentSpots: MineBlock[] | null;
 };
 
 let gameState: GameState = {} as GameState;
@@ -408,33 +408,30 @@ const performSpotReveal: (x: number, y: number) => SpotRevealResult = function (
 };
 
 const revealSpot = function (x: number, y: number) {
-    const queue = [{x, y}];
+    const queue = [{ x, y }];
     const visited = new Set([y * gameState.gameOptions.boardWidth + x]);
     let head = 0;
 
     while (head < queue.length) {
         const coords = queue[head++];
 
-        const {isMine, amountOfAdjMines, adjacentSpots} = performSpotReveal(coords.x, coords.y);
+        const { isMine, amountOfAdjMines, adjacentSpots } = performSpotReveal(coords.x, coords.y);
 
         if (!isMine) {
             if (amountOfAdjMines <= 0) {
-                const toAdd = adjacentSpots?.filter(spot => !spot.isFlagged) ?? [];
+                const toAdd = adjacentSpots?.filter((spot) => !spot.isFlagged) ?? [];
                 for (const spot of toAdd) {
                     const key = spot.y * gameState.gameOptions.boardWidth + spot.x;
                     if (!visited.has(key)) {
                         visited.add(key);
-                        queue.push({x: spot.x, y: spot.y});
+                        queue.push({ x: spot.x, y: spot.y });
                     }
                 }
             }
         } else {
             for (let a = 0; a < gameState.gameOptions.boardWidth; a++) {
                 for (let b = 0; b < gameState.gameOptions.boardHeight; b++) {
-                    if (
-                        gameState.gameOptions.revealBoardOnLoss ||
-                        gameState.board[b][a].isMine
-                    ) {
+                    if (gameState.gameOptions.revealBoardOnLoss || gameState.board[b][a].isMine) {
                         performSpotReveal(a, b);
                     }
                 }

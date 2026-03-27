@@ -35,8 +35,7 @@ describe('large board scalability', () => {
 
         // Move the mine to the center so that revealing a spot will always flood fill
         let state = getGameState();
-loop:
-        for (let i = 0; i < gameOptions.boardHeight; i++) {
+        loop: for (let i = 0; i < gameOptions.boardHeight; i++) {
             for (let j = 0; j < gameOptions.boardWidth; j++) {
                 if (state.board[i][j].isMine) {
                     state.board[i][j].isMine = false;
@@ -44,7 +43,9 @@ loop:
                 }
             }
         }
-        state.board[Math.floor(gameOptions.boardHeight / 2)][Math.floor(gameOptions.boardWidth / 2)].isMine = true;
+        const centerX = Math.floor(gameOptions.boardWidth / 2);
+        const centerY = Math.floor(gameOptions.boardHeight / 2);
+        state.board[centerY][centerX].isMine = true;
 
         // Reveal top left corner
         const result = selectSpot(0, 0);
@@ -80,8 +81,7 @@ loop:
 
         // Move the mine to the center so that revealing a spot will always flood fill
         let state = getGameState();
-loop:
-        for (let i = 0; i < gameOptions.boardHeight; i++) {
+        loop: for (let i = 0; i < gameOptions.boardHeight; i++) {
             for (let j = 0; j < gameOptions.boardWidth; j++) {
                 if (state.board[i][j].isMine) {
                     state.board[i][j].isMine = false;
@@ -89,8 +89,10 @@ loop:
                 }
             }
         }
-        state.board[Math.floor(gameOptions.boardHeight / 2)][Math.floor(gameOptions.boardWidth / 2)].isMine = true;
-        
+        const centerX = Math.floor(gameOptions.boardWidth / 2);
+        const centerY = Math.floor(gameOptions.boardHeight / 2);
+        state.board[centerY][centerX].isMine = true;
+
         // Reveal top left corner
         const result = selectSpot(0, 0);
 
