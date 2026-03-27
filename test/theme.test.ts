@@ -1,4 +1,4 @@
-import { jest, expect, describe, it, beforeEach } from '@jest/globals';
+import { jest, expect, describe, it, beforeEach, afterEach } from '@jest/globals';
 
 // Mock the background module to avoid pulling in pixi.js in node environment
 jest.mock('../src/manager/background', () => ({
