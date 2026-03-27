@@ -50,8 +50,5 @@ To run the game locally, follow these steps:
 
     Then open http://localhost:5173 to play the game locally in development mode. The game will reload on changes in the source.
 
-## Issues
-- Stack overflow (RangeError) when recursive revealing boards with dimensions 100x100 or greater [#3](https://github.com/Coteh/MinesweeperClone/issues/3)
-
 ## Future Additions
 - Timed Mode
