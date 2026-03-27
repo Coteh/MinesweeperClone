@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Volume icon now updates based on both enabled state and volume level
 - Zoom sound effects now only play when zoom level actually changes (not when maxed out)
 
+### Fixed
+
+- Stack overflow (RangeError) when recursive revealing boards with dimensions 100x100 or greater
+
 ## [1.1.1] - 2025-01-26
 
 ### Fixed
