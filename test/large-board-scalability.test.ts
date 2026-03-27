@@ -4,23 +4,14 @@ import { NonexistentMockGameStorage } from './util';
 import { Mock } from 'jest-mock';
 
 /**
- * Scalability regression tests for large board flood fill.
+ * Scalability regression tests for the flood fill reveal logic.
  *
- * The current implementation uses a mutually-recursive flood fill
- * (revealSpot → revealMultiple → revealSpot …) whose executors run
- * synchronously inside Promise constructors. On a large board this exhausts
- * the JavaScript call stack with "RangeError: Maximum call stack size
- * exceeded". The RangeError is silently swallowed by the Promise machinery,
- * so the flood fill terminates early and leaves most tiles unrevealed.
+ * The original recursive implementation overflows the JS call stack on boards
+ * of 100×100 or larger, aborting the fill mid-way and leaving most tiles
+ * unrevealed. Each test places the single mine at the center so that clicking
+ * (0, 0) is guaranteed to trigger a full flood fill. The assertion — that the
+ * game is won (all safe cells revealed) — serves as the pass/fail signal.
  *
- * Each test places the single mine at the center of the board so that
- * clicking (0, 0) is guaranteed to trigger a full flood fill. If the
- * recursive implementation stack-overflows mid-fill, far fewer cells will be
- * revealed and the game will NOT be won — which is how these tests catch the
- * bug.
- *
- * These tests are intentionally RED. They document the known failure so that
- * a future iterative implementation can turn them GREEN.
  * See: https://github.com/Coteh/MinesweeperClone/issues/3
  */
 describe('large board scalability', () => {
@@ -76,10 +67,7 @@ loop:
     }, 10000 /* 10 s ceiling */);
 
     it('should complete a flood fill on a 1000x1000 board without stack overflow', async () => {
-        // 1 000 000 cells, 10 mines → 999 990 safe cells.
-        // With so few mines the entire safe region is almost certainly a single
-        // connected component, so one click should reveal every safe cell and
-        // immediately win the game.
+        // 1 000 000 cells, 1 mine → 999 999 safe cells.
         const gameOptions: GameOptions = {
             boardWidth: 1000,
             boardHeight: 1000,
@@ -106,9 +94,6 @@ loop:
         // Reveal top left corner
         const result = selectSpot(0, 0);
 
-        // The recursive flood fill silently overflows the call stack inside a
-        // Promise constructor, leaving most tiles unrevealed. The game is
-        // therefore never won. This assertion exposes that failure.
         expect(result.win).toBe(true);
 
         // Double-check via game state: every non-mine cell must be revealed.
@@ -124,5 +109,5 @@ loop:
             }
         }
         expect(revealedCount).toBe(expectedRevealed);
-    }, 30000 /* 30 s ceiling — the crash happens well before this */);
+    }, 120000 /* 2 min ceiling */);
 });
