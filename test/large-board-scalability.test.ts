@@ -30,6 +30,51 @@ describe('large board scalability', () => {
         eventHandlerStub = jest.fn();
     });
 
+    it('should complete a flood fill on a 100x100 board without stack overflow', async () => {
+        // 10 000 cells, 1 mine → 9 999 safe cells.
+        const gameOptions: GameOptions = {
+            boardWidth: 100,
+            boardHeight: 100,
+            numberOfMines: 1,
+            revealBoardOnLoss: false,
+            difficultyKey: 'custom',
+        };
+
+        await initGame(gameOptions, eventHandlerStub, new NonexistentMockGameStorage());
+
+        // Move the mine to the center so that revealing a spot will always flood fill
+        let state = getGameState();
+loop:
+        for (let i = 0; i < gameOptions.boardHeight; i++) {
+            for (let j = 0; j < gameOptions.boardWidth; j++) {
+                if (state.board[i][j].isMine) {
+                    state.board[i][j].isMine = false;
+                    break loop;
+                }
+            }
+        }
+        state.board[Math.floor(gameOptions.boardHeight / 2)][Math.floor(gameOptions.boardWidth / 2)].isMine = true;
+
+        // Reveal top left corner
+        const result = selectSpot(0, 0);
+
+        expect(result.win).toBe(true);
+
+        // Double-check via game state: every non-mine cell must be revealed.
+        state = getGameState();
+        const totalCells = gameOptions.boardWidth * gameOptions.boardHeight;
+        const expectedRevealed = totalCells - gameOptions.numberOfMines;
+        let revealedCount = 0;
+        for (let y = 0; y < gameOptions.boardHeight; y++) {
+            for (let x = 0; x < gameOptions.boardWidth; x++) {
+                if (state.board[y][x].isRevealed && !state.board[y][x].isMine) {
+                    revealedCount++;
+                }
+            }
+        }
+        expect(revealedCount).toBe(expectedRevealed);
+    }, 10000 /* 10 s ceiling */);
+
     it('should complete a flood fill on a 1000x1000 board without stack overflow', async () => {
         // 1 000 000 cells, 10 mines → 999 990 safe cells.
         // With so few mines the entire safe region is almost certainly a single
@@ -80,49 +125,4 @@ loop:
         }
         expect(revealedCount).toBe(expectedRevealed);
     }, 30000 /* 30 s ceiling — the crash happens well before this */);
-
-    it('should complete a flood fill on a 100x100 board without stack overflow', async () => {
-        // 10 000 cells, 1 mine → 9 999 safe cells.
-        const gameOptions: GameOptions = {
-            boardWidth: 100,
-            boardHeight: 100,
-            numberOfMines: 1,
-            revealBoardOnLoss: false,
-            difficultyKey: 'custom',
-        };
-
-        await initGame(gameOptions, eventHandlerStub, new NonexistentMockGameStorage());
-
-        // Move the mine to the center so that revealing a spot will always flood fill
-        let state = getGameState();
-loop:
-        for (let i = 0; i < gameOptions.boardHeight; i++) {
-            for (let j = 0; j < gameOptions.boardWidth; j++) {
-                if (state.board[i][j].isMine) {
-                    state.board[i][j].isMine = false;
-                    break loop;
-                }
-            }
-        }
-        state.board[Math.floor(gameOptions.boardHeight / 2)][Math.floor(gameOptions.boardWidth / 2)].isMine = true;
-
-        // Reveal top left corner
-        const result = selectSpot(0, 0);
-
-        expect(result.win).toBe(true);
-
-        // Double-check via game state: every non-mine cell must be revealed.
-        state = getGameState();
-        const totalCells = gameOptions.boardWidth * gameOptions.boardHeight;
-        const expectedRevealed = totalCells - gameOptions.numberOfMines;
-        let revealedCount = 0;
-        for (let y = 0; y < gameOptions.boardHeight; y++) {
-            for (let x = 0; x < gameOptions.boardWidth; x++) {
-                if (state.board[y][x].isRevealed && !state.board[y][x].isMine) {
-                    revealedCount++;
-                }
-            }
-        }
-        expect(revealedCount).toBe(expectedRevealed);
-    }, 10000 /* 10 s ceiling */);
 });

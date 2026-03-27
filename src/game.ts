@@ -355,14 +355,12 @@ export const selectAdjacentSpots = function (x: number, y: number) {
                 gameState.board[adjacentSpots[i].y][adjacentSpots[i].x].isLosingSpot = true;
             }
         }
-        revealMultiple(adjacentSpots).then((res) => {
-            if (res) {
-                console.log('At least one block was revealed here');
-                eventHandler({ type: 'reveal', data: { x, y } });
-            } else {
-                console.log('No new blocks were revealed');
-            }
-        });
+        if (revealMultiple(adjacentSpots)) {
+            console.log('At least one block was revealed here');
+            eventHandler({ type: 'reveal', data: { x, y } });
+        } else {
+            console.log('No new blocks were revealed');
+        }
     }
     if (doesMineExist) {
         gameState.ended = true;
@@ -405,60 +403,59 @@ const performSpotReveal = function (x: number, y: number, callback?: SpotRevealC
     if (callback) {
         callback(isMine, amountOfAdjMines, adjacentSpots);
     }
+    return {
+        isMine,
+        amountOfAdjMines,
+        adjacentSpots,
+    };
 };
 
-const revealSpot: (x: number, y: number) => Promise<boolean> = function (x: number, y: number) {
-    return new Promise((resolve) => {
-        // Don't reveal already revealed spot
-        if (gameState.board[y][x].isRevealed) {
-            resolve(false);
-            return;
+const revealSpot: (x: number, y: number) => boolean = function (x: number, y: number) {
+    const queue = [{x, y}];
+    const visited = new Set();
+
+    while (queue.length > 0) {
+        const coords = queue.shift()!;
+        const coordsStr = `${coords.x},${coords.y}`;
+        if (visited.has(coordsStr)) {
+            continue;
         }
-        performSpotReveal(
-            x,
-            y,
-            function (
-                isMine: boolean,
-                amountOfAdjMines: number,
-                adjacentSpots: Array<MineBlock> | null,
-            ) {
-                if (!isMine) {
-                    // If mine count is 0, then recursively call revealSpot on all adjacent spots that are not flagged
-                    if (amountOfAdjMines <= 0) {
-                        revealMultiple(adjacentSpots?.filter((spot) => !spot.isFlagged) ?? []);
-                    }
-                } else {
-                    for (let a = 0; a < gameState.gameOptions.boardWidth; a++) {
-                        for (let b = 0; b < gameState.gameOptions.boardHeight; b++) {
-                            if (
-                                gameState.gameOptions.revealBoardOnLoss ||
-                                gameState.board[b][a].isMine
-                            ) {
-                                performSpotReveal(a, b);
-                            }
-                        }
+
+        const {isMine, amountOfAdjMines, adjacentSpots} = performSpotReveal(coords.x, coords.y);
+
+        if (!isMine) {
+            if (amountOfAdjMines <= 0) {
+                const toAdd = adjacentSpots?.filter(spot => !spot.isFlagged) ?? [];
+                queue.push(...toAdd.map(spot => ({x: spot.x, y: spot.y})));
+            }
+        } else {
+            for (let a = 0; a < gameState.gameOptions.boardWidth; a++) {
+                for (let b = 0; b < gameState.gameOptions.boardHeight; b++) {
+                    if (
+                        gameState.gameOptions.revealBoardOnLoss ||
+                        gameState.board[b][a].isMine
+                    ) {
+                        performSpotReveal(a, b);
                     }
                 }
-            },
-        );
-        resolve(true);
-    });
+            }
+            return true;
+        }
+
+        visited.add(coordsStr);
+    }
+
+    return visited.size > 0;
 };
 
-const revealMultiple: (spotArr: MineBlock[]) => Promise<boolean> = function (spotArr: MineBlock[]) {
-    return new Promise((resolve) => {
-        const revealPromises = [];
-        for (let i = 0; i < spotArr.length; i++) {
-            revealPromises.push(revealSpot(spotArr[i].x, spotArr[i].y));
+const revealMultiple: (spotArr: MineBlock[]) => boolean = function (spotArr: MineBlock[]) {
+    let hasHitASpot = false;
+    for (let i = 0; i < spotArr.length; i++) {
+        if (revealSpot(spotArr[i].x, spotArr[i].y)) {
+            hasHitASpot = true;
         }
-        Promise.allSettled(revealPromises).then((results) => {
-            if (results.find((res) => res.status === 'fulfilled' && res.value)) {
-                resolve(true);
-                return;
-            }
-            resolve(false);
-        });
-    });
+    }
+    return hasHitASpot;
 };
 
 const getAdjacentSpots = function (x: number, y: number) {
