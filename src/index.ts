@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             loaderWrapper.style.display = 'none';
         }, 1000);
 
-        await initGame(frontendState.gameOptions, eventHandler, gameStorage);
+        initGame(frontendState.gameOptions, eventHandler, gameStorage);
     } catch (e) {
         // if (typeof Sentry !== 'undefined') Sentry.captureException(e);
         const elem = createDialogContentFromTemplate('#error-dialog-content');
