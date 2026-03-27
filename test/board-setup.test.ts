@@ -15,11 +15,8 @@ import { IGameStorage } from '../src/storage';
 describe('board setup', function () {
     let eventHandlerStub: Mock;
 
-    async function setupGame(
-        gameStorage: IGameStorage,
-        gameOptions: GameOptions,
-    ): Promise<GameState> {
-        await initGame(gameOptions, eventHandlerStub, gameStorage);
+    function setupGame(gameStorage: IGameStorage, gameOptions: GameOptions): GameState {
+        initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
     }
 
@@ -27,8 +24,8 @@ describe('board setup', function () {
         eventHandlerStub = jest.fn();
     });
 
-    it('should initialize a game 10 wide, 10 high, with 10 mines', async function () {
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+    it('should initialize a game 10 wide, 10 high, with 10 mines', function () {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 10,
             boardHeight: 10,
             numberOfMines: 10,
@@ -52,11 +49,8 @@ describe('board setup', function () {
 describe('board overfill', function () {
     let eventHandlerStub: Mock;
 
-    async function setupGame(
-        gameStorage: IGameStorage,
-        gameOptions: GameOptions,
-    ): Promise<GameState> {
-        await initGame(gameOptions, eventHandlerStub, gameStorage);
+    function setupGame(gameStorage: IGameStorage, gameOptions: GameOptions): GameState {
+        initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
     }
 
@@ -65,7 +59,7 @@ describe('board overfill', function () {
     });
 
     it('should throw an error if the board has more mines than board tiles', function () {
-        expect(
+        expect(() =>
             setupGame(new NonexistentMockGameStorage(), {
                 boardWidth: 10,
                 boardHeight: 10,
@@ -73,7 +67,7 @@ describe('board overfill', function () {
                 revealBoardOnLoss: true,
                 difficultyKey: 'easy',
             }),
-        ).rejects.toThrow(
+        ).toThrow(
             new BoardOverfillException(
                 'Amount of mines to generate exceeds amount of board pieces.',
             ),
@@ -81,7 +75,7 @@ describe('board overfill', function () {
     });
 
     it('should throw an error if the board has as many mines are there are board tiles', function () {
-        expect(
+        expect(() =>
             setupGame(new NonexistentMockGameStorage(), {
                 boardWidth: 10,
                 boardHeight: 10,
@@ -89,7 +83,7 @@ describe('board overfill', function () {
                 revealBoardOnLoss: true,
                 difficultyKey: 'easy',
             }),
-        ).rejects.toThrow(
+        ).toThrow(
             new BoardOverfillException(
                 'Amount of mines to generate is equal to the amount of board pieces.',
             ),
@@ -100,11 +94,8 @@ describe('board overfill', function () {
 describe('first click', () => {
     let eventHandlerStub: Mock;
 
-    async function setupGame(
-        gameStorage: IGameStorage,
-        gameOptions: GameOptions,
-    ): Promise<GameState> {
-        await initGame(gameOptions, eventHandlerStub, gameStorage);
+    function setupGame(gameStorage: IGameStorage, gameOptions: GameOptions): GameState {
+        initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
     }
 
@@ -113,9 +104,9 @@ describe('first click', () => {
         setDebugEnabled(false);
     });
 
-    it('should never be a mine', async () => {
+    it('should never be a mine', () => {
         for (let i = 0; i < 10000; i++) {
-            const gameState = await setupGame(new NonexistentMockGameStorage(), {
+            const gameState = setupGame(new NonexistentMockGameStorage(), {
                 boardWidth: 10,
                 boardHeight: 10,
                 numberOfMines: 10,
@@ -128,8 +119,8 @@ describe('first click', () => {
         }
     });
 
-    it('should not generate an automatic win if mine is clicked first', async () => {
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+    it('should not generate an automatic win if mine is clicked first', () => {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 10,
             boardHeight: 10,
             numberOfMines: 10,

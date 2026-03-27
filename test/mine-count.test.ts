@@ -7,11 +7,8 @@ import { IGameStorage } from '../src/storage';
 describe('mine count with flags on loss', function () {
     let eventHandlerStub: Mock;
 
-    async function setupGame(
-        gameStorage: IGameStorage,
-        gameOptions: GameOptions,
-    ): Promise<GameState> {
-        await initGame(gameOptions, eventHandlerStub, gameStorage);
+    function setupGame(gameStorage: IGameStorage, gameOptions: GameOptions): GameState {
+        initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
     }
 
@@ -26,13 +23,13 @@ describe('mine count with flags on loss', function () {
         eventHandlerStub = jest.fn();
     });
 
-    it('should maintain mine count when flagged mines are revealed on loss', async function () {
+    it('should maintain mine count when flagged mines are revealed on loss', function () {
         // Create a simple 3x3 board with 2 mines
         // Layout:
         // M . .
         // . M .
         // . . .
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 3,
             boardHeight: 3,
             numberOfMines: 2,
@@ -95,9 +92,9 @@ describe('mine count with flags on loss', function () {
         expect(unflaggedMineCount).toBe(1);
     });
 
-    it('should maintain mine count at zero when all mines are flagged before loss', async function () {
+    it('should maintain mine count at zero when all mines are flagged before loss', function () {
         // Create a simple 3x3 board with 2 mines
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 3,
             boardHeight: 3,
             numberOfMines: 2,
@@ -155,9 +152,9 @@ describe('mine count with flags on loss', function () {
         expect(unflaggedMineCount).toBe(1);
     });
 
-    it('should show correct mine count when multiple mines flagged correctly', async function () {
+    it('should show correct mine count when multiple mines flagged correctly', function () {
         // Create a larger board to test with more mines
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 5,
             boardHeight: 5,
             numberOfMines: 5,
