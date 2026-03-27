@@ -1,7 +1,7 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "types": ["node", "jest", "cypress", "cypress-real-events"]
+        "types": ["node", "jest"]
     },
-    "include": ["src", "test", "cypress"]
+    "include": ["src", "test"]
 }
