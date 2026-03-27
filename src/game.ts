@@ -412,24 +412,24 @@ const performSpotReveal = function (x: number, y: number, callback?: SpotRevealC
 
 const revealSpot: (x: number, y: number) => boolean = function (x: number, y: number) {
     const queue = [{x, y}];
-    const visited = new Set();
+    const visited = new Set([y * gameState.gameOptions.boardWidth + x]);
     let head = 0;
 
     while (head < queue.length) {
         const coords = queue[head++];
-        const coordsKey = coords.y * gameState.gameOptions.boardWidth + coords.x;
-        if (visited.has(coordsKey)) {
-            continue;
-        }
 
         const {isMine, amountOfAdjMines, adjacentSpots} = performSpotReveal(coords.x, coords.y);
-
-        visited.add(coordsKey);
 
         if (!isMine) {
             if (amountOfAdjMines <= 0) {
                 const toAdd = adjacentSpots?.filter(spot => !spot.isFlagged) ?? [];
-                queue.push(...toAdd.map(spot => ({x: spot.x, y: spot.y})));
+                for (const spot of toAdd) {
+                    const key = spot.y * gameState.gameOptions.boardWidth + spot.x;
+                    if (!visited.has(key)) {
+                        visited.add(key);
+                        queue.push({x: spot.x, y: spot.y});
+                    }
+                }
             }
         } else {
             for (let a = 0; a < gameState.gameOptions.boardWidth; a++) {
