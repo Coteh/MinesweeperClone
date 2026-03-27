@@ -10,16 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Custom difficulties
-- Sound effects for game actions (tile reveal, flag placement, explosions, win, zoom controls)
-- Question mark sound effect using the existing click sound
+- Sound effects for game actions (tile reveal, flag placement, question mark, explosions, win, zoom controls)
 - Volume slider control for sound effects in settings
-- Dynamic volume icon that changes based on volume level (volume-x, volume-1, volume-2)
+- Dynamic volume icon that changes based on volume level and enabled state
 - Sound effect credits in settings footer
 
 ### Changed
 
-- Renamed `seconds` field to `seek` in `SoundSettings` type for clarity
-- Volume icon now updates based on both enabled state and volume level
 - Zoom sound effects now only play when zoom level actually changes (not when maxed out)
 
 ### Fixed
