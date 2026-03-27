@@ -247,7 +247,9 @@ describe('AudioManager', () => {
             expect(mockDocument.addEventListener).toHaveBeenCalledWith(
                 'touchstart',
                 expect.any(Function),
-                { passive: true },
+                {
+                    passive: true,
+                },
             );
         });
 
