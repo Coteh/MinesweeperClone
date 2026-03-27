@@ -21,7 +21,7 @@ describe('large board scalability', () => {
         eventHandlerStub = jest.fn();
     });
 
-    it('should complete a flood fill on a 100x100 board without stack overflow', async () => {
+    it('should complete a flood fill on a 100x100 board without stack overflow', () => {
         // 10 000 cells, 1 mine → 9 999 safe cells.
         const gameOptions: GameOptions = {
             boardWidth: 100,
@@ -31,7 +31,7 @@ describe('large board scalability', () => {
             difficultyKey: 'custom',
         };
 
-        await initGame(gameOptions, eventHandlerStub, new NonexistentMockGameStorage());
+        initGame(gameOptions, eventHandlerStub, new NonexistentMockGameStorage());
 
         // Move the mine to the center so that revealing a spot will always flood fill
         let state = getGameState();
@@ -67,7 +67,7 @@ describe('large board scalability', () => {
         expect(revealedCount).toBe(expectedRevealed);
     }, 10000 /* 10 s ceiling */);
 
-    it('should complete a flood fill on a 1000x1000 board without stack overflow', async () => {
+    it('should complete a flood fill on a 1000x1000 board without stack overflow', () => {
         // 1 000 000 cells, 1 mine → 999 999 safe cells.
         const gameOptions: GameOptions = {
             boardWidth: 1000,
@@ -77,7 +77,7 @@ describe('large board scalability', () => {
             difficultyKey: 'custom',
         };
 
-        await initGame(gameOptions, eventHandlerStub, new NonexistentMockGameStorage());
+        initGame(gameOptions, eventHandlerStub, new NonexistentMockGameStorage());
 
         // Move the mine to the center so that revealing a spot will always flood fill
         let state = getGameState();

@@ -15,11 +15,8 @@ import { IGameStorage } from '../src/storage';
 describe('auto-flag mines on win', function () {
     let eventHandlerStub: Mock;
 
-    async function setupGame(
-        gameStorage: IGameStorage,
-        gameOptions: GameOptions,
-    ): Promise<GameState> {
-        await initGame(gameOptions, eventHandlerStub, gameStorage);
+    function setupGame(gameStorage: IGameStorage, gameOptions: GameOptions): GameState {
+        initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
     }
 
@@ -47,9 +44,9 @@ describe('auto-flag mines on win', function () {
         eventHandlerStub = jest.fn();
     });
 
-    it('should auto-flag all remaining unflagged mines when winning', async function () {
+    it('should auto-flag all remaining unflagged mines when winning', function () {
         // Create a simple 3x3 board with 2 mines
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 3,
             boardHeight: 3,
             numberOfMines: 2,
@@ -97,9 +94,9 @@ describe('auto-flag mines on win', function () {
         }
     });
 
-    it('should auto-flag only unflagged mines when winning with some mines already flagged', async function () {
+    it('should auto-flag only unflagged mines when winning with some mines already flagged', function () {
         // Create a simple 4x4 board with 3 mines
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 4,
             boardHeight: 4,
             numberOfMines: 3,
@@ -151,9 +148,9 @@ describe('auto-flag mines on win', function () {
         }
     });
 
-    it('should only auto-flag mines and not affect non-mine cells', async function () {
+    it('should only auto-flag mines and not affect non-mine cells', function () {
         // Create a simple 4x4 board with 3 mines
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 4,
             boardHeight: 4,
             numberOfMines: 3,
@@ -220,9 +217,9 @@ describe('auto-flag mines on win', function () {
         expect(flaggedNonMineCount).toBe(0);
     });
 
-    it('should set mine counter to 0 after winning', async function () {
+    it('should set mine counter to 0 after winning', function () {
         // Create a simple 3x3 board with 2 mines
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 3,
             boardHeight: 3,
             numberOfMines: 2,
@@ -248,9 +245,9 @@ describe('auto-flag mines on win', function () {
         expect(unflaggedMineCount).toBe(0);
     });
 
-    it('should work correctly with a larger board', async function () {
+    it('should work correctly with a larger board', function () {
         // Create a 5x5 board with 8 mines
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 5,
             boardHeight: 5,
             numberOfMines: 8,
@@ -297,7 +294,7 @@ describe('auto-flag mines on win', function () {
         expect(unflaggedMines).toBe(0);
     });
 
-    it('should auto-flag remaining mines when winning via selectAdjacentSpots', async function () {
+    it('should auto-flag remaining mines when winning via selectAdjacentSpots', function () {
         // Create a preset 3x4 board with specific mine positions
         // Board layout:
         //   0 1 2
@@ -355,7 +352,7 @@ describe('auto-flag mines on win', function () {
             spareMineSpot: { x: -1, y: -1 },
         };
 
-        const gameState = await setupGame(new MockGameStorage(presetState), {
+        const gameState = setupGame(new MockGameStorage(presetState), {
             boardWidth: 3,
             boardHeight: 4,
             numberOfMines: 2,
@@ -378,9 +375,6 @@ describe('auto-flag mines on win', function () {
 
         // Use selectAdjacentSpots on a revealed tile to reveal the remaining safe tiles
         selectAdjacentSpots(1, 1);
-
-        // Wait for async operations
-        await Promise.resolve();
 
         // Verify the player has won
         expect(gameState.won).toBe(true);

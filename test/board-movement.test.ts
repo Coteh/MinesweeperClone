@@ -7,11 +7,8 @@ import { IGameStorage } from '../src/storage';
 describe('selecting tiles', function () {
     let eventHandlerStub: Mock;
 
-    async function setupGame(
-        gameStorage: IGameStorage,
-        gameOptions: GameOptions,
-    ): Promise<GameState> {
-        await initGame(gameOptions, eventHandlerStub, gameStorage);
+    function setupGame(gameStorage: IGameStorage, gameOptions: GameOptions): GameState {
+        initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
     }
 
@@ -19,8 +16,8 @@ describe('selecting tiles', function () {
         eventHandlerStub = jest.fn();
     });
 
-    it('will select a spot on the board by marking it as revealed', async function () {
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+    it('will select a spot on the board by marking it as revealed', function () {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 10,
             boardHeight: 10,
             numberOfMines: 10,
@@ -33,8 +30,8 @@ describe('selecting tiles', function () {
         expect(gameState.board[2][2].isRevealed).toBe(true);
     });
 
-    it('will prevent the user from selecting the same spot on the board twice', async function () {
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+    it('will prevent the user from selecting the same spot on the board twice', function () {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 10,
             boardHeight: 10,
             numberOfMines: 10,
@@ -55,11 +52,8 @@ describe('selecting tiles', function () {
 describe('flagging tiles', function () {
     let eventHandlerStub: Mock;
 
-    async function setupGame(
-        gameStorage: IGameStorage,
-        gameOptions: GameOptions,
-    ): Promise<GameState> {
-        await initGame(gameOptions, eventHandlerStub, gameStorage);
+    function setupGame(gameStorage: IGameStorage, gameOptions: GameOptions): GameState {
+        initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
     }
 
@@ -67,8 +61,8 @@ describe('flagging tiles', function () {
         eventHandlerStub = jest.fn();
     });
 
-    it('will flag a spot on the board by marking it as flagged', async function () {
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+    it('will flag a spot on the board by marking it as flagged', function () {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 10,
             boardHeight: 10,
             numberOfMines: 10,
@@ -89,11 +83,8 @@ describe('flagging tiles', function () {
 describe('unflagging tiles', function () {
     let eventHandlerStub: Mock;
 
-    async function setupGame(
-        gameStorage: IGameStorage,
-        gameOptions: GameOptions,
-    ): Promise<GameState> {
-        await initGame(gameOptions, eventHandlerStub, gameStorage);
+    function setupGame(gameStorage: IGameStorage, gameOptions: GameOptions): GameState {
+        initGame(gameOptions, eventHandlerStub, gameStorage);
         return getGameState();
     }
 
@@ -101,8 +92,8 @@ describe('unflagging tiles', function () {
         eventHandlerStub = jest.fn();
     });
 
-    it('will unflag a spot on the board by calling the flag function twice', async function () {
-        const gameState = await setupGame(new NonexistentMockGameStorage(), {
+    it('will unflag a spot on the board by calling the flag function twice', function () {
+        const gameState = setupGame(new NonexistentMockGameStorage(), {
             boardWidth: 10,
             boardHeight: 10,
             numberOfMines: 10,
