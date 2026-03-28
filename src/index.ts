@@ -18,7 +18,11 @@ import { TransformManager } from './manager/transform';
 import { InteractionSubsystem, setupInteractionSubsystem } from './subsystem/interaction';
 
 import './styles/global.css';
-import { SettingsSubsystem, setupSettingsSubsystem } from './subsystem/settings';
+import {
+    SettingsSubsystem,
+    setupSettingsSubsystem,
+    getCustomDifficulties,
+} from './subsystem/settings';
 import { DebugSubsystem, setupDebugSubsystem } from './subsystem/debug';
 import { AudioManager, SoundEffect } from './manager/audio';
 import { Theme, ThemeManager } from './manager/theme';
@@ -406,6 +410,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const timeCell = document.createElement('td');
             const highScore = persistentState.highscore[key];
+            timeCell.innerText = highScore !== undefined ? formatTime(highScore) : '—';
+            row.appendChild(timeCell);
+
+            tbody.appendChild(row);
+        });
+
+        // Populate table with scores for each custom difficulty
+        getCustomDifficulties().forEach((customDiff) => {
+            const row = document.createElement('tr');
+
+            const difficultyCell = document.createElement('td');
+            difficultyCell.innerText = customDiff.name;
+            row.appendChild(difficultyCell);
+
+            const timeCell = document.createElement('td');
+            const highScore = persistentState.highscore[customDiff.id];
             timeCell.innerText = highScore !== undefined ? formatTime(highScore) : '—';
             row.appendChild(timeCell);
 
