@@ -38,6 +38,24 @@ export type SettingsSubsystem = {
     setDebugSubsystem: (debugSubsystem: DebugSubsystem) => void;
 };
 
+export type CustomDifficultyConfig = {
+    id: string;
+    name: string;
+    width: number;
+    height: number;
+    mines: number;
+};
+
+export function getCustomDifficulties(): CustomDifficultyConfig[] {
+    const stored = getPreferenceValue<string>(CUSTOM_DIFFICULTIES_PREFERENCE_NAME);
+    if (!stored) return [];
+    try {
+        return JSON.parse(stored) as CustomDifficultyConfig[];
+    } catch {
+        return [];
+    }
+}
+
 import type { Config } from '../config';
 import { createDialogContentFromTemplate } from '../util';
 import { ComponentMap } from '../components';
@@ -87,24 +105,6 @@ export function setupSettingsSubsystem(
 
     // Get stored difficulty or default to easy
     let currDifficulty = getPreferenceValue<string>(DIFFICULTY_PREFERENCE_NAME) || DIFFICULTY_EASY;
-
-    type CustomDifficultyConfig = {
-        id: string;
-        name: string;
-        width: number;
-        height: number;
-        mines: number;
-    };
-
-    function getCustomDifficulties(): CustomDifficultyConfig[] {
-        const stored = getPreferenceValue<string>(CUSTOM_DIFFICULTIES_PREFERENCE_NAME);
-        if (!stored) return [];
-        try {
-            return JSON.parse(stored) as CustomDifficultyConfig[];
-        } catch {
-            return [];
-        }
-    }
 
     function saveCustomDifficulties(diffs: CustomDifficultyConfig[]) {
         savePreferenceValue(CUSTOM_DIFFICULTIES_PREFERENCE_NAME, JSON.stringify(diffs));
