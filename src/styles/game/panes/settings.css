@@ -67,6 +67,11 @@
 
 .settings .settings-item .settings-item-column > .toggle {
     text-transform: capitalize;
+    width: 100%;
+}
+
+.settings .settings-item .settings-item-column > .toggle > select {
+    width: 100%;
 }
 
 .settings .space {
