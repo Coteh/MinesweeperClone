@@ -61,6 +61,10 @@
     gap: 0.5em;
 }
 
+.settings .settings-item .settings-item-column:not(:last-child) {
+    justify-content: flex-end;
+}
+
 .settings .settings-item .settings-item-column:last-child {
     width: 60%;
 }
