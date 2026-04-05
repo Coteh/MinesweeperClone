@@ -63,6 +63,11 @@
 
 .settings .settings-item .settings-item-column:not(:last-child) {
     justify-content: flex-end;
+    padding-right: 0.5rem;
+}
+
+.settings .settings-item .settings-item-column:last-child {
+    padding-left: 0.5rem;
 }
 
 .settings .settings-item .settings-item-column > .toggle {
