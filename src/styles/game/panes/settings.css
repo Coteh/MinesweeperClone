@@ -54,7 +54,7 @@
 }
 
 .settings .settings-item .settings-item-column {
-    width: 100%;
+    width: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -63,10 +63,6 @@
 
 .settings .settings-item .settings-item-column:not(:last-child) {
     justify-content: flex-end;
-}
-
-.settings .settings-item .settings-item-column:last-child {
-    width: 60%;
 }
 
 .settings .settings-item .settings-item-column > .toggle {
