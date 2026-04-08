@@ -25,7 +25,7 @@
             }
         },
         "medium": {
-            "displayName": "Medium",
+            "displayName": "Medium (16x16)",
             "boardWidth": 16,
             "boardHeight": 16,
             "numberOfMines": 40,
@@ -37,7 +37,7 @@
             }
         },
         "hard": {
-            "displayName": "Hard",
+            "displayName": "Hard (30x16)",
             "boardWidth": 30,
             "boardHeight": 16,
             "numberOfMines": 99,
