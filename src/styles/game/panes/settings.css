@@ -54,15 +54,18 @@
 }
 
 .settings .settings-item .settings-item-column {
-    width: 100%;
+    flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     gap: 0.5em;
+    padding-right: 0.75em;
 }
 
 .settings .settings-item .settings-item-column:last-child {
-    width: 60%;
+    justify-content: flex-start;
+    padding-right: 0;
+    padding-left: 0.75em;
 }
 
 .settings .settings-item .settings-item-column > .toggle {
