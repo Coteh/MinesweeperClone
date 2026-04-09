@@ -91,6 +91,10 @@
     flex-shrink: 0;
 }
 
+.settings .setting.sound .settings-item-row .settings-item-column:first-child {
+    flex: 2;
+}
+
 /* Narrow-screen overrides for the settings dialog */
 
 @media (max-width: 499px) {
