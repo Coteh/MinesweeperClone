@@ -85,7 +85,9 @@
     flex: 1;
 }
 
-.settings .settings-item .settings-item-column > svg {
+.settings .settings-item .volume-icon {
+    display: inline-flex;
+    align-items: center;
     flex-shrink: 0;
 }
 
