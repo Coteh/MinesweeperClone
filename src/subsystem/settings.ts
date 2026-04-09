@@ -494,7 +494,7 @@ export function setupSettingsSubsystem(
                 fadeIn: true,
                 effect: 'pop',
                 style: {
-                    width: '95%',
+                    width: '85%',
                     height: '75%',
                     maxWidth: '600px',
                 },
@@ -756,9 +756,12 @@ export function setupSettingsSubsystem(
             );
 
             const knob = soundEffectsSettingElem.querySelector('.knob') as HTMLElement;
+            const volumeIconElem = soundEffectsSettingElem.querySelector(
+                '.volume-icon',
+            ) as HTMLElement;
 
             actionIconManager.changeIcon(
-                knob,
+                volumeIconElem,
                 getVolumeIcon(audioManager.isSoundEffectsEnabled(), storedVolume),
             );
             if (soundsEnabled === SETTING_ENABLED) {
@@ -784,7 +787,7 @@ export function setupSettingsSubsystem(
 
                     // Update icon based on volume level (only if sound is enabled)
                     if (audioManager.isSoundEffectsEnabled()) {
-                        actionIconManager.changeIcon(knob, getVolumeIcon(true, volume));
+                        actionIconManager.changeIcon(volumeIconElem, getVolumeIcon(true, volume));
                     }
                 });
 
@@ -846,9 +849,10 @@ export function setupSettingsSubsystem(
                         'volume-slider',
                     ) as HTMLInputElement;
                     const currentVolume = volumeSlider ? parseInt(volumeSlider.value, 10) : 100;
+                    const settingVolumeIcon = setting.querySelector('.volume-icon') as HTMLElement;
 
                     actionIconManager.changeIcon(
-                        knob,
+                        settingVolumeIcon,
                         getVolumeIcon(audioManager.isSoundEffectsEnabled(), currentVolume),
                     );
                 }
