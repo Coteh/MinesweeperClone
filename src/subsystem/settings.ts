@@ -494,7 +494,7 @@ export function setupSettingsSubsystem(
                 fadeIn: true,
                 effect: 'pop',
                 style: {
-                    width: '75%',
+                    width: '95%',
                     height: '75%',
                     maxWidth: '600px',
                 },
@@ -503,6 +503,11 @@ export function setupSettingsSubsystem(
             const settingsDialogContent = document.querySelector(
                 '.dialog-content > .settings',
             ) as HTMLElement;
+
+            // Add class for settings-specific CSS overrides (e.g. narrow-screen padding)
+            (settingsDialogContent?.closest('.dialog') as HTMLElement)?.classList.add(
+                'settings-dialog',
+            );
 
             const versionElem = settingsDialogContent.querySelector(
                 '.version-number',

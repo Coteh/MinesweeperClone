@@ -85,11 +85,25 @@
     flex: 1;
 }
 
-.settings .settings-item .knob > svg {
-    position: absolute;
-    left: -32px;
-    transform: translateY(-50%);
-    top: 50%;
+.settings .settings-item .settings-item-column > svg {
+    flex-shrink: 0;
+}
+
+/* Narrow-screen overrides for the settings dialog */
+
+@media (max-width: 499px) {
+    .dialog.settings-dialog > .dialog-content {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    .dialog.settings-dialog .settings .settings-item .settings-item-column {
+        padding-right: 0.5em;
+    }
+
+    .dialog.settings-dialog .settings .settings-item .settings-item-column:last-child {
+        padding-left: 0.5em;
+    }
 }
 
 /* Volume Controls */
