@@ -85,8 +85,11 @@ export class TransformManager {
         const newScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, oldScale * distanceRatio));
         const actualRatio = newScale / oldScale;
 
-        // Get the current visible center of the board element (post-transform).
-        // vcx = natural_center_x + tx, so (point - vcx) gives element-local offset.
+        // Get the current visible center of this.boardElem in viewport pixels (post-transform).
+        // vcx/vcy are at the current scale, so (point - vcx) is a viewport-scaled offset,
+        // not an element-local/pre-scale offset. Converting to element-local would divide by
+        // oldScale, but that factor cancels with the oldScale inside actualRatio, so the
+        // formula is correct as written directly in viewport-scaled coordinates.
         const rect = this.boardElem.getBoundingClientRect();
         const vcx = rect.left + rect.width / 2;
         const vcy = rect.top + rect.height / 2;
