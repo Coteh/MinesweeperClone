@@ -253,6 +253,13 @@ export function setupInteractionSubsystem(
                 const currentDistance = getDistance(event.touches);
                 const currentMidpoint = getMidpoint(event.touches);
 
+                // Guard against a touchmove arriving without a prior two-finger touchstart
+                // (startDistance would be 0, producing an Infinity ratio).
+                if (startDistance <= 0) {
+                    startDistance = currentDistance;
+                    startMidpoint = currentMidpoint;
+                }
+
                 // Zoom toward the pinch midpoint and pan with midpoint movement
                 transformManager.zoomAtPoint(
                     currentMidpoint.x,
