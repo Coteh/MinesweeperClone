@@ -5,4 +5,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    /* Prevent browser-native pinch-zoom and pan from firing alongside our
+       custom gesture handling. Chrome on Android ignores the viewport
+       user-scalable=no meta tag, so this CSS property is required. */
+    touch-action: none;
 }
