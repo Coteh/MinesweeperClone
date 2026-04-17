@@ -1,7 +1,7 @@
 import MobileDetect from 'mobile-detect';
 import { GameState } from '../game';
 import { FullscreenManager } from '../manager/fullscreen';
-import { MAX_ZOOM, MIN_ZOOM, TransformManager } from '../manager/transform';
+import { TransformManager } from '../manager/transform';
 import { getPreferenceValue } from '../preferences';
 import { FrontendState } from '..';
 import { toggleQuestionMode } from '../inputMode';
@@ -253,24 +253,16 @@ export function setupInteractionSubsystem(
                 const currentDistance = getDistance(event.touches);
                 const currentMidpoint = getMidpoint(event.touches);
 
-                // Zoom factor based on distance ratio
-                const zoomFactor = currentDistance / startDistance;
+                // Zoom toward the pinch midpoint and pan with midpoint movement
+                transformManager.zoomAtPoint(
+                    currentMidpoint.x,
+                    currentMidpoint.y,
+                    startMidpoint.x,
+                    startMidpoint.y,
+                    currentDistance / startDistance,
+                );
 
-                // Translation based on midpoint movement
-                const newBoardTransform = transformManager.boardTransform;
-                newBoardTransform.x += currentMidpoint.x - startMidpoint.x;
-                newBoardTransform.y += currentMidpoint.y - startMidpoint.y;
-
-                // Apply the zoom and translation
-                newBoardTransform.scale *= zoomFactor;
-                newBoardTransform.scale = Math.max(
-                    MIN_ZOOM,
-                    Math.min(MAX_ZOOM, newBoardTransform.scale),
-                ); // Limit scale between min and max
-                transformManager.boardTransform = newBoardTransform;
-                transformManager.adjustBoardTransform(false);
-
-                // Update the start distance for smooth scaling
+                // Update start values for next frame
                 startDistance = currentDistance;
                 startMidpoint = currentMidpoint;
                 event.preventDefault();

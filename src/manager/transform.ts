@@ -74,6 +74,32 @@ export class TransformManager {
         this.adjustBoardTransform(true);
     }
 
+    zoomAtPoint(
+        currMidX: number,
+        currMidY: number,
+        prevMidX: number,
+        prevMidY: number,
+        distanceRatio: number,
+    ) {
+        const oldScale = this._boardTransform.scale;
+        const newScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, oldScale * distanceRatio));
+        const actualRatio = newScale / oldScale;
+
+        // Get the current visible center of the board element (post-transform).
+        // vcx = natural_center_x + tx, so (point - vcx) gives element-local offset.
+        const rect = this.boardElem.getBoundingClientRect();
+        const vcx = rect.left + rect.width / 2;
+        const vcy = rect.top + rect.height / 2;
+
+        // Translate so that the content under prevMidpoint moves to currMidpoint
+        // after the scale change, keeping the pinch point stationary in the viewport.
+        this._boardTransform.x += currMidX - vcx - (prevMidX - vcx) * actualRatio;
+        this._boardTransform.y += currMidY - vcy - (prevMidY - vcy) * actualRatio;
+        this._boardTransform.scale = newScale;
+
+        this.adjustBoardTransform(false);
+    }
+
     addEventListener(event: TransformEvent, listener: TransformEventFunction) {
         if (!this.eventListeners.get(event)) {
             this.eventListeners.set(event, []);
