@@ -208,6 +208,7 @@ export function setupInteractionSubsystem(
 
     let isPinching = false;
     let isMoving = false;
+    let momentumFrame: number | null = null;
     let lastMoveTime = 0;
     let lastTouchX = 0;
     let lastTouchY = 0;
@@ -222,6 +223,11 @@ export function setupInteractionSubsystem(
         (event) => {
             console.log('touch start on zoomable', event.touches);
             if (event.touches.length === 2) {
+                if (momentumFrame !== null) {
+                    cancelAnimationFrame(momentumFrame);
+                    momentumFrame = null;
+                }
+                isMoving = false;
                 startDistance = getDistance(event.touches);
                 startMidpoint = getMidpoint(event.touches);
                 event.preventDefault();
@@ -234,6 +240,10 @@ export function setupInteractionSubsystem(
                     isPinching.toString();
                 return;
             } else if (event.touches.length === 1) {
+                if (momentumFrame !== null) {
+                    cancelAnimationFrame(momentumFrame);
+                    momentumFrame = null;
+                }
                 isMoving = true;
                 lastTouchX = event.touches[0].clientX;
                 lastTouchY = event.touches[0].clientY;
@@ -312,6 +322,7 @@ export function setupInteractionSubsystem(
 
                 if (event.touches.length === 0) {
                     isPinching = false;
+                    isMoving = false;
                     console.log('pinch ended');
                     (document.querySelector('#pinch') as HTMLSpanElement).innerText =
                         isPinching.toString();
@@ -322,7 +333,10 @@ export function setupInteractionSubsystem(
             console.log('isMoving', isMoving);
             if (isMoving) {
                 const momentum = () => {
-                    if (!isMoving) return;
+                    if (!isMoving) {
+                        momentumFrame = null;
+                        return;
+                    }
 
                     touchVelocityX *= touchFriction;
                     touchVelocityY *= touchFriction;
@@ -336,9 +350,10 @@ export function setupInteractionSubsystem(
                     transformManager.adjustBoardTransform(false);
 
                     if (Math.abs(touchVelocityX) > 0.01 || Math.abs(touchVelocityY) > 0.01) {
-                        requestAnimationFrame(momentum);
+                        momentumFrame = requestAnimationFrame(momentum);
                     } else {
                         isMoving = false;
+                        momentumFrame = null;
                     }
                 };
 
