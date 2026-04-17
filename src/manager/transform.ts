@@ -10,6 +10,10 @@ export type TransformEventFunction = () => void;
 export const MIN_ZOOM = 0.5;
 export const MAX_ZOOM = 2;
 
+// Extra pixels added to the computed pan extent so that zoom gestures near the
+// board edge have room to breathe before hitting the hard boundary.
+const BOUNDS_PADDING = 150;
+
 import type { Bounds } from '../config';
 
 export class TransformManager {
@@ -138,16 +142,16 @@ export class TransformManager {
 
                     if (scaledBoardWidth <= viewportW) {
                         // Board fits horizontally - limit translation so it remains visible centered
-                        allowedExtentX = (viewportW - scaledBoardWidth) / 2;
+                        allowedExtentX = (viewportW - scaledBoardWidth) / 2 + BOUNDS_PADDING;
                     } else {
                         // Board larger horizontally - allow panning so edges can be reached
-                        allowedExtentX = (scaledBoardWidth - viewportW) / 2;
+                        allowedExtentX = (scaledBoardWidth - viewportW) / 2 + BOUNDS_PADDING;
                     }
 
                     if (scaledBoardHeight <= viewportH) {
-                        allowedExtentY = (viewportH - scaledBoardHeight) / 2;
+                        allowedExtentY = (viewportH - scaledBoardHeight) / 2 + BOUNDS_PADDING;
                     } else {
-                        allowedExtentY = (scaledBoardHeight - viewportH) / 2;
+                        allowedExtentY = (scaledBoardHeight - viewportH) / 2 + BOUNDS_PADDING;
                     }
                 }
                 minXAllowed = Math.max(this.bounds.minX, -allowedExtentX);
