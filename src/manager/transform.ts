@@ -12,7 +12,7 @@ export const MAX_ZOOM = 2;
 
 // Extra pixels added to the computed pan extent so that zoom gestures near the
 // board edge have room to breathe before hitting the hard boundary.
-const BOUNDS_PADDING = 150;
+const BOUNDS_PADDING = 300;
 
 import type { Bounds } from '../config';
 
