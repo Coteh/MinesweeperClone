@@ -115,65 +115,41 @@ export class TransformManager {
     }
 
     adjustBoardTransform(useTransition: boolean) {
-        // If bounds are set, clamp x/y to the bounds values.
         if (this.bounds) {
-            let minXAllowed: number, maxXAllowed: number, minYAllowed: number, maxYAllowed: number;
-            // Compute board pixel dimensions based on DOM and use them with viewport to derive allowed translate ranges.
-            // If the scaled board is smaller than the viewport, keep it centered and prevent moving out of view.
-            // If the scaled board is larger than the viewport, allow panning so edges can be reached.
+            // Start from the config hard limits; tighten with dynamic extent if possible.
+            let minX = this.bounds.minX;
+            let maxX = this.bounds.maxX;
+            let minY = this.bounds.minY;
+            let maxY = this.bounds.maxY;
+
             try {
-                let allowedExtentX = 0; // positive number: maximum absolute translate allowed by viewport
-                let allowedExtentY = 0;
-                const boardElem = document.querySelector('#board') as HTMLElement | null;
                 const cellElem = document.querySelector('.box') as HTMLElement | null;
-                if (boardElem && cellElem) {
-                    const rows = boardElem.querySelectorAll('.row');
-                    const rowCount = rows.length || 0;
-                    const colCount = rows[0] ? rows[0].children.length : 0;
+                const rows = document.querySelectorAll('#board .row');
+                if (cellElem && rows.length > 0) {
+                    // getBoundingClientRect reflects the current CSS scale, so these
+                    // dimensions are already in post-transform viewport pixels.
                     const cellRect = cellElem.getBoundingClientRect();
-                    const cellW = cellRect.width || 30;
-                    const cellH = cellRect.height || 30;
-                    const boardWidth = colCount * cellW;
-                    const boardHeight = rowCount * cellH;
-                    const viewportW = window.innerWidth;
-                    const viewportH = window.innerHeight;
-                    const scaledBoardWidth = boardWidth * this._boardTransform.scale;
-                    const scaledBoardHeight = boardHeight * this._boardTransform.scale;
+                    const boardW = (rows[0].children.length || 0) * (cellRect.width || 30);
+                    const boardH = rows.length * (cellRect.height || 30);
 
-                    if (scaledBoardWidth <= viewportW) {
-                        // Board fits horizontally - limit translation so it remains visible centered
-                        allowedExtentX = (viewportW - scaledBoardWidth) / 2 + BOUNDS_PADDING;
-                    } else {
-                        // Board larger horizontally - allow panning so edges can be reached
-                        allowedExtentX = (scaledBoardWidth - viewportW) / 2 + BOUNDS_PADDING;
-                    }
+                    // How far the board center may shift before its edge leaves the
+                    // viewport. The Math.abs handles both "board smaller than viewport"
+                    // and "board larger than viewport" with the same formula.
+                    const extentX = Math.abs(boardW - window.innerWidth) / 2 + BOUNDS_PADDING;
+                    const extentY = Math.abs(boardH - window.innerHeight) / 2 + BOUNDS_PADDING;
 
-                    if (scaledBoardHeight <= viewportH) {
-                        allowedExtentY = (viewportH - scaledBoardHeight) / 2 + BOUNDS_PADDING;
-                    } else {
-                        allowedExtentY = (scaledBoardHeight - viewportH) / 2 + BOUNDS_PADDING;
-                    }
+                    // Intersect dynamic extent with config hard limits.
+                    minX = Math.max(this.bounds.minX, -extentX);
+                    maxX = Math.min(this.bounds.maxX, extentX);
+                    minY = Math.max(this.bounds.minY, -extentY);
+                    maxY = Math.min(this.bounds.maxY, extentY);
                 }
-                minXAllowed = Math.max(this.bounds.minX, -allowedExtentX);
-                maxXAllowed = Math.min(this.bounds.maxX, allowedExtentX);
-                minYAllowed = Math.max(this.bounds.minY, -allowedExtentY);
-                maxYAllowed = Math.min(this.bounds.maxY, allowedExtentY);
             } catch (_e) {
-                // If measurement fails, fall back to using bounds only
-                minXAllowed = this.bounds.minX;
-                maxXAllowed = this.bounds.maxX;
-                minYAllowed = this.bounds.minY;
-                maxYAllowed = this.bounds.maxY;
+                // DOM not ready; config limits unchanged.
             }
 
-            this._boardTransform.x = Math.max(
-                minXAllowed,
-                Math.min(maxXAllowed, this._boardTransform.x),
-            );
-            this._boardTransform.y = Math.max(
-                minYAllowed,
-                Math.min(maxYAllowed, this._boardTransform.y),
-            );
+            this._boardTransform.x = Math.max(minX, Math.min(maxX, this._boardTransform.x));
+            this._boardTransform.y = Math.max(minY, Math.min(maxY, this._boardTransform.y));
         }
 
         const translateRule = `translate(${this._boardTransform.x}px, ${this._boardTransform.y}px)`;
@@ -186,16 +162,8 @@ export class TransformManager {
             }, 10);
         }
 
-        if (this._boardTransform.scale > MIN_ZOOM) {
-            this.triggerEvent('zoom-in');
-        } else {
-            this.triggerEvent('zoom-out-max');
-        }
-        if (this._boardTransform.scale < MAX_ZOOM) {
-            this.triggerEvent('zoom-out');
-        } else {
-            this.triggerEvent('zoom-in-max');
-        }
+        this.triggerEvent(this._boardTransform.scale > MIN_ZOOM ? 'zoom-in' : 'zoom-out-max');
+        this.triggerEvent(this._boardTransform.scale < MAX_ZOOM ? 'zoom-out' : 'zoom-in-max');
 
         (document.querySelector('#x') as HTMLSpanElement).innerText =
             this._boardTransform.x.toString();
