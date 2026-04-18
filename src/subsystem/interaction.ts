@@ -226,6 +226,8 @@ export function setupInteractionSubsystem(
                 if (momentumFrame !== null) {
                     cancelAnimationFrame(momentumFrame);
                     momentumFrame = null;
+                    touchVelocityX = 0;
+                    touchVelocityY = 0;
                 }
                 isMoving = false;
                 startDistance = getDistance(event.touches);
@@ -243,6 +245,8 @@ export function setupInteractionSubsystem(
                 if (momentumFrame !== null) {
                     cancelAnimationFrame(momentumFrame);
                     momentumFrame = null;
+                    touchVelocityX = 0;
+                    touchVelocityY = 0;
                 }
                 isMoving = true;
                 lastTouchX = event.touches[0].clientX;
@@ -263,11 +267,20 @@ export function setupInteractionSubsystem(
                 const currentDistance = getDistance(event.touches);
                 const currentMidpoint = getMidpoint(event.touches);
 
+                // Overlapping touches produce distance 0 — skip to avoid NaN.
+                if (currentDistance <= 0) {
+                    event.preventDefault();
+                    return;
+                }
+
                 // Guard against a touchmove arriving without a prior two-finger touchstart
-                // (startDistance would be 0, producing an Infinity ratio).
+                // (startDistance would be 0, producing an Infinity ratio). Initialise and
+                // skip this frame so the next frame has a valid baseline to compare against.
                 if (startDistance <= 0) {
                     startDistance = currentDistance;
                     startMidpoint = currentMidpoint;
+                    event.preventDefault();
+                    return;
                 }
 
                 // Zoom toward the pinch midpoint and pan with midpoint movement
