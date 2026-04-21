@@ -42,13 +42,13 @@ context('settings JSON integration', () => {
 
     it('should populate the theme selector from config', () => {
         cy.get('.settings-link').click();
-        // Check that theme options use the label if present, otherwise the capitalized key
+        // Check that theme options use displayName if valid, otherwise the capitalized key
         cy.fixture('config.json').then((config) => {
             Object.keys(config.theme).forEach((theme) => {
                 const themeEntry = config.theme[theme];
                 const expectedLabel =
-                    themeEntry.label && themeEntry.label.trim().length > 0
-                        ? themeEntry.label.trim()
+                    themeEntry.displayName && themeEntry.displayName.trim().length > 0
+                        ? themeEntry.displayName.trim()
                         : theme.charAt(0).toUpperCase() + theme.slice(1);
                 cy.get(`#theme-selector option[value="${theme}"]`)
                     .should('exist')

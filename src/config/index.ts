@@ -15,7 +15,6 @@ export type GameDifficultyConfig = {
 
 export type ThemeConfig = {
     displayName: string;
-    label?: string;
     backgroundColor: string;
     winColor: string;
     loseColor: string;
@@ -92,42 +91,38 @@ const HTML_TAG_PATTERN = /<[^>]+>/;
 
 /**
  * Returns the user-facing label for a theme.
- * Uses the theme config's `label` field if defined and valid,
+ * Uses the theme config's `displayName` field if defined and valid,
  * otherwise falls back to the capitalized theme key.
  */
 export function getThemeLabel(themeKey: string, themeConfig: ThemeConfig): string {
     const fallback = themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
 
-    if (themeConfig.label === undefined) {
-        return fallback;
-    }
-
-    if (typeof themeConfig.label !== 'string') {
+    if (typeof themeConfig.displayName !== 'string') {
         console.error(
-            `Theme "${themeKey}" has an invalid label (must be a string). Falling back to capitalized key.`,
+            `Theme "${themeKey}" has an invalid displayName (must be a string). Falling back to capitalized key.`,
         );
         return fallback;
     }
 
-    const trimmed = themeConfig.label.trim();
+    const trimmed = themeConfig.displayName.trim();
 
     if (trimmed.length === 0) {
         console.error(
-            `Theme "${themeKey}" has an empty or whitespace-only label. Falling back to capitalized key.`,
+            `Theme "${themeKey}" has an empty or whitespace-only displayName. Falling back to capitalized key.`,
         );
         return fallback;
     }
 
     if (trimmed.length > MAX_THEME_LABEL_LENGTH) {
         console.error(
-            `Theme "${themeKey}" label exceeds ${MAX_THEME_LABEL_LENGTH} characters. Falling back to capitalized key.`,
+            `Theme "${themeKey}" displayName exceeds ${MAX_THEME_LABEL_LENGTH} characters. Falling back to capitalized key.`,
         );
         return fallback;
     }
 
     if (HTML_TAG_PATTERN.test(trimmed)) {
         console.error(
-            `Theme "${themeKey}" label contains HTML markup. Falling back to capitalized key.`,
+            `Theme "${themeKey}" displayName contains HTML markup. Falling back to capitalized key.`,
         );
         return fallback;
     }
