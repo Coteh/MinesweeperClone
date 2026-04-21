@@ -81,6 +81,10 @@
     max-width: 100%;
 }
 
+.settings .settings-item select.long-label {
+    font-size: 0.8em;
+}
+
 .settings .space {
     flex: 1;
 }
@@ -105,14 +109,6 @@
 
     .dialog.settings-dialog .settings .settings-item .settings-item-column:last-child {
         padding-left: 0.5em;
-    }
-
-    .dialog.settings-dialog
-        .settings
-        .settings-item
-        .settings-item-row
-        .settings-item-column:first-child {
-        flex: 0.6;
     }
 
     .dialog.settings-dialog
