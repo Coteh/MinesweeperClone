@@ -177,6 +177,7 @@
         },
         "classic": {
             "displayName": "Classic",
+            "label": "MinesweeperClone",
             "backgroundColor": "#BBBBBB",
             "winColor": "#2ECC71",
             "loseColor": "#E74C3C",

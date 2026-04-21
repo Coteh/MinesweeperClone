@@ -57,6 +57,7 @@ export function getCustomDifficulties(): CustomDifficultyConfig[] {
 }
 
 import type { Config } from '../config';
+import { getThemeLabel } from '../config';
 import { createDialogContentFromTemplate } from '../util';
 import { ComponentMap } from '../components';
 
@@ -865,7 +866,7 @@ export function setupSettingsSubsystem(
         themeManager.getSelectableThemes().forEach((t) => {
             const opt = document.createElement('option');
             opt.value = t;
-            opt.innerText = gameConfig.theme[t].displayName || t;
+            opt.innerText = getThemeLabel(t, gameConfig.theme[t]);
             themeSelector.appendChild(opt);
         });
         themeSelector.addEventListener('change', async (e) => {
