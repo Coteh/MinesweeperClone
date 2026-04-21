@@ -244,9 +244,4 @@ describe('getThemeLabel', () => {
         expect(getThemeLabel('classic', config)).toBe('MinesweeperClone');
         expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
-
-    it('classic theme renders as MinesweeperClone when displayName is set', () => {
-        const classicConfig = { ...baseConfig, displayName: 'MinesweeperClone' };
-        expect(getThemeLabel('classic', classicConfig)).toBe('MinesweeperClone');
-    });
 });
