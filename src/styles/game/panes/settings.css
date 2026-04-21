@@ -70,7 +70,6 @@
 }
 
 .settings .settings-item .settings-item-column > .toggle {
-    text-transform: capitalize;
     max-width: 100%;
     overflow: hidden;
 }

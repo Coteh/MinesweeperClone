@@ -227,10 +227,10 @@ describe('getThemeLabel', () => {
         expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
 
-    it('should return capitalized key and log error when displayName contains HTML markup', () => {
+    it('should return displayName as-is when it contains HTML-like characters (rendered via innerText)', () => {
         const config = { ...baseConfig, displayName: '<b>Bold</b>' };
-        expect(getThemeLabel('basic', config)).toBe('Basic');
-        expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('HTML markup'));
+        expect(getThemeLabel('basic', config)).toBe('<b>Bold</b>');
+        expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
 
     it('should return capitalized key and log error when displayName is a non-string type', () => {
