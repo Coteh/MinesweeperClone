@@ -114,6 +114,14 @@
         .settings-item-column:first-child {
         flex: 2;
     }
+
+    .dialog.settings-dialog
+        .settings
+        .setting.theme-switch
+        .settings-item-row
+        .settings-item-column:first-child {
+        flex: 0.6;
+    }
 }
 
 /* Volume Controls */
