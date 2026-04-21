@@ -115,6 +115,13 @@ export function setupSettingsSubsystem(
         return `${width}x${height}x${mines}`;
     }
 
+    const LONG_LABEL_THRESHOLD = 12;
+
+    function updateLongLabelClass(selectElem: HTMLSelectElement): void {
+        const selectedText = selectElem.options[selectElem.selectedIndex]?.text ?? '';
+        selectElem.classList.toggle('long-label', selectedText.length > LONG_LABEL_THRESHOLD);
+    }
+
     // Helper to update game options based on difficulty
     function switchDifficulty(difficulty: string, options: SwitchDifficultyOptions) {
         const setting = gameConfig.difficulty[difficulty];
@@ -703,6 +710,7 @@ export function setupSettingsSubsystem(
                 switchDifficulty(difficultyValue, { startNewGame: true });
                 savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, difficultyValue);
             }
+            updateLongLabelClass(difficultySelector);
         });
 
         // Set selected index by matching value
@@ -714,6 +722,7 @@ export function setupSettingsSubsystem(
             difficultySelector.selectedIndex = 0;
             currDifficulty = selectableDifficulties[0];
         }
+        updateLongLabelClass(difficultySelector);
 
         // Set initial state for settings knobs BEFORE setting up event listeners
         const highlightSettingElem = document.querySelector(`.setting.${HIGHLIGHT_SETTING_NAME}`);
@@ -882,10 +891,12 @@ export function setupSettingsSubsystem(
                 }
             }
             savePreferenceValue(THEME_PREFERENCE_NAME, themeValue);
+            updateLongLabelClass(themeSelector);
         });
         const currTheme = themeManager.getCurrentTheme();
         const themeIdx = themeManager.getSelectableThemes().indexOf(currTheme);
         themeSelector.selectedIndex = themeIdx >= 0 ? themeIdx : 0;
+        updateLongLabelClass(themeSelector);
 
         document
             .querySelector(`.settings-item.${DIFFICULTY_SETTING_NAME}`)
