@@ -87,7 +87,6 @@ const FALLBACK_CONFIG: Config = {
 };
 
 const MAX_THEME_LABEL_LENGTH = 30;
-const HTML_TAG_PATTERN = /<[^>]+>/;
 
 /**
  * Returns the user-facing label for a theme.
@@ -116,13 +115,6 @@ export function getThemeLabel(themeKey: string, themeConfig: ThemeConfig): strin
     if (trimmed.length > MAX_THEME_LABEL_LENGTH) {
         console.error(
             `Theme "${themeKey}" displayName exceeds ${MAX_THEME_LABEL_LENGTH} characters. Falling back to capitalized key.`,
-        );
-        return fallback;
-    }
-
-    if (HTML_TAG_PATTERN.test(trimmed)) {
-        console.error(
-            `Theme "${themeKey}" displayName contains HTML markup. Falling back to capitalized key.`,
         );
         return fallback;
     }
