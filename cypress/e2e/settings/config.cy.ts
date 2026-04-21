@@ -42,12 +42,17 @@ context('settings JSON integration', () => {
 
     it('should populate the theme selector from config', () => {
         cy.get('.settings-link').click();
-        // Check that theme options match config.json display names
+        // Check that theme options use the label if present, otherwise the capitalized key
         cy.fixture('config.json').then((config) => {
             Object.keys(config.theme).forEach((theme) => {
+                const themeEntry = config.theme[theme];
+                const expectedLabel =
+                    themeEntry.label && themeEntry.label.trim().length > 0
+                        ? themeEntry.label.trim()
+                        : theme.charAt(0).toUpperCase() + theme.slice(1);
                 cy.get(`#theme-selector option[value="${theme}"]`)
                     .should('exist')
-                    .and('contain.text', config.theme[theme].displayName);
+                    .and('contain.text', expectedLabel);
             });
         });
     });

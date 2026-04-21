@@ -6,7 +6,8 @@ jest.mock('../src/manager/background', () => ({
 }));
 
 import { ThemeManager } from '../src/manager/theme';
-import type { Config } from '../src/config';
+import { getThemeLabel } from '../src/config/index';
+import type { Config, ThemeConfig } from '../src/config/index';
 
 const normalColor = '#BBBBBB';
 const winColor = '#2ECC71';
@@ -149,5 +150,101 @@ describe('ThemeManager status bar color', () => {
             expect(mockMetaTag.setAttribute).toHaveBeenLastCalledWith('content', dimmedNormalColor);
             expect(mockMetaTag.setAttribute).not.toHaveBeenLastCalledWith('content', loseColor);
         });
+    });
+});
+
+describe('getThemeLabel', () => {
+    const baseConfig = {
+        displayName: 'Basic',
+        backgroundColor: '#BBBBBB',
+        winColor: '#2ECC71',
+        loseColor: '#E74C3C',
+        highlightColor: '#FFFF00',
+        metaThemeColor: '#BBBBBB',
+        textColor: '#000000',
+        tileBackground: '#BBBBBB',
+        tileBorder: '#888888',
+        standardBlockColor: '#808080',
+        losingBlockColor: '#CC0000',
+        blockRevealedColor: '#B3B3B3',
+        mineText1: '#0099FF',
+        mineText2: '#00FF00',
+        mineText3: '#FF0000',
+        mineText4: '#0000FF',
+        mineText5: '#442200',
+        mineText6: '#00FFFF',
+        mineText7: '#000000',
+        mineText8: '#858585',
+    } as ThemeConfig;
+
+    let consoleErrorSpy: ReturnType<typeof jest.spyOn>;
+
+    beforeEach(() => {
+        consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        consoleErrorSpy.mockRestore();
+    });
+
+    it('should return the label when it is valid', () => {
+        const config = { ...baseConfig, label: 'MinesweeperClone' };
+        expect(getThemeLabel('classic', config)).toBe('MinesweeperClone');
+    });
+
+    it('should return capitalized key when label is not defined', () => {
+        expect(getThemeLabel('classic', baseConfig)).toBe('Classic');
+        expect(getThemeLabel('ocean', baseConfig)).toBe('Ocean');
+    });
+
+    it('should return capitalized key and log error when label is empty string', () => {
+        const config = { ...baseConfig, label: '' };
+        expect(getThemeLabel('classic', config)).toBe('Classic');
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+            expect.stringContaining('empty or whitespace-only'),
+        );
+    });
+
+    it('should return capitalized key and log error when label is whitespace only', () => {
+        const config = { ...baseConfig, label: '   ' };
+        expect(getThemeLabel('ocean', config)).toBe('Ocean');
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+            expect.stringContaining('empty or whitespace-only'),
+        );
+    });
+
+    it('should return capitalized key and log error when label exceeds 30 characters', () => {
+        const config = { ...baseConfig, label: 'A'.repeat(31) };
+        expect(getThemeLabel('basic', config)).toBe('Basic');
+        expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('exceeds 30'));
+    });
+
+    it('should return label when it is exactly 30 characters', () => {
+        const config = { ...baseConfig, label: 'A'.repeat(30) };
+        expect(getThemeLabel('basic', config)).toBe('A'.repeat(30));
+        expect(consoleErrorSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return capitalized key and log error when label contains HTML markup', () => {
+        const config = { ...baseConfig, label: '<b>Bold</b>' };
+        expect(getThemeLabel('basic', config)).toBe('Basic');
+        expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('HTML markup'));
+    });
+
+    it('should return capitalized key and log error when label is not a string', () => {
+        const config = { ...baseConfig, label: 42 as unknown as string };
+        expect(getThemeLabel('basic', config)).toBe('Basic');
+        expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('must be a string'));
+    });
+
+    it('should trim whitespace from valid labels', () => {
+        const config = { ...baseConfig, label: '  MinesweeperClone  ' };
+        expect(getThemeLabel('classic', config)).toBe('MinesweeperClone');
+        expect(consoleErrorSpy).not.toHaveBeenCalled();
+    });
+
+    it('classic theme renders as MinesweeperClone when label is set', () => {
+        const classicConfig = { ...baseConfig, label: 'MinesweeperClone' };
+        expect(getThemeLabel('classic', classicConfig)).toBe('MinesweeperClone');
     });
 });
