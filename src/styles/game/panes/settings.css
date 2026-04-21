@@ -109,18 +109,18 @@
 
     .dialog.settings-dialog
         .settings
-        .setting.sound
+        .settings-item
         .settings-item-row
         .settings-item-column:first-child {
-        flex: 2;
+        flex: 0.6;
     }
 
     .dialog.settings-dialog
         .settings
-        .setting.theme-switch
+        .setting.sound
         .settings-item-row
         .settings-item-column:first-child {
-        flex: 0.6;
+        flex: 2;
     }
 }
 
