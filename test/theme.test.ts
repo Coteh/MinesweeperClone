@@ -187,64 +187,66 @@ describe('getThemeLabel', () => {
         consoleErrorSpy.mockRestore();
     });
 
-    it('should return the label when it is valid', () => {
-        const config = { ...baseConfig, label: 'MinesweeperClone' };
+    it('should return displayName when it is valid', () => {
+        const config = { ...baseConfig, displayName: 'MinesweeperClone' };
         expect(getThemeLabel('classic', config)).toBe('MinesweeperClone');
     });
 
-    it('should return capitalized key when label is not defined', () => {
-        expect(getThemeLabel('classic', baseConfig)).toBe('Classic');
-        expect(getThemeLabel('ocean', baseConfig)).toBe('Ocean');
+    it('should return capitalized key and log error when displayName is not a string (runtime safety)', () => {
+        const config = { ...baseConfig, displayName: undefined as unknown as string };
+        expect(getThemeLabel('classic', config)).toBe('Classic');
+        expect(getThemeLabel('ocean', config)).toBe('Ocean');
+        expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('must be a string'));
     });
 
-    it('should return capitalized key and log error when label is empty string', () => {
-        const config = { ...baseConfig, label: '' };
+    it('should return capitalized key and log error when displayName is empty string', () => {
+        const config = { ...baseConfig, displayName: '' };
         expect(getThemeLabel('classic', config)).toBe('Classic');
         expect(consoleErrorSpy).toHaveBeenCalledWith(
             expect.stringContaining('empty or whitespace-only'),
         );
     });
 
-    it('should return capitalized key and log error when label is whitespace only', () => {
-        const config = { ...baseConfig, label: '   ' };
+    it('should return capitalized key and log error when displayName is whitespace only', () => {
+        const config = { ...baseConfig, displayName: '   ' };
         expect(getThemeLabel('ocean', config)).toBe('Ocean');
         expect(consoleErrorSpy).toHaveBeenCalledWith(
             expect.stringContaining('empty or whitespace-only'),
         );
     });
 
-    it('should return capitalized key and log error when label exceeds 30 characters', () => {
-        const config = { ...baseConfig, label: 'A'.repeat(31) };
+    it('should return capitalized key and log error when displayName exceeds 30 characters', () => {
+        const config = { ...baseConfig, displayName: 'A'.repeat(31) };
         expect(getThemeLabel('basic', config)).toBe('Basic');
         expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('exceeds 30'));
     });
 
-    it('should return label when it is exactly 30 characters', () => {
-        const config = { ...baseConfig, label: 'A'.repeat(30) };
+    it('should return displayName when it is exactly 30 characters', () => {
+        const config = { ...baseConfig, displayName: 'A'.repeat(30) };
         expect(getThemeLabel('basic', config)).toBe('A'.repeat(30));
         expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
 
-    it('should return capitalized key and log error when label contains HTML markup', () => {
-        const config = { ...baseConfig, label: '<b>Bold</b>' };
+    it('should return capitalized key and log error when displayName contains HTML markup', () => {
+        const config = { ...baseConfig, displayName: '<b>Bold</b>' };
         expect(getThemeLabel('basic', config)).toBe('Basic');
         expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('HTML markup'));
     });
 
-    it('should return capitalized key and log error when label is not a string', () => {
-        const config = { ...baseConfig, label: 42 as unknown as string };
+    it('should return capitalized key and log error when displayName is a non-string type', () => {
+        const config = { ...baseConfig, displayName: 42 as unknown as string };
         expect(getThemeLabel('basic', config)).toBe('Basic');
         expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('must be a string'));
     });
 
-    it('should trim whitespace from valid labels', () => {
-        const config = { ...baseConfig, label: '  MinesweeperClone  ' };
+    it('should trim whitespace from valid displayName', () => {
+        const config = { ...baseConfig, displayName: '  MinesweeperClone  ' };
         expect(getThemeLabel('classic', config)).toBe('MinesweeperClone');
         expect(consoleErrorSpy).not.toHaveBeenCalled();
     });
 
-    it('classic theme renders as MinesweeperClone when label is set', () => {
-        const classicConfig = { ...baseConfig, label: 'MinesweeperClone' };
+    it('classic theme renders as MinesweeperClone when displayName is set', () => {
+        const classicConfig = { ...baseConfig, displayName: 'MinesweeperClone' };
         expect(getThemeLabel('classic', classicConfig)).toBe('MinesweeperClone');
     });
 });
