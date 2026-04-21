@@ -56,8 +56,8 @@ export function getCustomDifficulties(): CustomDifficultyConfig[] {
     }
 }
 
-import type { Config } from '../config';
-import { getThemeLabel } from '../config';
+import type { Config } from '../config/index';
+import { getThemeLabel } from '../config/index';
 import { createDialogContentFromTemplate } from '../util';
 import { ComponentMap } from '../components';
 
