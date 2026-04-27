@@ -34,6 +34,9 @@ export const createBoardComponent = ({
     let lastTapX = 0;
     let lastTapY = 0;
     let doubleTapListenerSetUp = false;
+    // Set to true when a double-tap zoom fires so that in-flight per-tile
+    // touchstart timers (flag preview, reveal preview) are suppressed.
+    let isDoubleTapInProgress = false;
 
     const startFlagPreview = (tileElement: HTMLElement, isFlagged: boolean) => {
         cancelFlagPreview();
@@ -171,6 +174,12 @@ export const createBoardComponent = ({
                 const timeSince = now - lastTapTime;
 
                 if (timeSince < DOUBLE_TAP_DELAY && dist < DOUBLE_TAP_DISTANCE) {
+                    // Cancel any in-flight flag/reveal preview timers that were
+                    // started by this tap's touchstart before we could detect it
+                    // as the second tap of a double-tap.
+                    isDoubleTapInProgress = true;
+                    cancelFlagPreview();
+                    clearAllRevealPreviews();
                     // Prevent the tile's game-action from firing on the second tap.
                     e.stopPropagation();
                     if (transformManager.boardTransform.scale >= MAX_ZOOM) {
@@ -270,6 +279,8 @@ export const createBoardComponent = ({
                 const applyRevealPreviewState = () => {
                     if (!gameState.board[i][j].isRevealed) return;
                     if (gameState.ended) return; // Don't show surprised face if game has ended
+                    // Suppress the reveal preview if a double-tap zoom just fired.
+                    if (isDoubleTapInProgress) return;
 
                     // Get adjacent non-revealed, non-flagged tiles
                     const revealPreviewTiles = getAdjacentTileElements(j, i, gameState, parentElem);
@@ -313,6 +324,8 @@ export const createBoardComponent = ({
 
                 elem.addEventListener('touchstart', (e) => {
                     e.preventDefault();
+                    // Reset double-tap guard so the next ordinary tap works normally.
+                    isDoubleTapInProgress = false;
                     pressStartTime = Date.now();
                     blockPressed = true;
                     touchStartX = e.touches[0].clientX;
