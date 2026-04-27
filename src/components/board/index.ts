@@ -1,9 +1,13 @@
 import { GameState, selectSpot, flagSpot, selectAdjacentSpots, questionMarkSpot } from '../../game';
 import { getQuestionMode } from '../../inputMode';
 import { AssetManager } from '../../manager/asset';
+import { AudioManager, SoundEffect } from '../../manager/audio';
+import { TransformManager, MAX_ZOOM } from '../../manager/transform';
 
 type BoardComponentProps = {
     assetManager: AssetManager;
+    transformManager: TransformManager;
+    audioManager: AudioManager;
 };
 
 export type BoardRenderProps = {
@@ -11,13 +15,25 @@ export type BoardRenderProps = {
     gameState: GameState;
 };
 
-export const createBoardComponent = ({ assetManager }: BoardComponentProps) => {
+export const createBoardComponent = ({
+    assetManager,
+    transformManager,
+    audioManager,
+}: BoardComponentProps) => {
     // Flag preview hold threshold in milliseconds (configurable)
     const FLAG_PREVIEW_HOLD_THRESHOLD = 250;
 
     // Module-level flag preview state
     let flagPreviewTimeout: ReturnType<typeof setTimeout> | null = null;
     let flagPreviewElement: HTMLElement | null = null;
+
+    // Double-tap to zoom state
+    const DOUBLE_TAP_DELAY = 300;
+    const DOUBLE_TAP_DISTANCE = 30;
+    let lastTapTime = 0;
+    let lastTapX = 0;
+    let lastTapY = 0;
+    let doubleTapListenerSetUp = false;
 
     const startFlagPreview = (tileElement: HTMLElement, isFlagged: boolean) => {
         cancelFlagPreview();
@@ -138,6 +154,52 @@ export const createBoardComponent = ({ assetManager }: BoardComponentProps) => {
         document.querySelectorAll('.box.reveal-preview').forEach((elem) => {
             elem.classList.remove('reveal-preview');
         });
+    };
+
+    // Sets up the double-tap-to-zoom listener on the board element. Called once
+    // on first render since parentElem is not available at factory-creation time.
+    const setupDoubleTapZoom = (boardElem: HTMLElement) => {
+        boardElem.addEventListener(
+            'touchend',
+            (e) => {
+                if (e.touches.length !== 0) return;
+                const touch = e.changedTouches[0];
+                const now = Date.now();
+                const dx = touch.clientX - lastTapX;
+                const dy = touch.clientY - lastTapY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const timeSince = now - lastTapTime;
+
+                if (timeSince < DOUBLE_TAP_DELAY && dist < DOUBLE_TAP_DISTANCE) {
+                    // Prevent the tile's game-action from firing on the second tap.
+                    e.stopPropagation();
+                    if (transformManager.boardTransform.scale >= MAX_ZOOM) {
+                        transformManager.resetZoom(false);
+                        audioManager.playSoundEffect(SoundEffect.ZoomReset);
+                    } else {
+                        // Passing the same coordinates for prevMid and currMid means
+                        // there is no pan component — the zoom is centred exactly on
+                        // the tap point.
+                        transformManager.zoomAtPoint(
+                            touch.clientX,
+                            touch.clientY,
+                            touch.clientX,
+                            touch.clientY,
+                            2,
+                        );
+                        audioManager.playSoundEffect(SoundEffect.ZoomIn);
+                    }
+                    lastTapTime = 0;
+                    return;
+                }
+
+                lastTapTime = now;
+                lastTapX = touch.clientX;
+                lastTapY = touch.clientY;
+            },
+            true,
+        );
+        doubleTapListenerSetUp = true;
     };
 
     return ({ parentElem, gameState }: BoardRenderProps) => {
@@ -399,6 +461,10 @@ export const createBoardComponent = ({ assetManager }: BoardComponentProps) => {
                 row.appendChild(elem);
             }
             parentElem.appendChild(row);
+        }
+
+        if (!doubleTapListenerSetUp) {
+            setupDoubleTapZoom(parentElem);
         }
     };
 };

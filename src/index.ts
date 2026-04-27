@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const components: ComponentMap = {
         renderDigits: createDigitsComponent({ assetManager }),
-        renderBoard: createBoardComponent({ assetManager }),
+        renderBoard: createBoardComponent({ assetManager, transformManager, audioManager }),
         renderDialog: createDialogComponent({ themeManager }),
         renderPromptDialog: createPromptDialogComponent({ themeManager }),
         renderNotification: createNotificationComponent(),
