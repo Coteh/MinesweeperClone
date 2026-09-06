@@ -47,7 +47,7 @@
     "jest-junit": "^16.0.0",
     "marked": "^17.0.1",
     "mobile-detect": "^1.4.5",
-    "pixi-filters": "6.1.0",
+    "pixi-filters": "6.1.5",
     "prettier": "3.8.1",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.3",
