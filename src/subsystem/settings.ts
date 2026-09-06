@@ -56,10 +56,58 @@ export function getCustomDifficulties(): CustomDifficultyConfig[] {
     }
 }
 
-import type { Config } from '../config/index';
+import type { Config, ThemeConfig } from '../config/index';
 import { getThemeLabel } from '../config/index';
 import { createDialogContentFromTemplate } from '../util';
 import { ComponentMap } from '../components';
+
+// A fixed board so every card shows the same layout and only the colours differ.
+// Numbers are revealed tiles, null is an unrevealed tile, 'mine' is the losing tile.
+const THEME_PREVIEW_BOARD: (number | null | 'mine')[][] = [
+    [1, 2, null, null],
+    [0, 3, null, 'mine'],
+    [null, null, null, null],
+];
+
+function createThemePreview(themeConfig: ThemeConfig): HTMLElement {
+    const mineTextColors = [
+        themeConfig.mineText1,
+        themeConfig.mineText2,
+        themeConfig.mineText3,
+        themeConfig.mineText4,
+        themeConfig.mineText5,
+        themeConfig.mineText6,
+        themeConfig.mineText7,
+        themeConfig.mineText8,
+    ];
+
+    const preview = document.createElement('div');
+    preview.className = 'theme-card-preview';
+
+    THEME_PREVIEW_BOARD.forEach((row) => {
+        const rowElem = document.createElement('div');
+        rowElem.className = 'theme-card-preview-row';
+        row.forEach((tile) => {
+            const tileElem = document.createElement('div');
+            tileElem.className = 'theme-card-preview-tile';
+            if (tile === null) {
+                tileElem.style.backgroundColor = themeConfig.standardBlockColor;
+            } else if (tile === 'mine') {
+                tileElem.style.backgroundColor = themeConfig.losingBlockColor;
+            } else {
+                tileElem.style.backgroundColor = themeConfig.blockRevealedColor;
+                if (tile > 0) {
+                    tileElem.innerText = String(tile);
+                    tileElem.style.color = mineTextColors[tile - 1];
+                }
+            }
+            rowElem.appendChild(tileElem);
+        });
+        preview.appendChild(rowElem);
+    });
+
+    return preview;
+}
 
 export function setupSettingsSubsystem(
     gameConfig: Config,
@@ -117,9 +165,12 @@ export function setupSettingsSubsystem(
 
     const LONG_LABEL_THRESHOLD = 12;
 
-    function updateLongLabelClass(selectElem: HTMLSelectElement): void {
-        const selectedText = selectElem.options[selectElem.selectedIndex]?.text ?? '';
-        selectElem.classList.toggle('long-label', selectedText.length > LONG_LABEL_THRESHOLD);
+    function updateLongLabelClass(elem: HTMLElement, label: string): void {
+        elem.classList.toggle('long-label', label.length > LONG_LABEL_THRESHOLD);
+    }
+
+    function updateSelectLongLabelClass(selectElem: HTMLSelectElement): void {
+        updateLongLabelClass(selectElem, selectElem.options[selectElem.selectedIndex]?.text ?? '');
     }
 
     // Helper to update game options based on difficulty
@@ -476,6 +527,89 @@ export function setupSettingsSubsystem(
         });
     }
 
+    // Keeps the Theme row in the settings pane showing the active theme's label
+    function updateThemeSettingValue() {
+        const valueElem = document.querySelector(
+            `.settings-item.${THEME_SETTING_NAME} .theme-selector-value`,
+        ) as HTMLElement;
+        if (!valueElem) return;
+        const currTheme = themeManager.getCurrentTheme();
+        const label = getThemeLabel(currTheme, themeManager.getThemeConfig(currTheme));
+        valueElem.innerText = label;
+        updateLongLabelClass(valueElem, label);
+    }
+
+    function openThemeSelectionDialog() {
+        const dialogElem = createDialogContentFromTemplate('#theme-selection-dialog-content');
+        const grid = dialogElem.querySelector('#theme-selection-grid') as HTMLElement;
+
+        const setSelectedCard = (theme: Theme) => {
+            grid.querySelectorAll('.theme-card').forEach((card) => {
+                const isSelected = (card as HTMLElement).dataset.theme === theme;
+                card.classList.toggle('selected', isSelected);
+                card.setAttribute('aria-checked', String(isSelected));
+            });
+        };
+
+        themeManager.getSelectableThemes().forEach((theme) => {
+            const themeConfig = themeManager.getThemeConfig(theme);
+
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = 'theme-card';
+            card.dataset.theme = theme;
+            card.setAttribute('role', 'radio');
+            card.style.backgroundColor = themeConfig.backgroundColor;
+
+            const name = document.createElement('span');
+            name.className = 'theme-card-name';
+            name.innerText = getThemeLabel(theme, themeConfig);
+            if (themeConfig.textColor) {
+                name.style.color = themeConfig.textColor;
+            }
+            card.appendChild(name);
+            card.appendChild(createThemePreview(themeConfig));
+
+            card.addEventListener('click', async () => {
+                audioManager.playSoundEffect(SoundEffect.Click);
+                if (theme === themeManager.getCurrentTheme()) return;
+
+                await themeManager.switchTheme(theme);
+                onThemeSwitch?.(theme);
+                if (gameState.ended) {
+                    if (gameState.won) {
+                        backgroundManager.renderWin();
+                    } else {
+                        backgroundManager.renderLose();
+                    }
+                }
+                savePreferenceValue(THEME_PREFERENCE_NAME, theme);
+                setSelectedCard(theme);
+            });
+
+            grid.appendChild(card);
+        });
+
+        setSelectedCard(themeManager.getCurrentTheme());
+
+        const backBtn = dialogElem.querySelector('.theme-selection-back') as HTMLElement;
+        backBtn.addEventListener('click', () => {
+            audioManager.playSoundEffect(SoundEffect.Click);
+            toggleSettings(true);
+        });
+
+        renderDialog({
+            content: dialogElem,
+            fadeIn: true,
+            effect: 'pop',
+            style: {
+                width: '90%',
+                height: '85%',
+                maxWidth: '520px',
+            },
+        });
+    }
+
     function promptFullscreen() {
         const dialogElem = createDialogContentFromTemplate('#prompt-dialog-content');
         (dialogElem.querySelector('.prompt-text') as HTMLSpanElement).innerText =
@@ -710,7 +844,7 @@ export function setupSettingsSubsystem(
                 switchDifficulty(difficultyValue, { startNewGame: true });
                 savePreferenceValue(DIFFICULTY_PREFERENCE_NAME, difficultyValue);
             }
-            updateLongLabelClass(difficultySelector);
+            updateSelectLongLabelClass(difficultySelector);
         });
 
         // Set selected index by matching value
@@ -722,7 +856,7 @@ export function setupSettingsSubsystem(
             difficultySelector.selectedIndex = 0;
             currDifficulty = selectableDifficulties[0];
         }
-        updateLongLabelClass(difficultySelector);
+        updateSelectLongLabelClass(difficultySelector);
 
         // Set initial state for settings knobs BEFORE setting up event listeners
         const highlightSettingElem = document.querySelector(`.setting.${HIGHLIGHT_SETTING_NAME}`);
@@ -869,34 +1003,7 @@ export function setupSettingsSubsystem(
             });
         });
 
-        const themeSelector = document.getElementById('theme-selector') as HTMLSelectElement;
-        // Populate theme options from config
-        themeSelector.innerHTML = '';
-        themeManager.getSelectableThemes().forEach((t) => {
-            const opt = document.createElement('option');
-            opt.value = t;
-            opt.innerText = getThemeLabel(t, gameConfig.theme[t]);
-            themeSelector.appendChild(opt);
-        });
-        themeSelector.addEventListener('change', async (e) => {
-            const themeValue = (e.target as HTMLSelectElement).value as Theme;
-
-            await themeManager.switchTheme(themeValue);
-            onThemeSwitch?.(themeValue);
-            if (gameState.ended) {
-                if (gameState.won) {
-                    backgroundManager.renderWin();
-                } else {
-                    backgroundManager.renderLose();
-                }
-            }
-            savePreferenceValue(THEME_PREFERENCE_NAME, themeValue);
-            updateLongLabelClass(themeSelector);
-        });
-        const currTheme = themeManager.getCurrentTheme();
-        const themeIdx = themeManager.getSelectableThemes().indexOf(currTheme);
-        themeSelector.selectedIndex = themeIdx >= 0 ? themeIdx : 0;
-        updateLongLabelClass(themeSelector);
+        updateThemeSettingValue();
 
         document
             .querySelector(`.settings-item.${DIFFICULTY_SETTING_NAME}`)
@@ -912,15 +1019,7 @@ export function setupSettingsSubsystem(
 
         document
             .querySelector(`.settings-item.${THEME_SETTING_NAME}`)
-            ?.addEventListener('click', () => {
-                const themeSelector = document.getElementById(
-                    'theme-selector',
-                ) as HTMLSelectElement;
-                if (themeSelector) {
-                    themeSelector.focus();
-                    themeSelector.showPicker();
-                }
-            });
+            ?.addEventListener('click', openThemeSelectionDialog);
 
         // Re-enable transitions after initial state is set
         // Use requestAnimationFrame to ensure DOM has settled

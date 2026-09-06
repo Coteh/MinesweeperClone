@@ -1,0 +1,126 @@
+/* Theme Row */
+
+.settings .setting.theme-switch .theme-selector {
+    pointer-events: initial;
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    max-width: 100%;
+    padding: 0;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+.settings .setting.theme-switch .theme-selector-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.settings .setting.theme-switch .theme-selector-value.long-label {
+    font-size: 0.8em;
+}
+
+.settings .setting.theme-switch .theme-selector svg {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+}
+
+/* Theme Selection Dialog */
+
+.theme-selection {
+    font-family: var(--text-font-family);
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+}
+
+.theme-selection h2 {
+    margin: 0;
+}
+
+.theme-selection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75em;
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 0;
+    padding: 4px;
+}
+
+.theme-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6em;
+    padding: 0.75em 0.5em;
+    border: 1px solid var(--gray-4);
+    font-family: inherit;
+    cursor: pointer;
+    /* Cards are painted with the theme's own background, so a fixed height keeps
+       the grid even regardless of how long each theme's label is */
+    min-height: 8em;
+}
+
+.theme-card.selected {
+    /* Two rings so the highlight stays visible against any theme background */
+    box-shadow:
+        0 0 0 2px var(--dialog-background-color),
+        0 0 0 4px var(--dialog-text-color, var(--text-color));
+}
+
+.theme-card-name {
+    font-size: 0.9em;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    overflow-wrap: anywhere;
+}
+
+.theme-card-preview {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.theme-card-preview-row {
+    display: flex;
+}
+
+.theme-card-preview-tile {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 0, 0, 0.35);
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+}
+
+/* One card per row on narrow screens, laid out side-on so they stay compact */
+@media (max-width: 399px) {
+    .theme-selection-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .theme-card {
+        flex-direction: row;
+        justify-content: space-between;
+        gap: 1em;
+        padding: 0.75em 1em;
+        min-height: 0;
+    }
+}

@@ -244,21 +244,18 @@ describe('settings', () => {
         cy.get('#difficulty-selector').should('be.focused');
     });
 
-    it('should open the theme selector when clicking on the theme settings item', () => {
+    it('should open the theme selection pane when clicking on the theme settings item', () => {
         cy.get('.settings-link').click();
 
         cy.get('.settings-item.theme-switch').realClick();
-        cy.get('#theme-selector').should('be.focused');
+        cy.get('.theme-selection-grid').should('be.visible');
     });
 
-    it('should associate labels with their corresponding select elements', () => {
+    it('should associate the difficulty label with its select element', () => {
         cy.get('.settings-link').click();
 
         cy.get('label[for="difficulty-selector"]').realClick();
         cy.get('#difficulty-selector').should('be.focused');
-
-        cy.get('label[for="theme-selector"]').realClick();
-        cy.get('#theme-selector').should('be.focused');
     });
 
     it('should be able to select the cloudy theme', () => {
@@ -267,8 +264,8 @@ describe('settings', () => {
         cy.get('.settings-item.theme-switch').should('be.visible');
         cy.selectTheme('cloudy');
 
-        // Verify cloudy theme is selected
-        cy.get('#theme-selector').should('have.value', 'cloudy');
+        // Verify the theme row reflects the selection
+        cy.get('.theme-selector-value').should('have.text', 'Cloudy');
 
         // Verify body has cloudy class
         cy.get('body').should('have.class', 'cloudy');
