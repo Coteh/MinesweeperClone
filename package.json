@@ -45,7 +45,7 @@
     "howler": "^2.2.4",
     "jest": "^29.7.0",
     "jest-junit": "^16.0.0",
-    "marked": "^17.0.1",
+    "marked": "^17.0.3",
     "mobile-detect": "^1.4.5",
     "pixi-filters": "6.1.0",
     "prettier": "3.8.1",
