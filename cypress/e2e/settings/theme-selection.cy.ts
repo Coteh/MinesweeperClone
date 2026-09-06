@@ -35,6 +35,18 @@ describe('Theme Selection Pane', () => {
         cy.get('.theme-card').should('have.length', themeKeys.length);
     });
 
+    it('should stack the cards in a single column on narrow screens', () => {
+        cy.viewport(399, 800);
+        cy.get('#theme-selector').click();
+
+        cy.get('.theme-selection-grid')
+            .should('have.css', 'overflow-x', 'hidden')
+            .and(($grid) => {
+                const tracks = $grid.css('grid-template-columns').trim().split(/\s+/);
+                expect(tracks).to.have.length(1);
+            });
+    });
+
     it('should render a card per theme using that theme own colours', () => {
         cy.get('#theme-selector').click();
 
@@ -44,13 +56,50 @@ describe('Theme Selection Pane', () => {
                 .should('exist')
                 .and('have.css', 'background-color', hexToRgbString(themeConfig.backgroundColor));
 
-            // The preview board is drawn from the theme's own block colours
-            cy.get(`.theme-card[data-theme="${theme}"] .theme-card-preview-tile`)
-                .first()
+            // Every colour role in the preview board comes from the theme's own config.
+            // Tiles are indexed row-major over THEME_PREVIEW_BOARD in src/subsystem/settings.ts.
+            const tiles = () =>
+                cy.get(`.theme-card[data-theme="${theme}"] .theme-card-preview-tile`);
+
+            tiles()
+                .eq(0)
                 .should(
                     'have.css',
                     'background-color',
                     hexToRgbString(themeConfig.blockRevealedColor),
+                )
+                .and('have.css', 'color', hexToRgbString(themeConfig.mineText1))
+                .and('have.text', '1');
+            tiles()
+                .eq(1)
+                .should('have.css', 'color', hexToRgbString(themeConfig.mineText2))
+                .and('have.text', '2');
+            tiles()
+                .eq(2)
+                .should(
+                    'have.css',
+                    'background-color',
+                    hexToRgbString(themeConfig.standardBlockColor),
+                );
+            // Revealed with no adjacent mines, so it carries the revealed colour and no number
+            tiles()
+                .eq(4)
+                .should(
+                    'have.css',
+                    'background-color',
+                    hexToRgbString(themeConfig.blockRevealedColor),
+                )
+                .and('have.text', '');
+            tiles()
+                .eq(5)
+                .should('have.css', 'color', hexToRgbString(themeConfig.mineText3))
+                .and('have.text', '3');
+            tiles()
+                .eq(7)
+                .should(
+                    'have.css',
+                    'background-color',
+                    hexToRgbString(themeConfig.losingBlockColor),
                 );
         });
     });
