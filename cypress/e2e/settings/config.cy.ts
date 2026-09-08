@@ -40,9 +40,10 @@ context('settings JSON integration', () => {
         });
     });
 
-    it('should populate the theme selector from config', () => {
+    it('should populate the theme selection pane from config', () => {
         cy.get('.settings-link').click();
-        // Check that theme options use displayName if valid, otherwise the capitalized key
+        cy.get('#theme-selector').click();
+        // Check that theme cards use displayName if valid, otherwise the capitalized key
         cy.fixture('config.json').then((config) => {
             Object.keys(config.theme).forEach((theme) => {
                 const themeEntry = config.theme[theme];
@@ -50,7 +51,7 @@ context('settings JSON integration', () => {
                     themeEntry.displayName && themeEntry.displayName.trim().length > 0
                         ? themeEntry.displayName.trim()
                         : theme.charAt(0).toUpperCase() + theme.slice(1);
-                cy.get(`#theme-selector option[value="${theme}"]`)
+                cy.get(`.theme-card[data-theme="${theme}"] .theme-card-name`)
                     .should('exist')
                     .and('contain.text', expectedLabel);
             });
