@@ -1,6 +1,7 @@
 .game-space {
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .game-space > .game-top {
