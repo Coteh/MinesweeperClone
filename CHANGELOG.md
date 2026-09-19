@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Volume slider control for sound effects in settings
 - Dynamic volume icon that changes based on volume level and enabled state
 - Sound effect credits in settings footer
+- Theme selection pane with a preview card per theme
 
 ### Changed
 

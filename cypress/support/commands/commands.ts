@@ -128,9 +128,15 @@ Cypress.Commands.add('selectDifficulty', (value: string) => {
     cy.get('#difficulty-selector').select(value).should('have.value', value);
 });
 
+// Opens the theme selection pane from the settings pane, picks a theme, then goes back.
 Cypress.Commands.add('selectTheme', (value: string) => {
     cy.get('#theme-selector').should('exist');
-    cy.get('#theme-selector').select(value).should('have.value', value);
+    cy.get('#theme-selector').click();
+    cy.get(`.theme-card[data-theme="${value}"]`).should('exist');
+    cy.get(`.theme-card[data-theme="${value}"]`).click();
+    cy.get(`.theme-card[data-theme="${value}"]`).should('have.class', 'selected');
+    cy.get('.theme-selection-back').click();
+    cy.get('.theme-selector-value').should('exist');
 });
 
 // Helper to open settings, select a difficulty, and close settings.

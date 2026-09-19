@@ -1,5 +1,6 @@
 @import url('./game.css');
 @import url('./settings.css');
+@import url('./theme-selection.css');
 
 .pane > .space {
     flex: 1;

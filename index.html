@@ -224,15 +224,14 @@
                     <div class="settings-item setting theme-switch">
                         <div class="settings-item-row">
                             <div class="settings-item-column">
-                                <label for="theme-selector">Theme</label>
+                                <span>Theme</span>
                             </div>
                             <div class="settings-item-column">
                                 <span class="toggle">
-                                    <select id="theme-selector">
-                                        <option value="basic">Basic</option>
-                                        <option value="ocean">Ocean</option>
-                                        <option value="classic">Classic</option>
-                                    </select>
+                                    <button type="button" id="theme-selector" class="theme-selector">
+                                        <span class="theme-selector-value"></span>
+                                        <i data-feather="chevron-right"></i>
+                                    </button>
                                 </span>
                             </div>
                         </div>
@@ -570,6 +569,13 @@
                 </div>
                 <button class="button custom-difficulty-start"><span>Save and Start New Game</span></button>
                 <button class="button custom-difficulty-cancel"><span>Cancel</span></button>
+            </div>
+        </template>
+        <template id="theme-selection-dialog-content">
+            <div class="theme-selection">
+                <h2>Themes</h2>
+                <div class="theme-selection-grid" id="theme-selection-grid" role="radiogroup" aria-label="Themes"></div>
+                <button class="button theme-selection-back"><span>Back</span></button>
             </div>
         </template>
         <script src="src/index.ts" type="module"></script>

@@ -140,10 +140,14 @@ was wrong and why the fix works.
 changes belong there, and it is updated in its own commits, not alongside every fix. Version
 bumps go through `scripts/bump.sh`.
 
-Never carry agent metadata into the repository: no agent session links, no "Generated with
-<tool>" footers, no session or co-author trailers naming an assistant, and no model names
-(`claude-*`, `gpt-*`, `gemini-*`, and the like) in commit messages, PR titles, PR
-descriptions, or any file pushed to the repository.
+Never carry issue-tracker or agent metadata into the repository:
+
+- No issue-tracker references anywhere in pushed content — no ticket identifiers like
+  `COT-123`, no tracker URLs, no `Fixes <ticket>` trailers — in commit messages, PR titles,
+  PR descriptions, code comments, or changelog entries. Describe the change on its own terms.
+- No agent session links, no "Generated with <tool>" footers, no session or co-author
+  trailers naming an assistant, and no model names (`claude-*`, `gpt-*`, `gemini-*`, and the
+  like) in commit messages, PR titles, PR descriptions, or any file pushed to the repository.
 
 ## Agent instruction files
 
