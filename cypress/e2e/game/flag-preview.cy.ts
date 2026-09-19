@@ -393,6 +393,39 @@ describe('flag preview functionality', () => {
                     cy.get('.box').eq(0).find('img[data-asset="img/Flag.png"]').should('not.exist');
                 });
         });
+
+        it('cancels preview immediately when mousedown fires on a different tile (mouseleave skipped)', () => {
+            visitWithBoard();
+            cy.clock();
+
+            // Hold on tile (0,0) until preview appears
+            cy.get('.game-board > .row')
+                .eq(0)
+                .within(() => {
+                    cy.get('.box').eq(0).trigger('mousedown', { button: 0 });
+                });
+
+            cy.tick(250);
+            cy.get('.flag-preview').should('exist');
+
+            // mousedown on a different tile without a prior mouseleave (simulates fast pointer movement)
+            cy.get('.game-board > .row')
+                .eq(0)
+                .within(() => {
+                    cy.get('.box').eq(1).trigger('mousedown', { button: 0 });
+                });
+
+            // Preview must be gone immediately — not waiting for mouseup
+            cy.get('.flag-preview').should('not.exist');
+
+            // Neither tile should be flagged
+            cy.get('.game-board > .row')
+                .eq(0)
+                .within(() => {
+                    cy.get('.box').eq(0).find('img[data-asset="img/Flag.png"]').should('not.exist');
+                    cy.get('.box').eq(1).find('img[data-asset="img/Flag.png"]').should('not.exist');
+                });
+        });
     });
 
     describe('no preview when game has already ended', () => {
