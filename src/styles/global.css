@@ -1,5 +1,5 @@
-@import url('./components/dialog.css');
-@import url('./components/notification.css');
+@import url('../components/dialog/dialog.css');
+@import url('../components/notification/notification.css');
 @import url('./components/knob.css');
 @import url('./components/slider.css');
 @import url('./components/swipe.css');
